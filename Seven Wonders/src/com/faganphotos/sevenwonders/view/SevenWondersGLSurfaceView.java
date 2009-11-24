@@ -14,6 +14,8 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 
 		renderer = new SevenWondersGLRenderer(context);
 		setRenderer(renderer);
+		
+		setKeepScreenOn(true);
 	}
 
 	public boolean onTouchEvent(final MotionEvent event) {
