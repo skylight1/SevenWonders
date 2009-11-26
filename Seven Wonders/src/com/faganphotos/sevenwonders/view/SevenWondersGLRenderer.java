@@ -3,7 +3,6 @@ package com.faganphotos.sevenwonders.view;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import skylight1.opengl.GeometryBuilder;
 import skylight1.opengl.OpenGLGeometry;
 import skylight1.opengl.OpenGLGeometryBuilder;
 import skylight1.opengl.OpenGLGeometryBuilderFactory;
@@ -11,7 +10,6 @@ import skylight1.opengl.Texture;
 import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
 import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
 import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
-import skylight1.opengl.OpenGLGeometryBuilderFactory.Void;
 import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLU;
@@ -37,7 +35,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	public void onSurfaceCreated(final GL10 gl, final EGLConfig config) {
-		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Void>>, GeometryBuilder.TexturableRectangle2D<Void>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory
+		final OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory
 				.createTexturableNormalizable();
 
 		// final ObjFileLoader objFileLoader;
@@ -76,50 +74,53 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	private void addGroundToGeometry(
-			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Void>>, GeometryBuilder.TexturableRectangle2D<Void>> anOpenGLGeometryBuilder) {
+			final OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder) {
 
-		anOpenGLGeometryBuilder.startGeometry();
-		for (int i = 0; i < 100; i++) {
-			final float x1 = -1000 + i * 20;
-			final float x2 = x1 + 2000 / 100;
-			for (int j = 0; j < 100; j++) {
-				final float z1 = -1000 + j * 20;
-				final float z2 = z1 + 2000 / 100;
+		final int sideLength = 2000;
+		final int sideSegments = 25;
+
+		openGLGeometryBuilder.startGeometry();
+		for (int i = 0; i < sideSegments; i++) {
+			final float x1 = -sideLength / 2 + i * (sideLength / sideSegments);
+			final float x2 = x1 + (sideLength / sideSegments);
+			for (int j = 0; j < sideSegments; j++) {
+				final float z1 = -sideLength / 2 + j * (sideLength / sideSegments);
+				final float z2 = z1 + (sideLength / sideSegments);
 
 				final float s1 = 320f / 1024f;
 				final float t2 = 256f / 1024f;
 				final float s2 = (320f + 256f) / 1024f;
 				final float t1 = 0;
 
-				anOpenGLGeometryBuilder.add3DTriangle(x1, -1f, z1, x2, -1f, z1, x1, -1f, z2).setTextureCoordinates(s1,
-						t1, s2, t1, s1, t2);//.setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
-				anOpenGLGeometryBuilder.add3DTriangle(x2, -1f, z1, x2, -1f, z2, x1, -1f, z2).setTextureCoordinates(s2,
-						t1, s2, t2, s1, t2);//.setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
+				openGLGeometryBuilder.add3DTriangle(x1, -1f, z1, x2, -1f, z1, x1, -1f, z2).setTextureCoordinates(s1,
+						t1, s2, t1, s1, t2);// .setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
+				openGLGeometryBuilder.add3DTriangle(x2, -1f, z1, x2, -1f, z2, x1, -1f, z2).setTextureCoordinates(s2,
+						t1, s2, t2, s1, t2);// .setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
 			}
 		}
-		worldGeometry = anOpenGLGeometryBuilder.endGeometry();
+		worldGeometry = openGLGeometryBuilder.endGeometry();
 	}
 
 	private void addCarpetToGeometry(
-			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Void>>, TexturableRectangle2D<Void>> anOpenGLGeometryBuilder) {
+			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder) {
 
-		anOpenGLGeometryBuilder.startGeometry();
+		openGLGeometryBuilder.startGeometry();
 		final float x1 = -0.5f;
 		final float x2 = 0.5f;
 		final float z1 = -1.25f;
 		final float z2 = 1.25f;
-		final float y = -0.25f;
+		final float y = -0.35f;
 
 		final float s1 = 0;
 		final float t2 = 480f / 1024f;
 		final float s2 = 320f / 1024f;
 		final float t1 = 0;
 
-		anOpenGLGeometryBuilder.add3DTriangle(x1, y, z1, x2, y, z1, x1, y, z2).setTextureCoordinates(s1, t1, s2, t1,
+		openGLGeometryBuilder.add3DTriangle(x1, y, z1, x2, y, z1, x1, y, z2).setTextureCoordinates(s1, t1, s2, t1,
 				s1, t2);
-		anOpenGLGeometryBuilder.add3DTriangle(x2, y, z1, x2, y, z2, x1, y, z2).setTextureCoordinates(s2, t1, s2, t2,
+		openGLGeometryBuilder.add3DTriangle(x2, y, z1, x2, y, z2, x1, y, z2).setTextureCoordinates(s2, t1, s2, t2,
 				s1, t2);
-		carpetGeometry = anOpenGLGeometryBuilder.endGeometry();
+		carpetGeometry = openGLGeometryBuilder.endGeometry();
 	}
 
 	public void onSurfaceChanged(GL10 gl, int w, int h) {
@@ -143,7 +144,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
-//		gl.glLoadIdentity();
+		// gl.glLoadIdentity();
 		float distance = -500f + (float) (System.currentTimeMillis() % 15000) / 15000f * 1000f;
 		gl.glTranslatef(0, -10f, distance);
 
