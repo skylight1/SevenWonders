@@ -20,8 +20,25 @@ import android.opengl.GLSurfaceView.Renderer;
 import com.faganphotos.sevenwonders.R;
 
 public class SevenWondersGLRenderer implements Renderer {
-	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
 
+	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
+	
+	private static final int WORLD_START_X = -1000;
+
+	private static final int WORLD_END_X = 1000;
+
+	private static final float WORLD_START_Y = -20f;
+	
+	private static final float TERRAIN_END_Y = -1f;
+	
+	private static final int WORLD_START_Z = -1000;
+	
+	private static final int WORLD_END_Z = 1000;
+	
+	private static final String TERRAIN_FILE = "terrain_dunes.png";
+
+	private static final int TERRAIN_DENSITY = 25;
+	
 	private final Context context;
 
 	private Texture texture;
@@ -60,43 +77,32 @@ public class SevenWondersGLRenderer implements Renderer {
 		// gl.glEnable(GL10.GL_CULL_FACE);
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 
-		// gl.glShadeModel(GL10.GL_SMOOTH);
+		gl.glShadeModel(GL10.GL_SMOOTH);
 
-		// gl.glEnable(GL10.GL_LIGHTING);
-		// gl.glLightModelfv(GL10.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.4f, 0.4f, 0.4f, 1f }, 0);
-		//
-		// gl.glEnable(GL10.GL_LIGHT0);
-		// gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, new float[] { -1f, 0f, 1f, 0.0f }, 0);
-		// gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, new float[] { 0.5f, 0.5f, 0.5f, 1f }, 0);
-		//
-		// gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
-		// gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
-		// gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, new float[] { 0.1f, 0.1f, 0.1f, 1.0f }, 0);
-		// gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, new float[] { 50.0f }, 0);
+		gl.glEnable(GL10.GL_LIGHTING);
+		gl.glLightModelfv(GL10.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.4f, 0.4f, 0.4f, 1f }, 0);
+		
+		gl.glEnable(GL10.GL_LIGHT0);
+		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, new float[] { -1f, 0f, 1f, 0.0f }, 0);
+		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, new float[] { 0.5f, 0.5f, 0.5f, 1f }, 0);
+		
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, new float[] { 0.1f, 0.1f, 0.1f, 1.0f }, 0);
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, new float[] { 50.0f }, 0);
+
 	}
-
+	
 	private void addGroundToGeometry(
 			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Void>>, GeometryBuilder.TexturableRectangle2D<Void>> anOpenGLGeometryBuilder) {
-
+		
+		final Terrain terrain = new Terrain(TERRAIN_FILE, 
+			WORLD_START_X, WORLD_END_X, 
+			WORLD_START_Y, TERRAIN_END_Y, 
+			WORLD_START_Z, WORLD_END_Z);
+				
 		anOpenGLGeometryBuilder.startGeometry();
-		for (int i = 0; i < 100; i++) {
-			final float x1 = -1000 + i * 20;
-			final float x2 = x1 + 2000 / 100;
-			for (int j = 0; j < 100; j++) {
-				final float z1 = -1000 + j * 20;
-				final float z2 = z1 + 2000 / 100;
-
-				final float s1 = 320f / 1024f;
-				final float t2 = 256f / 1024f;
-				final float s2 = (320f + 256f) / 1024f;
-				final float t1 = 0;
-
-				anOpenGLGeometryBuilder.add3DTriangle(x1, -1f, z1, x2, -1f, z1, x1, -1f, z2).setTextureCoordinates(s1,
-						t1, s2, t1, s1, t2);//.setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
-				anOpenGLGeometryBuilder.add3DTriangle(x2, -1f, z1, x2, -1f, z2, x1, -1f, z2).setTextureCoordinates(s2,
-						t1, s2, t2, s1, t2);//.setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
-			}
-		}
+		terrain.addToGeometry(context, SubTexture.SAND, TERRAIN_DENSITY, anOpenGLGeometryBuilder);
 		worldGeometry = anOpenGLGeometryBuilder.endGeometry();
 	}
 
