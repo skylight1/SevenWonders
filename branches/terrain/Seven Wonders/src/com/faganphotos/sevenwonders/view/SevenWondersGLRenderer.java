@@ -11,7 +11,6 @@ import skylight1.opengl.Texture;
 import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
 import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
 import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
-import skylight1.opengl.OpenGLGeometryBuilderFactory.Void;
 import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLU;
@@ -22,23 +21,23 @@ import com.faganphotos.sevenwonders.R;
 public class SevenWondersGLRenderer implements Renderer {
 
 	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
-	
+
 	private static final int WORLD_START_X = -1000;
 
 	private static final int WORLD_END_X = 1000;
 
 	private static final float WORLD_START_Y = -20f;
-	
+
 	private static final float TERRAIN_END_Y = -1f;
-	
+
 	private static final int WORLD_START_Z = -1000;
-	
+
 	private static final int WORLD_END_Z = 1000;
-	
+
 	private static final String TERRAIN_FILE = "terrain_dunes.png";
 
 	private static final int TERRAIN_DENSITY = 25;
-	
+
 	private final Context context;
 
 	private Texture texture;
@@ -54,7 +53,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	public void onSurfaceCreated(final GL10 gl, final EGLConfig config) {
-		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Void>>, GeometryBuilder.TexturableRectangle2D<Void>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory
+		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory
 				.createTexturableNormalizable();
 
 		// final ObjFileLoader objFileLoader;
@@ -81,33 +80,31 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		gl.glEnable(GL10.GL_LIGHTING);
 		gl.glLightModelfv(GL10.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.4f, 0.4f, 0.4f, 1f }, 0);
-		
+
 		gl.glEnable(GL10.GL_LIGHT0);
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, new float[] { -1f, 0f, 1f, 0.0f }, 0);
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, new float[] { 0.5f, 0.5f, 0.5f, 1f }, 0);
-		
+
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, new float[] { 0.1f, 0.1f, 0.1f, 1.0f }, 0);
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, new float[] { 50.0f }, 0);
 
 	}
-	
+
 	private void addGroundToGeometry(
-			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Void>>, GeometryBuilder.TexturableRectangle2D<Void>> anOpenGLGeometryBuilder) {
-		
-		final Terrain terrain = new Terrain(TERRAIN_FILE, 
-			WORLD_START_X, WORLD_END_X, 
-			WORLD_START_Y, TERRAIN_END_Y, 
-			WORLD_START_Z, WORLD_END_Z);
-				
+			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> anOpenGLGeometryBuilder) {
+
+		final Terrain terrain = new Terrain(TERRAIN_FILE, WORLD_START_X, WORLD_END_X, WORLD_START_Y, TERRAIN_END_Y,
+				WORLD_START_Z, WORLD_END_Z);
+
 		anOpenGLGeometryBuilder.startGeometry();
 		terrain.addToGeometry(context, SubTexture.SAND, TERRAIN_DENSITY, anOpenGLGeometryBuilder);
 		worldGeometry = anOpenGLGeometryBuilder.endGeometry();
 	}
 
 	private void addCarpetToGeometry(
-			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Void>>, TexturableRectangle2D<Void>> anOpenGLGeometryBuilder) {
+			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> anOpenGLGeometryBuilder) {
 
 		anOpenGLGeometryBuilder.startGeometry();
 		final float x1 = -0.5f;
@@ -149,7 +146,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
-//		gl.glLoadIdentity();
+		// gl.glLoadIdentity();
 		float distance = -500f + (float) (System.currentTimeMillis() % 15000) / 15000f * 1000f;
 		gl.glTranslatef(0, -10f, distance);
 
