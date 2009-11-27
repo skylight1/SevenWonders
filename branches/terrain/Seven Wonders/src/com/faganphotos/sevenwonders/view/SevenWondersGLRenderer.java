@@ -119,9 +119,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		final float t1 = 0;
 
 		anOpenGLGeometryBuilder.add3DTriangle(x1, y, z1, x2, y, z1, x1, y, z2).setTextureCoordinates(s1, t1, s2, t1,
-				s1, t2);
+				s1, t2).setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
 		anOpenGLGeometryBuilder.add3DTriangle(x2, y, z1, x2, y, z2, x1, y, z2).setTextureCoordinates(s2, t1, s2, t2,
-				s1, t2);
+				s1, t2).setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
 		carpetGeometry = anOpenGLGeometryBuilder.endGeometry();
 	}
 
