@@ -26,9 +26,9 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final int WORLD_END_X = 1000;
 
-	private static final float WORLD_START_Y = -20f;
+	private static final float WORLD_START_Y = -50f;
 
-	private static final float TERRAIN_END_Y = -1f;
+	private static final float TERRAIN_END_Y = 0f;
 
 	private static final int WORLD_START_Z = -1000;
 
@@ -79,7 +79,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		gl.glShadeModel(GL10.GL_SMOOTH);
 
 		gl.glEnable(GL10.GL_LIGHTING);
-		gl.glLightModelfv(GL10.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.4f, 0.4f, 0.4f, 1f }, 0);
+		gl.glLightModelfv(GL10.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.75f, 0.75f, 0.75f, 1f }, 0);
 
 		gl.glEnable(GL10.GL_LIGHT0);
 		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, new float[] { -1f, 0f, 1f, 0.0f }, 0);
