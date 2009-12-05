@@ -47,10 +47,10 @@ public class Terrain {
 	 * @param context
 	 *			Context to load assets from
 	 * @param texture
-	 *			SubTexture to use for each two triangles added
+	 *			GameTexture to use for each two triangles added
 	 * @param density
 	 *			int number of vertexes to break X and Z axes up into
-	 * @param anOpenGLGeometryBuilder
+	 * @param geometry
 	 *			OpenGLGeometryBuilder to add to
 	 */
 	public void addToGeometry(
