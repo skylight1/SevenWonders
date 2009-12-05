@@ -22,19 +22,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
 
-	private static final int WORLD_START_X = -1000;
-
-	private static final int WORLD_END_X = 1000;
-
-	private static final float WORLD_START_Y = -50f;
-
-	private static final float TERRAIN_END_Y = 0f;
-
-	private static final int WORLD_START_Z = -1000;
-
-	private static final int WORLD_END_Z = 1000;
-
-	private static final String TERRAIN_FILE = "terrain_dunes.png";
+	private static final int TERRAIN_MAP_RESOURCE = R.raw.terrain_vertical_waves;
 
 	private static final int TERRAIN_DENSITY = 25;
 
@@ -95,11 +83,10 @@ public class SevenWondersGLRenderer implements Renderer {
 	private void addGroundToGeometry(
 			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> anOpenGLGeometryBuilder) {
 
-		final Terrain terrain = new Terrain(TERRAIN_FILE, WORLD_START_X, WORLD_END_X, WORLD_START_Y, TERRAIN_END_Y,
-				WORLD_START_Z, WORLD_END_Z);
+		final Terrain terrain = new Terrain(TERRAIN_MAP_RESOURCE, CubeBounds.TERRAIN);
 
 		anOpenGLGeometryBuilder.startGeometry();
-		terrain.addToGeometry(context, SubTexture.SAND, TERRAIN_DENSITY, anOpenGLGeometryBuilder);
+		terrain.addToGeometry(context, GameTexture.SAND, TERRAIN_DENSITY, anOpenGLGeometryBuilder);
 		worldGeometry = anOpenGLGeometryBuilder.endGeometry();
 	}
 
