@@ -14,6 +14,13 @@ public class SubTexture {
 		0,
 		256f / 1024f
 	);
+	
+	public static final SubTexture SPELL = new SubTexture(
+		(321f + 256f) / 1024f,
+		(321f + 256f + 120f) / 1024f,
+		0,
+		120f / 1024f
+	);
 
 	final float s1;
 	
