@@ -1,5 +1,7 @@
 package com.faganphotos.sevenwonders.view;
 
+import static com.faganphotos.sevenwonders.view.SubTexture.SPELL;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -48,6 +50,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private OpenGLGeometry carpetGeometry;
 
+	private OpenGLGeometry spellGeometry;
+
 	public SevenWondersGLRenderer(Context aContext) {
 		context = aContext;
 	}
@@ -66,8 +70,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		// planeGeometry = objFileLoader.createGeometry(openGLGeometryBuilder);
 
 		addGroundToGeometry(openGLGeometryBuilder);
+		addSpellsToGeometry(openGLGeometryBuilder);
 		addCarpetToGeometry(openGLGeometryBuilder);
-
+		
 		openGLGeometryBuilder.enable(gl);
 
 		gl.glColor4f(1, 1, 1, 1);
@@ -76,6 +81,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		// gl.glEnable(GL10.GL_CULL_FACE);
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 
+		gl.glEnable(GL10.GL_BLEND);
+		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		
 		gl.glShadeModel(GL10.GL_SMOOTH);
 
 		gl.glEnable(GL10.GL_LIGHTING);
@@ -90,6 +98,19 @@ public class SevenWondersGLRenderer implements Renderer {
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, new float[] { 0.1f, 0.1f, 0.1f, 1.0f }, 0);
 		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, new float[] { 50.0f }, 0);
 
+	}
+
+	private void addSpellsToGeometry(
+			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder) {
+		openGLGeometryBuilder.startGeometry();
+		float spellX = 0;
+		float spellY = 2;
+		float spellEdgeLength = (WORLD_END_X - WORLD_START_X) / TERRAIN_DENSITY;
+		final float xLeft = spellX - spellEdgeLength / 2f;
+		final float xRight = spellX + spellEdgeLength / 2f;
+		openGLGeometryBuilder.add3DTriangle(xLeft, spellY, 0, xRight, spellY, 0, xRight, spellY + spellEdgeLength, 0).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t2, SPELL.s2, SPELL.t1);
+		openGLGeometryBuilder.add3DTriangle(xLeft, spellY, 0, xRight, spellY + spellEdgeLength, 0, xLeft, spellY + spellEdgeLength, 0).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t1, SPELL.s1, SPELL.t1);;
+		spellGeometry = openGLGeometryBuilder.endGeometry();
 	}
 
 	private void addGroundToGeometry(
@@ -156,7 +177,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		// GLU.gluLookAt(gl, 0, 0, 0, 0, 2, distance, 0, 1, 0);
 
 		worldGeometry.draw(gl);
-
+		
+		spellGeometry.draw(gl);
+		
 		gl.glLoadIdentity();
 		carpetGeometry.draw(gl);
 		//		
