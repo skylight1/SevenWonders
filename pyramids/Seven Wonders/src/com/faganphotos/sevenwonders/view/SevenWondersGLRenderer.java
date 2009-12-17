@@ -1,5 +1,7 @@
 package com.faganphotos.sevenwonders.view;
 
+import java.io.IOException;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -53,19 +55,24 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	public void onSurfaceCreated(final GL10 gl, final EGLConfig config) {
+		
 		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory
 				.createTexturableNormalizable();
 
-		// final ObjFileLoader objFileLoader;
-		// try {
-		// objFileLoader = new ObjFileLoader(context, R.raw.airplane_red_mesh_obj);
-		// } catch (IOException e) {
-		// throw new RuntimeException(e);
-		// }
-		//
-		// planeGeometry = objFileLoader.createGeometry(openGLGeometryBuilder);
-
+		//Add ground and pyramid to a single drawable geometry for the world.
+		openGLGeometryBuilder.startGeometry();
 		addGroundToGeometry(openGLGeometryBuilder);
+		final ObjFileLoader objFileLoader;
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.pyramid);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		objFileLoader.createGeometry(openGLGeometryBuilder);		
+		worldGeometry = openGLGeometryBuilder.endGeometry();
+		
+		//Add carpet to a separate drawable geometry. 
+		//Allows the world to be translated separately from the carpet later.
 		addCarpetToGeometry(openGLGeometryBuilder);
 
 		openGLGeometryBuilder.enable(gl);
@@ -98,9 +105,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		final Terrain terrain = new Terrain(TERRAIN_FILE, WORLD_START_X, WORLD_END_X, WORLD_START_Y, TERRAIN_END_Y,
 				WORLD_START_Z, WORLD_END_Z);
 
-		anOpenGLGeometryBuilder.startGeometry();
+
 		terrain.addToGeometry(context, SubTexture.SAND, TERRAIN_DENSITY, anOpenGLGeometryBuilder);
-		worldGeometry = anOpenGLGeometryBuilder.endGeometry();
+
 	}
 
 	private void addCarpetToGeometry(
