@@ -13,6 +13,7 @@ import skylight1.opengl.Texture;
 import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
 import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
 import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
+import skylight1.opengl.files.ObjFileLoader;
 import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLU;
