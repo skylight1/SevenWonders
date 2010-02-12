@@ -2,6 +2,8 @@ package com.faganphotos.sevenwonders.view;
 
 import static com.faganphotos.sevenwonders.view.SubTexture.SPELL;
 
+import java.io.IOException;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -13,6 +15,7 @@ import skylight1.opengl.Texture;
 import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
 import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
 import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
+import skylight1.opengl.files.ObjFileLoader;
 import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLU;
@@ -21,6 +24,8 @@ import android.opengl.GLSurfaceView.Renderer;
 import com.faganphotos.sevenwonders.R;
 
 public class SevenWondersGLRenderer implements Renderer {
+
+	private static final float HEIGHT_OF_CARPET_FROM_GROUND = 10f;
 
 	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
 
@@ -43,7 +48,9 @@ public class SevenWondersGLRenderer implements Renderer {
 	private final Context context;
 
 	private Texture texture;
-
+	
+	private Texture sphinxTexture;
+	
 	private FPSLogger fPSLogger = new FPSLogger(SevenWondersGLRenderer.class.getName(), FRAMES_BETWEEN_LOGGING_FPS);
 
 	private OpenGLGeometry worldGeometry;
@@ -51,6 +58,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	private OpenGLGeometry carpetGeometry;
 
 	private OpenGLGeometry spellGeometry;
+	
+	private OpenGLGeometry sphinxGeometry;
 
 	public SevenWondersGLRenderer(Context aContext) {
 		context = aContext;
@@ -60,14 +69,14 @@ public class SevenWondersGLRenderer implements Renderer {
 		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory
 				.createTexturableNormalizable();
 
-		// final ObjFileLoader objFileLoader;
-		// try {
-		// objFileLoader = new ObjFileLoader(context, R.raw.airplane_red_mesh_obj);
-		// } catch (IOException e) {
-		// throw new RuntimeException(e);
-		// }
-		//
-		// planeGeometry = objFileLoader.createGeometry(openGLGeometryBuilder);
+		final ObjFileLoader objFileLoader;
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.sphinx_scaled);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		sphinxGeometry = objFileLoader.createGeometry(openGLGeometryBuilder);
 
 		addGroundToGeometry(openGLGeometryBuilder);
 		addSpellsToGeometry(openGLGeometryBuilder);
@@ -78,7 +87,6 @@ public class SevenWondersGLRenderer implements Renderer {
 		gl.glColor4f(1, 1, 1, 1);
 		gl.glClearColor(0.5f, 0.5f, 1, 1.0f);
 
-		// gl.glEnable(GL10.GL_CULL_FACE);
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 
 		gl.glEnable(GL10.GL_BLEND);
@@ -104,12 +112,13 @@ public class SevenWondersGLRenderer implements Renderer {
 			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder) {
 		openGLGeometryBuilder.startGeometry();
 		float spellX = 0;
-		float spellY = 2;
-		float spellEdgeLength = (WORLD_END_X - WORLD_START_X) / TERRAIN_DENSITY;
+		float spellY = HEIGHT_OF_CARPET_FROM_GROUND;
+		float spellZ = 200;
+		float spellEdgeLength = 4;
 		final float xLeft = spellX - spellEdgeLength / 2f;
 		final float xRight = spellX + spellEdgeLength / 2f;
-		openGLGeometryBuilder.add3DTriangle(xLeft, spellY, 0, xRight, spellY, 0, xRight, spellY + spellEdgeLength, 0).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t2, SPELL.s2, SPELL.t1);
-		openGLGeometryBuilder.add3DTriangle(xLeft, spellY, 0, xRight, spellY + spellEdgeLength, 0, xLeft, spellY + spellEdgeLength, 0).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t1, SPELL.s1, SPELL.t1);;
+		openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY, spellZ, xRight, spellY + spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t2, SPELL.s2, SPELL.t1);
+		openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY + spellEdgeLength, spellZ, xLeft, spellY + spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t1, SPELL.s1, SPELL.t1);;
 		spellGeometry = openGLGeometryBuilder.endGeometry();
 	}
 
@@ -161,6 +170,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		}
 
 		texture = new Texture(gl, context, R.raw.textures);
+
+		sphinxTexture = new Texture(gl, context, R.raw.sphinx, true);
+
 		texture.activateTexture();
 	}
 
@@ -169,27 +181,27 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		// gl.glLoadIdentity();
 		float distance = -500f + (float) (System.currentTimeMillis() % 15000) / 15000f * 1000f;
-		gl.glTranslatef(0, -10f, distance);
+		gl.glTranslatef(0, -HEIGHT_OF_CARPET_FROM_GROUND, distance);
 
 		// float distance = -250f + (float) (System.currentTimeMillis() % 15000) / 15000f * 300f;
 
 		// gl.glLoadIdentity();
 		// GLU.gluLookAt(gl, 0, 0, 0, 0, 2, distance, 0, 1, 0);
 
+
 		worldGeometry.draw(gl);
 		
 		spellGeometry.draw(gl);
 		
+		sphinxTexture.activateTexture();
+		gl.glEnable(GL10.GL_CULL_FACE);
+		sphinxGeometry.draw(gl);
+		gl.glDisable(GL10.GL_CULL_FACE);
+		texture.activateTexture();
+		
 		gl.glLoadIdentity();
 		carpetGeometry.draw(gl);
-		//		
-		// drawPlane(gl, 0, 2, distance);
-		// for (int p = 0; p < 4; p++) {
-		// final int rank = p / 2 + 1;
-		// final int side = (int) Math.signum(0.5f - (float) (p % 2));
-		// drawPlane(gl, side * 8 * rank, 2 + 2 * rank, distance);
-		// }
-
+	
 		fPSLogger.frameRendered();
 	}
 }
