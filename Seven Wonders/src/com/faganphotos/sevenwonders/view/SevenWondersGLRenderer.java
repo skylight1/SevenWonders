@@ -18,6 +18,8 @@ import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLU;
 import android.opengl.GLSurfaceView.Renderer;
+import android.os.SystemClock;
+import android.util.Log;
 
 import com.faganphotos.sevenwonders.R;
 
@@ -51,6 +53,14 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private OpenGLGeometry carpetGeometry;
 
+	private Position playerWorldPosition = new Position();
+	
+	private float playerFacing;
+	
+	private float velocity = 35f * 1000f / 60f / 60f / 1000f;
+
+	private long timeAtLastOnRenderCall;
+	
 	public SevenWondersGLRenderer(Context aContext) {
 		context = aContext;
 	}
@@ -153,15 +163,23 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public void onDrawFrame(GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		
+        final long now = SystemClock.uptimeMillis();
+		if (timeAtLastOnRenderCall == 0) {
+			timeAtLastOnRenderCall = now;
+		}
+		
+		// TODO delete this next line
+		playerFacing += 360f / 1000f;
+		
+        playerWorldPosition.x += Math.sin( playerFacing / 180f * Math.PI ) * velocity * (now - timeAtLastOnRenderCall);
+        playerWorldPosition.z += Math.cos( playerFacing / 180f * Math.PI ) * velocity * (now - timeAtLastOnRenderCall);
+        timeAtLastOnRenderCall = now;
 
-		// gl.glLoadIdentity();
-		float distance = -500f + (float) (System.currentTimeMillis() % 15000) / 15000f * 1000f;
-		gl.glTranslatef(0, -10f, distance);
-
-		// float distance = -250f + (float) (System.currentTimeMillis() % 15000) / 15000f * 300f;
-
-		// gl.glLoadIdentity();
-		// GLU.gluLookAt(gl, 0, 0, 0, 0, 2, distance, 0, 1, 0);
+        Log.i(SevenWondersGLRenderer.class.getName(), playerWorldPosition + ", " + playerFacing);
+        
+		gl.glTranslatef(-playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
+		gl.glRotatef(-playerFacing, 0, 1, 0);
 
 		worldGeometry.draw(gl);
 
