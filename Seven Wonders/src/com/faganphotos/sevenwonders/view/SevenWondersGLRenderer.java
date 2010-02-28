@@ -1,0 +1,236 @@
+package com.faganphotos.sevenwonders.view;
+
+import static com.faganphotos.sevenwonders.view.GameTexture.*;
+import java.io.IOException;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
+import skylight1.opengl.GeometryBuilder;
+import skylight1.opengl.OpenGLGeometry;
+import skylight1.opengl.OpenGLGeometryBuilder;
+import skylight1.opengl.OpenGLGeometryBuilderFactory;
+import skylight1.opengl.Texture;
+import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
+import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
+import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
+import skylight1.opengl.files.ObjFileLoader;
+import skylight1.util.FPSLogger;
+import android.content.Context;
+import android.opengl.GLU;
+import android.opengl.GLSurfaceView.Renderer;
+import android.os.SystemClock;
+import android.util.Log;
+
+import com.faganphotos.sevenwonders.R;
+
+public class SevenWondersGLRenderer implements Renderer {
+
+	private static final float HEIGHT_OF_CARPET_FROM_GROUND = 10f;
+
+	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
+
+	private static final int TERRAIN_MAP_RESOURCE = R.raw.terrain_dunes;
+
+	private static final int TERRAIN_DENSITY = 25;
+
+	private final Context context;
+
+	private Texture atlasTexture;
+	
+	private Texture sphinxTexture;
+	
+	private FPSLogger fPSLogger = new FPSLogger(SevenWondersGLRenderer.class.getName(), FRAMES_BETWEEN_LOGGING_FPS);
+
+	private OpenGLGeometry worldGeometry;
+
+	private OpenGLGeometry carpetGeometry;
+
+	private OpenGLGeometry spellGeometry;
+	
+	private OpenGLGeometry sphinxGeometry;
+
+	//Start a little back so that we aren't inside the pyramid.
+	private Position playerWorldPosition = new Position(0, 0, 200);
+	
+	private float playerFacing;
+	
+	private float velocity = 35f * 1000f / 60f / 60f / 1000f;
+
+	private long timeAtLastOnRenderCall;
+	
+	public SevenWondersGLRenderer(Context aContext) {
+		context = aContext;
+	}
+
+	public void onSurfaceCreated(final GL10 gl, final EGLConfig config) {
+		
+		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory
+				.createTexturableNormalizable();
+
+		//Add ground and pyramid to a single drawable geometry for the world.
+		openGLGeometryBuilder.startGeometry();
+		addGroundToGeometry(openGLGeometryBuilder);
+		final ObjFileLoader pyramidLoader;
+		try {
+			pyramidLoader = new ObjFileLoader(context, R.raw.pyramid);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		pyramidLoader.createGeometry(openGLGeometryBuilder);		
+		worldGeometry = openGLGeometryBuilder.endGeometry();
+
+		//Load sphinx geometry.
+		final ObjFileLoader sphinxLoader;
+		try {
+			sphinxLoader = new ObjFileLoader(context, R.raw.sphinx_scaled);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}		
+		sphinxGeometry = sphinxLoader.createGeometry(openGLGeometryBuilder);
+
+		addSpellsToGeometry(openGLGeometryBuilder);
+		
+		//Add carpet to a separate drawable geometry. 
+		//Allows the world to be translated separately from the carpet later.
+		addCarpetToGeometry(openGLGeometryBuilder);
+
+		
+		openGLGeometryBuilder.enable(gl);
+
+		gl.glColor4f(1, 1, 1, 1);
+		gl.glClearColor(0.5f, 0.5f, 1, 1.0f);
+
+		gl.glEnable(GL10.GL_DEPTH_TEST);
+
+		gl.glEnable(GL10.GL_BLEND);
+		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		
+		gl.glShadeModel(GL10.GL_SMOOTH);
+
+		gl.glEnable(GL10.GL_LIGHTING);
+		gl.glLightModelfv(GL10.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.75f, 0.75f, 0.75f, 1f }, 0);
+
+		gl.glEnable(GL10.GL_LIGHT0);
+		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, new float[] { -1f, 0f, 1f, 0.0f }, 0);
+		gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, new float[] { 0.5f, 0.5f, 0.5f, 1f }, 0);
+
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, new float[] { 0.1f, 0.1f, 0.1f, 1.0f }, 0);
+		gl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, new float[] { 50.0f }, 0);
+
+	}
+
+	private void addSpellsToGeometry(
+			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder) {
+		openGLGeometryBuilder.startGeometry();
+		float spellX = -50;
+		float spellY = HEIGHT_OF_CARPET_FROM_GROUND;
+		float spellZ = 200;
+		float spellEdgeLength = 4;
+		final float xLeft = spellX - spellEdgeLength / 2f;
+		final float xRight = spellX + spellEdgeLength / 2f;
+		openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY, spellZ, xRight, spellY + spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t2, SPELL.s2, SPELL.t1);
+		openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY + spellEdgeLength, spellZ, xLeft, spellY + spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t1, SPELL.s1, SPELL.t1);;
+		spellGeometry = openGLGeometryBuilder.endGeometry();
+	}
+
+	private void addGroundToGeometry(
+			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> anOpenGLGeometryBuilder) {
+
+		final Terrain terrain = new Terrain(TERRAIN_MAP_RESOURCE, CubeBounds.TERRAIN);
+		terrain.addToGeometry(context, GameTexture.SAND, TERRAIN_DENSITY, anOpenGLGeometryBuilder);
+	}
+
+	private void addCarpetToGeometry(
+			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> anOpenGLGeometryBuilder) {
+
+		anOpenGLGeometryBuilder.startGeometry();
+		final float x1 = -0.5f;
+		final float x2 = 0.5f;
+		final float z1 = -1.25f;
+		final float z2 = 1.25f;
+		final float y = -0.25f;
+
+		final float s1 = 0;
+		final float t2 = 480f / 1024f;
+		final float s2 = 320f / 1024f;
+		final float t1 = 0;
+
+		anOpenGLGeometryBuilder.add3DTriangle(x1, y, z1, x2, y, z1, x1, y, z2).setTextureCoordinates(s1, t1, s2, t1,
+				s1, t2).setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
+		anOpenGLGeometryBuilder.add3DTriangle(x2, y, z1, x2, y, z2, x1, y, z2).setTextureCoordinates(s2, t1, s2, t2,
+				s1, t2).setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
+		carpetGeometry = anOpenGLGeometryBuilder.endGeometry();
+	}
+
+	public void onSurfaceChanged(GL10 gl, int w, int h) {
+		gl.glMatrixMode(GL10.GL_PROJECTION);
+		gl.glViewport(0, 0, w, h);
+		GLU.gluPerspective(gl, 45, (float) w / (float) h, 0.1f, 1000f);
+
+		gl.glMatrixMode(GL10.GL_MODELVIEW);
+
+		// if the surface changed from a prior surface, such as a change of orientation, then free the prior plane
+		// texture
+		if (atlasTexture != null) {
+			atlasTexture.freeTexture();
+			atlasTexture = null;
+		}
+
+		atlasTexture = new Texture(gl, context, R.raw.textures);
+
+		sphinxTexture = new Texture(gl, context, R.raw.sphinx, true);
+
+		atlasTexture.activateTexture();
+	}
+
+	public void onDrawFrame(GL10 gl) {
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		
+        final long now = SystemClock.uptimeMillis();
+		if (timeAtLastOnRenderCall == 0) {
+			timeAtLastOnRenderCall = now;
+		}
+		
+		// TODO delete this next line
+		playerFacing += 360f / 1000f;
+		
+        playerWorldPosition.x += Math.sin( playerFacing / 180f * Math.PI ) * velocity * (now - timeAtLastOnRenderCall);
+        playerWorldPosition.z += Math.cos( playerFacing / 180f * Math.PI ) * velocity * (now - timeAtLastOnRenderCall);
+        timeAtLastOnRenderCall = now;
+
+        Log.i(SevenWondersGLRenderer.class.getName(), playerWorldPosition + ", " + playerFacing);
+        
+		gl.glTranslatef(-playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
+		gl.glRotatef(-playerFacing, 0, 1, 0);
+
+		//Don't draw inside facing surfaces on things like the pyramid and sphinx.
+		//This fixes a z-fighting issue. At long distances OpenGL doesn't have enough precision in the depth buffer
+		//to tell if the front is closer or if the inside of nearby back surface is closer.
+		gl.glEnable(GL10.GL_CULL_FACE);
+
+		worldGeometry.draw(gl);
+		
+		//Draw the sphinx.
+		sphinxTexture.activateTexture();
+		//Translate a bit so that it isn't inside the pyramid. 
+		//XXX Since this is permanent, we could actually alter the geometry instead.
+		gl.glPushMatrix();
+		gl.glTranslatef(-100, 0, 0);
+		sphinxGeometry.draw(gl);
+		gl.glPopMatrix();
+		atlasTexture.activateTexture();
+		
+		//The spell only has one surface at the moment, that we want to be visible from both sides.
+		gl.glDisable(GL10.GL_CULL_FACE);
+
+		spellGeometry.draw(gl);
+		
+		gl.glLoadIdentity();
+		carpetGeometry.draw(gl);
+
+		fPSLogger.frameRendered();
+	}
+}
