@@ -1,6 +1,7 @@
 package com.faganphotos.sevenwonders.view;
 
 import static com.faganphotos.sevenwonders.view.GameTexture.*;
+import static javax.microedition.khronos.opengles.GL10.*;
 import java.io.IOException;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -25,6 +26,8 @@ import android.util.Log;
 import com.faganphotos.sevenwonders.R;
 
 public class SevenWondersGLRenderer implements Renderer {
+	
+	private static final boolean LOG = false;
 
 	private static final float HEIGHT_OF_CARPET_FROM_GROUND = 10f;
 
@@ -88,22 +91,26 @@ public class SevenWondersGLRenderer implements Renderer {
 			throw new RuntimeException(e);
 		}		
 		sphinxGeometry = sphinxLoader.createGeometry(openGLGeometryBuilder);
-
+		
 		addSpellsToGeometry(openGLGeometryBuilder);
 		
 		//Add carpet to a separate drawable geometry. 
 		//Allows the world to be translated separately from the carpet later.
 		addCarpetToGeometry(openGLGeometryBuilder);
 
-		
 		openGLGeometryBuilder.enable(gl);
 
 		gl.glColor4f(1, 1, 1, 1);
 		gl.glClearColor(0.5f, 0.5f, 1, 1.0f);
 
+		//Don't draw inside facing surfaces on things like the pyramid and sphinx.
+		//This fixes a z-fighting issue: At long distances OpenGL doesn't have enough precision in the depth buffer
+		//to tell if the front is closer or if the inside of a nearby back surface is closer and gets it wrong some times.
+		gl.glEnable(GL10.GL_CULL_FACE);
+		
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 
-		gl.glEnable(GL10.GL_BLEND);
+		gl.glDisable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		
 		gl.glShadeModel(GL10.GL_SMOOTH);
@@ -125,9 +132,9 @@ public class SevenWondersGLRenderer implements Renderer {
 	private void addSpellsToGeometry(
 			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder) {
 		openGLGeometryBuilder.startGeometry();
-		float spellX = -50;
+		float spellX = -25;
 		float spellY = HEIGHT_OF_CARPET_FROM_GROUND;
-		float spellZ = 200;
+		float spellZ = 25;
 		float spellEdgeLength = 4;
 		final float xLeft = spellX - spellEdgeLength / 2f;
 		final float xRight = spellX + spellEdgeLength / 2f;
@@ -147,8 +154,8 @@ public class SevenWondersGLRenderer implements Renderer {
 			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> anOpenGLGeometryBuilder) {
 
 		anOpenGLGeometryBuilder.startGeometry();
-		final float x1 = -0.5f;
-		final float x2 = 0.5f;
+		final float x1 = 0.5f;
+		final float x2 = -0.5f;
 		final float z1 = -1.25f;
 		final float z2 = 1.25f;
 		final float y = -0.25f;
@@ -172,65 +179,90 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		gl.glMatrixMode(GL10.GL_MODELVIEW);
 
-		// if the surface changed from a prior surface, such as a change of orientation, then free the prior plane
-		// texture
+		// if the surface changed from a prior surface, such as a change of orientation, then free the prior texture
+		if (sphinxTexture != null) {
+			sphinxTexture.freeTexture();
+			sphinxTexture = null;
+		}
+		sphinxTexture = new Texture(gl, context, R.raw.sphinx, true);
+		
 		if (atlasTexture != null) {
 			atlasTexture.freeTexture();
 			atlasTexture = null;
 		}
-
 		atlasTexture = new Texture(gl, context, R.raw.textures);
-
-		sphinxTexture = new Texture(gl, context, R.raw.sphinx, true);
 
 		atlasTexture.activateTexture();
 	}
 
-	public void onDrawFrame(GL10 gl) {
+	public void onDrawFrame(final GL10 gl) {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
+		//Carpet drawn with no transformations, always right in front of the screen.
+		gl.glLoadIdentity();
+		//Drawn first for performance, might occlude other geometry, which OpenGL can then skip.
+		carpetGeometry.draw(gl);
 		
-        final long now = SystemClock.uptimeMillis();
+		//Spin player to test movement calculations. 
+		//TODO Replace this line with using input to change facing.
+		playerFacing += 360f / 1000f;
+       
+		applyMovement(gl);
+
+		worldGeometry.draw(gl);
+		drawSphinx(gl);
+		drawSpell(gl);
+
+		fPSLogger.frameRendered();
+	}
+	
+	private void applyMovement(final GL10 gl) {
+        final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
+		playerWorldPosition.x += Math.sin( playerFacing / 180f * Math.PI ) * velocity * timeDeltaMS;
+        playerWorldPosition.z += Math.cos( playerFacing / 180f * Math.PI ) * velocity * timeDeltaMS;
+        if ( LOG ) Log.i(SevenWondersGLRenderer.class.getName(), playerWorldPosition + ", " + playerFacing);
+		
+        gl.glTranslatef(-playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
+		gl.glRotatef(-playerFacing, 0, 1, 0);
+	}
+
+	private long calculateTimeSinceLastRenderMillis() {
+		final long now = SystemClock.uptimeMillis();
 		if (timeAtLastOnRenderCall == 0) {
 			timeAtLastOnRenderCall = now;
 		}
 		
-		// TODO delete this next line
-		playerFacing += 360f / 1000f;
-		
-        playerWorldPosition.x += Math.sin( playerFacing / 180f * Math.PI ) * velocity * (now - timeAtLastOnRenderCall);
-        playerWorldPosition.z += Math.cos( playerFacing / 180f * Math.PI ) * velocity * (now - timeAtLastOnRenderCall);
+        final long timeDeltaMS = now - timeAtLastOnRenderCall;
         timeAtLastOnRenderCall = now;
-
-        Log.i(SevenWondersGLRenderer.class.getName(), playerWorldPosition + ", " + playerFacing);
-        
-		gl.glTranslatef(-playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
-		gl.glRotatef(-playerFacing, 0, 1, 0);
-
-		//Don't draw inside facing surfaces on things like the pyramid and sphinx.
-		//This fixes a z-fighting issue. At long distances OpenGL doesn't have enough precision in the depth buffer
-		//to tell if the front is closer or if the inside of nearby back surface is closer.
-		gl.glEnable(GL10.GL_CULL_FACE);
-
-		worldGeometry.draw(gl);
-		
-		//Draw the sphinx.
+		return timeDeltaMS;
+	}
+	
+	private void drawSphinx(final GL10 gl) {
 		sphinxTexture.activateTexture();
-		//Translate a bit so that it isn't inside the pyramid. 
+		//Translate a bit so sphinx isn't inside the pyramid. 
 		//XXX Since this is permanent, we could actually alter the geometry instead.
 		gl.glPushMatrix();
 		gl.glTranslatef(-100, 0, 0);
+		
 		sphinxGeometry.draw(gl);
+		
 		gl.glPopMatrix();
-		atlasTexture.activateTexture();
+		atlasTexture.activateTexture();		
+	}
+	
+	private void drawSpell(final GL10 gl) {
 		
 		//The spell only has one surface at the moment, that we want to be visible from both sides.
 		gl.glDisable(GL10.GL_CULL_FACE);
-
+		//Disable depth writing so that transparent pixels don't block things behind them.
+		gl.glDepthMask(false);
+		gl.glEnable(GL_BLEND);
+		
 		spellGeometry.draw(gl);
 		
-		gl.glLoadIdentity();
-		carpetGeometry.draw(gl);
-
-		fPSLogger.frameRendered();
+		gl.glDisable(GL_BLEND);
+		gl.glDepthMask(true);
+		gl.glEnable(GL10.GL_CULL_FACE);
 	}
+	
 }
