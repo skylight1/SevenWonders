@@ -47,7 +47,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private OpenGLGeometry worldGeometry;
 
-	private OpenGLGeometry carpetGeometry;
+	private OpenGLGeometry[] carpetGeometry;
 
 	private OpenGLGeometry spellGeometry;
 	
@@ -152,24 +152,92 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private void addCarpetToGeometry(
 			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> anOpenGLGeometryBuilder) {
+		
+		carpetGeometry = new OpenGLGeometry[10];
+		ObjFileLoader objFileLoader;
 
 		anOpenGLGeometryBuilder.startGeometry();
-		final float x1 = 0.5f;
-		final float x2 = -0.5f;
-		final float z1 = -1.25f;
-		final float z2 = 1.25f;
-		final float y = -0.25f;
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.triag0);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		objFileLoader.createGeometry(anOpenGLGeometryBuilder);		
+		carpetGeometry[0] = anOpenGLGeometryBuilder.endGeometry();
+		anOpenGLGeometryBuilder.startGeometry();
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.triag1);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		objFileLoader.createGeometry(anOpenGLGeometryBuilder);		
+		carpetGeometry[1] = anOpenGLGeometryBuilder.endGeometry();
+		
+		anOpenGLGeometryBuilder.startGeometry();
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.triag2);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		objFileLoader.createGeometry(anOpenGLGeometryBuilder);		
+		carpetGeometry[2] = anOpenGLGeometryBuilder.endGeometry();
+		anOpenGLGeometryBuilder.startGeometry();
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.triag3);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		objFileLoader.createGeometry(anOpenGLGeometryBuilder);		
+		carpetGeometry[3] = anOpenGLGeometryBuilder.endGeometry();
+		anOpenGLGeometryBuilder.startGeometry();
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.triag4);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		objFileLoader.createGeometry(anOpenGLGeometryBuilder);		
+		carpetGeometry[4] = anOpenGLGeometryBuilder.endGeometry();
+		anOpenGLGeometryBuilder.startGeometry();
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.triag5);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		objFileLoader.createGeometry(anOpenGLGeometryBuilder);		
+		carpetGeometry[5] = anOpenGLGeometryBuilder.endGeometry();
+		anOpenGLGeometryBuilder.startGeometry();
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.triag6);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		objFileLoader.createGeometry(anOpenGLGeometryBuilder);		
+		carpetGeometry[6] = anOpenGLGeometryBuilder.endGeometry();
+		anOpenGLGeometryBuilder.startGeometry();
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.triag7);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		objFileLoader.createGeometry(anOpenGLGeometryBuilder);		
+		carpetGeometry[7] = anOpenGLGeometryBuilder.endGeometry();
+		anOpenGLGeometryBuilder.startGeometry();
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.triag8);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		objFileLoader.createGeometry(anOpenGLGeometryBuilder);		
+		carpetGeometry[8] = anOpenGLGeometryBuilder.endGeometry();
+		anOpenGLGeometryBuilder.startGeometry();
+		try {
+			objFileLoader = new ObjFileLoader(context, R.raw.triag9);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		objFileLoader.createGeometry(anOpenGLGeometryBuilder);		
+		carpetGeometry[9] = anOpenGLGeometryBuilder.endGeometry();
 
-		final float s1 = 0;
-		final float t2 = 480f / 1024f;
-		final float s2 = 320f / 1024f;
-		final float t1 = 0;
-
-		anOpenGLGeometryBuilder.add3DTriangle(x1, y, z1, x2, y, z1, x1, y, z2).setTextureCoordinates(s1, t1, s2, t1,
-				s1, t2).setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
-		anOpenGLGeometryBuilder.add3DTriangle(x2, y, z1, x2, y, z2, x1, y, z2).setTextureCoordinates(s2, t1, s2, t2,
-				s1, t2).setNormal(0, 1, 0, 0, 1, 0, 0, 1, 0);
-		carpetGeometry = anOpenGLGeometryBuilder.endGeometry();
 	}
 
 	public void onSurfaceChanged(GL10 gl, int w, int h) {
@@ -201,7 +269,11 @@ public class SevenWondersGLRenderer implements Renderer {
 		//Carpet drawn with no transformations, always right in front of the screen.
 		gl.glLoadIdentity();
 		//Drawn first for performance, might occlude other geometry, which OpenGL can then skip.
-		carpetGeometry.draw(gl);
+		//XXX Hack to fix the carpet being drawn face down. Should probably change geometry or disable culling for the carpet instead.
+		gl.glFrontFace(GL_CW);
+		int myIndex=(int)((System.currentTimeMillis() % 800+1) /100f);
+		carpetGeometry[myIndex].draw(gl);
+		gl.glFrontFace(GL_CCW);
 		
 		//Spin player to test movement calculations. 
 		//TODO Replace this line with using input to change facing.
