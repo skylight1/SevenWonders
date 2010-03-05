@@ -27,6 +27,8 @@ import com.faganphotos.sevenwonders.R;
 
 public class SevenWondersGLRenderer implements Renderer {
 	
+	public static final float INITIAL_VELOCITY = 35f * 1000f / 60f / 60f / 1000f;
+
 	private static final boolean LOG = false;
 
 	private static final float HEIGHT_OF_CARPET_FROM_GROUND = 10f;
@@ -38,6 +40,10 @@ public class SevenWondersGLRenderer implements Renderer {
 	private static final int TERRAIN_DENSITY = 25;
 	
 	private static final int[] CARPET_OBJ_IDS = new int[] {R.raw.carpet_wave_0, R.raw.carpet_wave_1, R.raw.carpet_wave_2, R.raw.carpet_wave_3, R.raw.carpet_wave_4, R.raw.carpet_wave_5, R.raw.carpet_wave_6, R.raw.carpet_wave_7, R.raw.carpet_wave_8, R.raw.carpet_wave_9};
+
+	private static final float MINIMUM_VELOCITY = -INITIAL_VELOCITY / 10f;
+
+	private static final float MAXIMUM_VELOCITY = INITIAL_VELOCITY * 3f;
 
 	private final Context context;
 
@@ -60,7 +66,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	
 	private float playerFacing;
 	
-	private float velocity = 35f * 1000f / 60f / 60f / 1000f;
+	private float velocity = INITIAL_VELOCITY;
 
 	private long timeAtLastOnRenderCall;
 	
@@ -252,6 +258,18 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glDisable(GL_BLEND);
 		aGl.glDepthMask(true);
 		aGl.glEnable(GL10.GL_CULL_FACE);
+	}
+
+	public void setPlayerVelocity(int aNewVelocity) {
+		velocity = aNewVelocity;
+	}
+
+	public void turn(float anAngleOfTurn) {
+		playerFacing += anAngleOfTurn;
+	}
+
+	public void changeVelocity(float aVelocityIncrement) {
+		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, velocity + aVelocityIncrement));
 	}
 	
 }
