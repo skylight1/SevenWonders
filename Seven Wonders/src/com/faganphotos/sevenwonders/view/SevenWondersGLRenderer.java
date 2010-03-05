@@ -231,7 +231,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		//Translate a bit so sphinx isn't inside the pyramid. 
 		//XXX Since this is permanent, we could actually alter the geometry instead.
 		aGl.glPushMatrix();
-		aGl.glTranslatef(-100, 0, 0);
+		aGl.glTranslatef(-100, -25, 0);
 		
 		sphinxGeometry.draw(aGl);
 		
