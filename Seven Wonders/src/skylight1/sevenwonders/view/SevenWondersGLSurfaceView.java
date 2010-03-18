@@ -15,7 +15,7 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 		super(context);
 
 		setDebugFlags(DEBUG_CHECK_GL_ERROR);
-
+		
 		renderer = new SevenWondersGLRenderer(context);
 		setRenderer(renderer);
 
