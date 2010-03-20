@@ -211,12 +211,13 @@ public class SevenWondersGLRenderer implements Renderer {
 	
 	private void applyMovement(final GL10 aGl) {
         final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
-		playerWorldPosition.x += Math.sin( playerFacing / 180f * Math.PI ) * velocity * timeDeltaMS;
-        playerWorldPosition.z += Math.cos( playerFacing / 180f * Math.PI ) * velocity * timeDeltaMS;
+		final float facingX = (float) Math.sin( playerFacing / 180f * Math.PI );
+        final float facingZ = -(float) Math.cos( playerFacing / 180f * Math.PI );
+		playerWorldPosition.x += facingX * velocity * timeDeltaMS;
+		playerWorldPosition.z += facingZ * velocity * timeDeltaMS;
         if ( LOG ) Log.i(SevenWondersGLRenderer.class.getName(), playerWorldPosition + ", " + playerFacing);
 		
-        aGl.glTranslatef(-playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
-		aGl.glRotatef(-playerFacing, 0, 1, 0);
+        GLU.gluLookAt(aGl, playerWorldPosition.x, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z, playerWorldPosition.x + facingX, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z + facingZ, 0f, 1f, 0f);
 	}
 
 	private long calculateTimeSinceLastRenderMillis() {
