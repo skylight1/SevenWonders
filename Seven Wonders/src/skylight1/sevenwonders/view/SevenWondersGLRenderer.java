@@ -31,8 +31,6 @@ public class SevenWondersGLRenderer implements Renderer {
 	
 	public static final float INITIAL_VELOCITY = 35f * 1000f / 60f / 60f / 1000f;
 
-	private static final boolean LOG = false;
-
 	private static final float HEIGHT_OF_CARPET_FROM_GROUND = 10f;
 
 	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
@@ -215,7 +213,6 @@ public class SevenWondersGLRenderer implements Renderer {
         final float facingZ = -(float) Math.cos( playerFacing / 180f * Math.PI );
 		playerWorldPosition.x += facingX * velocity * timeDeltaMS;
 		playerWorldPosition.z += facingZ * velocity * timeDeltaMS;
-        if ( LOG ) Log.i(SevenWondersGLRenderer.class.getName(), playerWorldPosition + ", " + playerFacing);
 		
         GLU.gluLookAt(aGl, playerWorldPosition.x, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z, playerWorldPosition.x + facingX, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z + facingZ, 0f, 1f, 0f);
 	}
