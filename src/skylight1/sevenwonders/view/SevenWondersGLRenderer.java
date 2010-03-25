@@ -28,7 +28,11 @@ import android.os.SystemClock;
 import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
-	
+
+	private RendererListener rendererListener;
+
+	private static final String TAG = SevenWondersGLRenderer.class.getName();
+
 	public static final float INITIAL_VELOCITY = 35f * 1000f / 60f / 60f / 1000f;
 
 	private static final boolean LOG = false;
@@ -40,8 +44,11 @@ public class SevenWondersGLRenderer implements Renderer {
 	private static final int TERRAIN_MAP_RESOURCE = R.raw.terrain_dunes;
 
 	private static final int TERRAIN_DENSITY = 25;
-	
-	private static final int[] CARPET_OBJ_IDS = new int[] {R.raw.carpet_wave_0, R.raw.carpet_wave_1, R.raw.carpet_wave_2, R.raw.carpet_wave_3, R.raw.carpet_wave_4, R.raw.carpet_wave_5, R.raw.carpet_wave_6, R.raw.carpet_wave_7, R.raw.carpet_wave_8, R.raw.carpet_wave_9};
+
+	private static final int[] CARPET_OBJ_IDS = new int[] {
+		R.raw.carpet_wave_0, R.raw.carpet_wave_1, R.raw.carpet_wave_2, R.raw.carpet_wave_3, R.raw.carpet_wave_4,
+		R.raw.carpet_wave_5, R.raw.carpet_wave_6, R.raw.carpet_wave_7, R.raw.carpet_wave_8, R.raw.carpet_wave_9
+	};
 
 	private static final float MINIMUM_VELOCITY = -INITIAL_VELOCITY / 10f;
 
@@ -50,9 +57,9 @@ public class SevenWondersGLRenderer implements Renderer {
 	private final Context context;
 
 	private Texture atlasTexture;
-	
+
 	private Texture sphinxTexture;
-	
+
 	private FPSLogger fPSLogger = new FPSLogger(SevenWondersGLRenderer.class.getName(), FRAMES_BETWEEN_LOGGING_FPS);
 
 	private OpenGLGeometry worldGeometry;
@@ -60,38 +67,40 @@ public class SevenWondersGLRenderer implements Renderer {
 	private OpenGLGeometry[] carpetGeometry;
 
 	private OpenGLGeometry spellGeometry;
-	
+
 	private OpenGLGeometry sphinxGeometry;
 
 	//Start a little back so that we aren't inside the pyramid.
 	private Position playerWorldPosition = new Position(0, 0, 200);
-	
+
 	private float playerFacing;
-	
+
 	private float velocity = INITIAL_VELOCITY;
 
 	private long timeAtLastOnRenderCall;
-	
+
 	public SevenWondersGLRenderer(Context aContext) {
 		context = aContext;
 	}
 
 	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
-		
+
+		Log.i(TAG,"- onSurfaceCreated - ");
+
 		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory
 				.createTexturableNormalizable();
 
 		//Add ground and pyramid to a single drawable geometry for the world.
 		openGLGeometryBuilder.startGeometry();
 		addGroundToGeometry(openGLGeometryBuilder);
-		loadRequiredObj(R.raw.pyramid, openGLGeometryBuilder);		
+		loadRequiredObj(R.raw.pyramid, openGLGeometryBuilder);
 		worldGeometry = openGLGeometryBuilder.endGeometry();
 
 		sphinxGeometry = loadRequiredObj(R.raw.sphinx_scaled, openGLGeometryBuilder);
-		
+
 		addSpellsToGeometry(openGLGeometryBuilder);
-		
-		//Add carpet to a separate drawable geometry. 
+
+		//Add carpet to a separate drawable geometry.
 		//Allows the world to be translated separately from the carpet later.
 		addCarpetToGeometry(openGLGeometryBuilder);
 
@@ -104,12 +113,12 @@ public class SevenWondersGLRenderer implements Renderer {
 		//This fixes a z-fighting issue: At long distances OpenGL doesn't have enough precision in the depth buffer
 		//to tell if the front is closer or if the inside of a nearby back surface is closer and gets it wrong some times.
 		aGl.glEnable(GL10.GL_CULL_FACE);
-		
+
 		aGl.glEnable(GL10.GL_DEPTH_TEST);
 
 		aGl.glDisable(GL10.GL_BLEND);
 		aGl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		
+
 		aGl.glShadeModel(GL10.GL_SMOOTH);
 
 		aGl.glEnable(GL10.GL_LIGHTING);
@@ -152,15 +161,15 @@ public class SevenWondersGLRenderer implements Renderer {
 			loader = new ObjFileLoader(context, aObjId);
 		} catch (IOException e) {
 			throw new RuntimeException("Error loading required geometry from OBJ file:" + aObjId, e);
-		}		
-		return loader.createGeometry(aBuilder);		
+		}
+		return loader.createGeometry(aBuilder);
 	}
-	
+
 	private void addCarpetToGeometry(
 			final OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> anOpenGLGeometryBuilder) {
-		
+
 		carpetGeometry = new OpenGLGeometry[CARPET_OBJ_IDS.length];
-		for(int i = 0; i < CARPET_OBJ_IDS.length; i++ ) {			
+		for(int i = 0; i < CARPET_OBJ_IDS.length; i++ ) {
 			carpetGeometry[i] = loadRequiredObj(CARPET_OBJ_IDS[i], anOpenGLGeometryBuilder);
 		}
 	}
@@ -178,7 +187,7 @@ public class SevenWondersGLRenderer implements Renderer {
 			sphinxTexture = null;
 		}
 		sphinxTexture = new Texture(aGl, context, R.raw.sphinx, true);
-		
+
 		if (atlasTexture != null) {
 			atlasTexture.freeTexture();
 			atlasTexture = null;
@@ -190,7 +199,6 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public void onDrawFrame(final GL10 aGl) {
 		aGl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-
 		//Carpet drawn with no transformations, always right in front of the screen.
 		aGl.glLoadIdentity();
 		//Drawn first for performance, might occlude other geometry, which OpenGL can then skip.
@@ -199,22 +207,25 @@ public class SevenWondersGLRenderer implements Renderer {
 		final int carpetIndex = (int)((SystemClock.uptimeMillis() % 800+1) /100f);
 		carpetGeometry[carpetIndex].draw(aGl);
 		aGl.glFrontFace(GL_CCW);
-		
+
 		applyMovement(aGl);
 
 		worldGeometry.draw(aGl);
 		drawSphinx(aGl);
 		drawSpell(aGl);
 
+		if(!fPSLogger.isStarted()) {
+			rendererListener.startedRendering();
+		}
 		fPSLogger.frameRendered();
 	}
-	
+
 	private void applyMovement(final GL10 aGl) {
         final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
 		playerWorldPosition.x += Math.sin( playerFacing / 180f * Math.PI ) * velocity * timeDeltaMS;
         playerWorldPosition.z += Math.cos( playerFacing / 180f * Math.PI ) * velocity * timeDeltaMS;
-        if ( LOG ) Log.i(SevenWondersGLRenderer.class.getName(), playerWorldPosition + ", " + playerFacing);
-		
+        if ( LOG ) Log.i(TAG, playerWorldPosition + ", " + playerFacing);
+
         aGl.glTranslatef(-playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
 		aGl.glRotatef(-playerFacing, 0, 1, 0);
 	}
@@ -224,35 +235,35 @@ public class SevenWondersGLRenderer implements Renderer {
 		if (timeAtLastOnRenderCall == 0) {
 			timeAtLastOnRenderCall = now;
 		}
-		
+
         final long timeDeltaMS = now - timeAtLastOnRenderCall;
         timeAtLastOnRenderCall = now;
 		return timeDeltaMS;
 	}
-	
+
 	private void drawSphinx(final GL10 aGl) {
 		sphinxTexture.activateTexture();
-		//Translate a bit so sphinx isn't inside the pyramid. 
+		//Translate a bit so sphinx isn't inside the pyramid.
 		//XXX Since this is permanent, we could actually alter the geometry instead.
 		aGl.glPushMatrix();
 		aGl.glTranslatef(-100, -25, 0);
-		
+
 		sphinxGeometry.draw(aGl);
-		
+
 		aGl.glPopMatrix();
-		atlasTexture.activateTexture();		
+		atlasTexture.activateTexture();
 	}
-	
+
 	private void drawSpell(final GL10 aGl) {
-		
+
 		//The spell only has one surface at the moment, that we want to be visible from both sides.
 		aGl.glDisable(GL10.GL_CULL_FACE);
 		//Disable depth writing so that transparent pixels don't block things behind them.
 		aGl.glDepthMask(false);
 		aGl.glEnable(GL_BLEND);
-		
+
 		spellGeometry.draw(aGl);
-		
+
 		aGl.glDisable(GL_BLEND);
 		aGl.glDepthMask(true);
 		aGl.glEnable(GL10.GL_CULL_FACE);
@@ -269,5 +280,9 @@ public class SevenWondersGLRenderer implements Renderer {
 	public void changeVelocity(float aVelocityIncrement) {
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, velocity + aVelocityIncrement));
 	}
-	
+
+	public void setRendererListener(RendererListener rendererListener2) {
+		rendererListener = rendererListener2;
+	}
+
 }
