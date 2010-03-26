@@ -9,10 +9,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-public class SevenWondersActivity extends Activity implements RendererListener {
+public class SevenWondersActivity extends Activity {
 
 	private static String TAG = SevenWondersActivity.class.getName();
 	private SevenWondersGLSurfaceView gLSurfaceView;
@@ -25,10 +26,11 @@ public class SevenWondersActivity extends Activity implements RendererListener {
     private Handler handler = new Handler() {
     	public void handleMessage(Message msg) {
     		if(mainLayout!=null) {
-    			mainLayout.removeViewAt(MENULAYER);
+    			splashView.setVisibility(View.INVISIBLE);
     		}
     	}
     };
+	private ImageView splashView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -36,15 +38,20 @@ public class SevenWondersActivity extends Activity implements RendererListener {
 
 		Log.i(TAG,"onCreate()");
 
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
 		SoundTracks.setEnabled(true);
 
 		SoundTracks soundTrack = SoundTracks.getInstance();
 		soundTrack.init(getApplicationContext());
 
 		if(gLSurfaceView==null) {
-			gLSurfaceView = new SevenWondersGLSurfaceView(this, this); // context, rendererListener
+			gLSurfaceView = new SevenWondersGLSurfaceView(this, new RendererListener() {
+
+				@Override
+			    public void startedRendering() {
+			    	Log.i(TAG,"startedRendering()");
+					SoundTracks.getInstance().fadeoutSplashSoundTrack(SoundTracks.SOUNDTRACK);
+					handler.sendMessage(handler.obtainMessage());
+			    }});
 		}
 
 //		setContentView(gLSurfaceView);
@@ -57,14 +64,15 @@ public class SevenWondersActivity extends Activity implements RendererListener {
 			RelativeLayout.LayoutParams.FILL_PARENT,
 			RelativeLayout.LayoutParams.FILL_PARENT));
 
-		ImageView menuview = new ImageView(this);//(ImageView) findViewById(R.id.menuview);
-		menuview.setBackgroundResource(R.drawable.bg);
+		splashView = new ImageView(this);
+
+		splashView.setBackgroundResource(R.drawable.bg);
 
 		mainLayout.addView(gLSurfaceView, new RelativeLayout.LayoutParams(
 			RelativeLayout.LayoutParams.FILL_PARENT,
 			RelativeLayout.LayoutParams.FILL_PARENT));
 
-		mainLayout.addView(menuview, new RelativeLayout.LayoutParams(
+		mainLayout.addView(splashView, new RelativeLayout.LayoutParams(
 			RelativeLayout.LayoutParams.FILL_PARENT,
 			RelativeLayout.LayoutParams.FILL_PARENT));
 
@@ -120,9 +128,4 @@ public class SevenWondersActivity extends Activity implements RendererListener {
 		}
 	}
 
-    public void startedRendering() {
-    	Log.i(TAG,"startedRendering()");
-		SoundTracks.getInstance().fadeoutSplashSoundTrack(SoundTracks.SOUNDTRACK);
-		handler.sendMessage(handler.obtainMessage());
-    }
 }

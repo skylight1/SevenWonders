@@ -13,9 +13,9 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	private SevenWondersGLRenderer renderer;
 	private RendererListener rendererListener;
 
-	public SevenWondersGLSurfaceView(Context context, SevenWondersActivity activity) {
+	public SevenWondersGLSurfaceView(Context context, RendererListener listener) {
 		super(context);
-		rendererListener = activity;
+		rendererListener = listener;
 		init(context);
 	}
 	public SevenWondersGLSurfaceView(Context context, AttributeSet attrs) {
@@ -23,8 +23,8 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 		init(context);
 	}
 
-	public void setRendererListener(SevenWondersActivity activity) {
-		rendererListener = activity;
+	public void setRendererListener(RendererListener listener) {
+		rendererListener = listener;
 	}
 
 	private void init(Context context) {
@@ -53,28 +53,22 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		Log.i(SevenWondersGLSurfaceView.class.getName(), "Key Down: " + keyCode);
 		if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_SPACE) {
-			Log.i(SevenWondersGLSurfaceView.class.getName(), "Pausing...");
 			renderer.setPlayerVelocity(0);
 			return true;
 			// left/q -> left
 		} else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_Q) {
-			Log.i(SevenWondersGLSurfaceView.class.getName(), "Turning left");
 			renderer.turn(-5f);
 			return true;
 			// right/w -> right
 		} else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_W) {
-			Log.i(SevenWondersGLSurfaceView.class.getName(), "Turning right");
 			renderer.turn(+5f);
 			return true;
 			// up -> pause
 		} else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-			Log.i(SevenWondersGLSurfaceView.class.getName(), "Speeding up.");
 			renderer.changeVelocity(SevenWondersGLRenderer.INITIAL_VELOCITY / 10f);
 			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-			Log.i(SevenWondersGLSurfaceView.class.getName(), "Slowing down.");
 			renderer.changeVelocity(-SevenWondersGLRenderer.INITIAL_VELOCITY / 10f);
 			return true;
 		}

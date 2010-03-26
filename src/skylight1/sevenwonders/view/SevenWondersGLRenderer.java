@@ -35,8 +35,6 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public static final float INITIAL_VELOCITY = 35f * 1000f / 60f / 60f / 1000f;
 
-	private static final boolean LOG = false;
-
 	private static final float HEIGHT_OF_CARPET_FROM_GROUND = 10f;
 
 	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
@@ -195,6 +193,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		atlasTexture = new Texture(aGl, context, R.raw.textures);
 
 		atlasTexture.activateTexture();
+
+		if(rendererListener!=null) {
+			rendererListener.startedRendering();
+		}
 	}
 
 	public void onDrawFrame(final GL10 aGl) {
@@ -214,20 +216,20 @@ public class SevenWondersGLRenderer implements Renderer {
 		drawSphinx(aGl);
 		drawSpell(aGl);
 
-		if(!fPSLogger.isStarted()) {
-			rendererListener.startedRendering();
-		}
 		fPSLogger.frameRendered();
 	}
 
 	private void applyMovement(final GL10 aGl) {
         final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
-		playerWorldPosition.x += Math.sin( playerFacing / 180f * Math.PI ) * velocity * timeDeltaMS;
-        playerWorldPosition.z += Math.cos( playerFacing / 180f * Math.PI ) * velocity * timeDeltaMS;
-        if ( LOG ) Log.i(TAG, playerWorldPosition + ", " + playerFacing);
 
-        aGl.glTranslatef(-playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
-		aGl.glRotatef(-playerFacing, 0, 1, 0);
+		final float facingX = (float) Math.sin( playerFacing / 180f * Math.PI );
+        final float facingZ = -(float) Math.cos( playerFacing / 180f * Math.PI );
+		playerWorldPosition.x += facingX * velocity * timeDeltaMS;
+		playerWorldPosition.z += facingZ * velocity * timeDeltaMS;
+
+		GLU.gluLookAt(aGl, playerWorldPosition.x, HEIGHT_OF_CARPET_FROM_GROUND,
+			playerWorldPosition.z, playerWorldPosition.x + facingX, HEIGHT_OF_CARPET_FROM_GROUND,
+			playerWorldPosition.z + facingZ, 0f, 1f, 0f);
 	}
 
 	private long calculateTimeSinceLastRenderMillis() {
