@@ -1,20 +1,37 @@
 package skylight1.sevenwonders.view;
 
+import skylight1.sevenwonders.SevenWondersActivity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 public class SevenWondersGLSurfaceView extends GLSurfaceView {
-	SevenWondersGLRenderer renderer;
+	protected static final String TAG = SevenWondersGLSurfaceView.class.getName();
+	private SevenWondersGLRenderer renderer;
+	private RendererListener rendererListener;
 
-	public SevenWondersGLSurfaceView(Context context) {
+	public SevenWondersGLSurfaceView(Context context, RendererListener listener) {
 		super(context);
+		rendererListener = listener;
+		init(context);
+	}
+	public SevenWondersGLSurfaceView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		init(context);
+	}
 
+	public void setRendererListener(RendererListener listener) {
+		rendererListener = listener;
+	}
+
+	private void init(Context context) {
 		setDebugFlags(DEBUG_CHECK_GL_ERROR);
 
 		renderer = new SevenWondersGLRenderer(context);
+		renderer.setRendererListener(rendererListener);
 		setRenderer(renderer);
 
 		setClickable(true);
@@ -28,6 +45,7 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	public boolean onTouchEvent(final MotionEvent event) {
 		queueEvent(new Runnable() {
 			public void run() {
+				Log.i(TAG,String.format("touched %s,%s",event.getXPrecision(),event.getXPrecision()));
 			}
 		});
 		return true;
