@@ -67,6 +67,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	private OpenGLGeometry spellGeometry;
 
 	private OpenGLGeometry sphinxGeometry;
+	
+	private OpenGLGeometry pyramidGeometry;
 
 	//Start a little back so that we aren't inside the pyramid.
 	private Position playerWorldPosition = new Position(0, 0, 200);
@@ -90,12 +92,15 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		//Add ground and pyramid to a single drawable geometry for the world.
 		openGLGeometryBuilder.startGeometry();
+		
 		addGroundToGeometry(openGLGeometryBuilder);
-		loadRequiredObj(R.raw.pyramid, openGLGeometryBuilder);
+		
 		worldGeometry = openGLGeometryBuilder.endGeometry();
 
 		sphinxGeometry = loadRequiredObj(R.raw.sphinx_scaled, openGLGeometryBuilder);
 
+		pyramidGeometry = loadRequiredObj(R.raw.pyramid, openGLGeometryBuilder);
+		
 		addSpellsToGeometry(openGLGeometryBuilder);
 
 		//Add carpet to a separate drawable geometry.
@@ -214,6 +219,10 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		worldGeometry.draw(aGl);
 		drawSphinx(aGl);
+		drawPyramid(aGl, 90, 0, 5);
+		drawPyramid(aGl, 255, 0, -2);
+		drawPyramid(aGl, -320, -7, 100);
+
 		drawSpell(aGl);
 
 		fPSLogger.frameRendered();
@@ -254,6 +263,16 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		aGl.glPopMatrix();
 		atlasTexture.activateTexture();
+	}
+
+	private void drawPyramid(final GL10 aGl, final int x, final int y , final int z) {
+		
+		aGl.glPushMatrix();
+		aGl.glTranslatef(x, y, z);
+
+		pyramidGeometry.draw(aGl);
+
+		aGl.glPopMatrix();
 	}
 
 	private void drawSpell(final GL10 aGl) {
