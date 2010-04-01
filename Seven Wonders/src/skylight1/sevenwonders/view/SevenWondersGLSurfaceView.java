@@ -1,17 +1,28 @@
 package skylight1.sevenwonders.view;
 
 import skylight1.sevenwonders.SevenWondersActivity;
+import android.app.Activity;
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-public class SevenWondersGLSurfaceView extends GLSurfaceView {
+public class SevenWondersGLSurfaceView extends GLSurfaceView implements SensorEventListener {
 	protected static final String TAG = SevenWondersGLSurfaceView.class.getName();
 	private SevenWondersGLRenderer renderer;
 	private RendererListener rendererListener;
+	private SensorManager sensorManager;
+	private long lastSystemTime;
+
+	
+//	sensorManager = (SensorManager) android.app.Activity.g   (android.content.Context.SENSOR_SERVICE);
+
 
 	public SevenWondersGLSurfaceView(Context context, RendererListener listener) {
 		super(context);
@@ -28,6 +39,10 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	}
 
 	private void init(Context context) {
+
+		sensorManager = (SensorManager) ((Activity)context).getSystemService(android.content.Context.SENSOR_SERVICE);
+		sensorManager.registerListener(this, sensorManager.getDefaultSensor(SensorManager.SENSOR_ORIENTATION),SensorManager.SENSOR_DELAY_NORMAL);
+
 		setDebugFlags(DEBUG_CHECK_GL_ERROR);
 
 		renderer = new SevenWondersGLRenderer(context);
@@ -73,5 +88,35 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 			return true;
 		}
 		return false;
+	}
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		long time = android.os.SystemClock.elapsedRealtime();
+
+		if (event.sensor.getType() != SensorManager.SENSOR_ORIENTATION || event.values.length < 3)
+			return;
+		if ((time-lastSystemTime)<1000)
+			return;
+		
+		lastSystemTime = time;
+		float[] values = event.values;
+
+		final float zero = values[0];
+		final float one = values[1];
+		final float two = values[2];
+		
+
+		if (one > 4){ // turn right
+			renderer.turn(5f);
+			
+		}
+		else if (one < -4){ // turn left
+			renderer.turn(-5f);
+		}
 	}
 }

@@ -296,10 +296,17 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public void turn(float anAngleOfTurn) {
 		playerFacing += anAngleOfTurn;
+		Log.i("angle now ", "" + playerFacing);
+	}
+	
+	public void setPlayerFacing(float anAngleAbosulte){
+		playerFacing = anAngleAbosulte;
+		
 	}
 
 	public void changeVelocity(float aVelocityIncrement) {
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, velocity + aVelocityIncrement));
+		Log.i("velocity now ", "" + velocity);
 	}
 
 	public void setRendererListener(RendererListener rendererListener2) {
