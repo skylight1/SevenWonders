@@ -100,7 +100,7 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView implements SensorEv
 
 		if (event.sensor.getType() != SensorManager.SENSOR_ORIENTATION || event.values.length < 3)
 			return;
-		if ((time-lastSystemTime)<1000)
+		if ((time-lastSystemTime)<200)
 			return;
 		
 		lastSystemTime = time;
@@ -112,11 +112,11 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView implements SensorEv
 		
 
 		if (one > 4){ // turn right
-			renderer.turn(5f);
+			renderer.turn(1f);
 			
 		}
 		else if (one < -4){ // turn left
-			renderer.turn(-5f);
+			renderer.turn(-1f);
 		}
 	}
 }
