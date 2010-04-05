@@ -1,4 +1,4 @@
-package skylight1.sevenwonders.view;
+package skylight1.sevenwonders.model;
 
 import static android.view.KeyEvent.*;
 import static javax.microedition.khronos.opengles.GL10.*;
@@ -20,6 +20,7 @@ import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
 import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
 import skylight1.opengl.files.ObjFileLoader;
 import skylight1.sevenwonders.R;
+import skylight1.sevenwonders.view.GameTexture;
 import android.content.Context;
 import android.util.FloatMath;
 import android.util.Log;

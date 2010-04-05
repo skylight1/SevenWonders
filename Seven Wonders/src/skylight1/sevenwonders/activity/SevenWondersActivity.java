@@ -1,4 +1,4 @@
-package skylight1.sevenwonders;
+package skylight1.sevenwonders.activity;
 
 import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
 import android.app.Activity;

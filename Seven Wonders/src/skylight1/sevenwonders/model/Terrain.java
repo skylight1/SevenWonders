@@ -1,9 +1,10 @@
-package skylight1.sevenwonders.view;
+package skylight1.sevenwonders.model;
 
 import skylight1.opengl.OpenGLGeometryBuilder;
 import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
 import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
 import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
+import skylight1.sevenwonders.view.GameTexture;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

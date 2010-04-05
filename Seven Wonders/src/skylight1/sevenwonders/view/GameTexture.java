@@ -24,13 +24,13 @@ public class GameTexture {
 		120f / ATLAS_DIMENSION
 	);
 
-	final float s1;
+	public final float s1;
 	
-	final float s2;
+	public final float s2;
 	
-	final float t1;
+	public final float t1;
 	
-	final float t2;
+	public final float t2;
 
 	/**
 	 * Create a GameTexture.

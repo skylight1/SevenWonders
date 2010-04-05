@@ -1,4 +1,4 @@
-package skylight1.sevenwonders.view;
+package skylight1.sevenwonders.model;
 
 /**
  * A position in three dimensions.

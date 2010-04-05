@@ -7,6 +7,7 @@ import static javax.microedition.khronos.opengles.GL10.*;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import skylight1.sevenwonders.model.World;
 import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLU;

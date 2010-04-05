@@ -1,4 +1,4 @@
-package skylight1.sevenwonders.view;
+package skylight1.sevenwonders.model;
 
 /**
  * Cube used to specify bounds in 3D space.
