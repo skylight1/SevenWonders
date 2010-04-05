@@ -51,6 +51,8 @@ public class World {
 	private final OpenGLGeometry worldGeometry;
 
 	private final OpenGLGeometry sphinxGeometry;
+	
+	private OpenGLGeometry pyramidGeometry;
 
 	private OpenGLGeometry[] carpetGeometry;
 
@@ -75,11 +77,12 @@ public class World {
 		//Add ground and pyramid to a single drawable geometry for the world.
 		openGLGeometryBuilder.startGeometry();
 		addGroundToGeometry(aContext, openGLGeometryBuilder);
-		loadRequiredObj(aContext, R.raw.pyramid, openGLGeometryBuilder);		
 		worldGeometry = openGLGeometryBuilder.endGeometry();
 		
 		sphinxGeometry = loadRequiredObj(aContext, R.raw.sphinx_scaled, openGLGeometryBuilder);
-		
+
+		pyramidGeometry = loadRequiredObj(aContext, R.raw.pyramid, openGLGeometryBuilder);
+
 		addSpellsToGeometry(openGLGeometryBuilder);
 		
 		//Add carpet to a separate drawable geometry. 
@@ -170,6 +173,9 @@ public class World {
 		applyMovement(aGl);
 		worldGeometry.draw(aGl);
 		drawSphinx(aGl);
+		drawPyramid(aGl, 90, 0, 5);
+		drawPyramid(aGl, 255, 0, -2);
+		drawPyramid(aGl, -320, -7, 100);
 		drawSpell(aGl);
 	}
 	
@@ -201,6 +207,13 @@ public class World {
 		atlasTexture.activateTexture();		
 	}
 	
+	private void drawPyramid(final GL10 aGl, final int x, final int y , final int z) {		
+			aGl.glPushMatrix();
+			aGl.glTranslatef(x, y, z);
+			pyramidGeometry.draw(aGl);
+			aGl.glPopMatrix();
+	}
+
 	private void drawSpell(final GL10 aGl) {
 		
 		//The spell only has one surface at the moment, that we want to be visible from both sides.
