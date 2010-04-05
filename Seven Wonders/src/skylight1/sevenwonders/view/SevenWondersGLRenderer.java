@@ -1,5 +1,6 @@
 package skylight1.sevenwonders.view;
 
+import static skylight1.sevenwonders.Configuration.*;
 import static android.view.KeyEvent.*;
 import static javax.microedition.khronos.opengles.GL10.*;
 
@@ -17,8 +18,6 @@ import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
 	
-	public static final boolean LOG = false;
-
 	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
 	
 	private final Context context;
@@ -40,7 +39,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	public void onSurfaceChanged(final GL10 aGl, final int aW, final int aH) {		
-		Log.i("7W", "onSurfaceChanged(), thread name = " + Thread.currentThread().getName());
+		if ( LOG ) Log.i(TAG, "onSurfaceChanged(), thread name = " + Thread.currentThread().getName());
 		
 		aGl.glColor4f(1, 1, 1, 1);
 		aGl.glClearColor(0.5f, 0.5f, 1, 1.0f);

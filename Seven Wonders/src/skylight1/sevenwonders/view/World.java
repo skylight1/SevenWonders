@@ -4,6 +4,7 @@ import static android.view.KeyEvent.*;
 import static javax.microedition.khronos.opengles.GL10.*;
 import static skylight1.sevenwonders.view.GameTexture.*;
 import static skylight1.sevenwonders.view.SevenWondersGLRenderer.*;
+import static skylight1.sevenwonders.Configuration.*;
 
 import java.io.IOException;
 
@@ -146,9 +147,11 @@ public class World {
 	}
 	
 	public void update(final int timeDeltaMS) {
+		if ( LOG ) Log.d(TAG, "World#update. timeDeltaMS = " + timeDeltaMS);
+		
 		playerWorldPosition.x += FloatMath.sin( playerFacing / 180f * PI ) * velocity * timeDeltaMS;
         playerWorldPosition.z -= FloatMath.cos( playerFacing / 180f * PI ) * velocity * timeDeltaMS;
-        if ( LOG ) if ( LOG ) Log.i(SevenWondersGLRenderer.class.getName(), playerWorldPosition + ", " + playerFacing);	
+        if ( LOG ) Log.i(TAG, "World#update. playerWorldPosition = " + playerWorldPosition + ", playerFacing = " + playerFacing);	
         
         remainingCarpetDisplayTimeMS -= timeDeltaMS;
         while ( remainingCarpetDisplayTimeMS < 0 ) {
@@ -228,29 +231,29 @@ public class World {
 		switch( keyCode ) {
 			case KEYCODE_DPAD_LEFT:
 			case KEYCODE_Q:
-				if ( LOG ) Log.i(SevenWondersGLSurfaceView.class.getName(), "Turning left.");
+				if ( LOG ) Log.i(TAG, "World#handleInput. Turning left.");
 				turn(-5f);
 				return true;
 				
 			case KEYCODE_DPAD_RIGHT:
 			case KEYCODE_W:
-				if ( LOG ) Log.i(SevenWondersGLSurfaceView.class.getName(), "Turning right.");
+				if ( LOG ) Log.i(TAG, "World#handleInput. Turning right.");
 				turn(+5f);
 				return true;
 				
 			case KEYCODE_DPAD_CENTER:
 			case KEYCODE_SPACE:
-				if ( LOG ) Log.i(SevenWondersGLSurfaceView.class.getName(), "Stopping.");
+				if ( LOG ) Log.i(TAG, "World#handleInput. Stopping.");
 				setPlayerVelocity(0);
 				return true;				
 				
 			case KEYCODE_DPAD_UP:
-				if ( LOG ) Log.i(SevenWondersGLSurfaceView.class.getName(), "Speeding up.");
+				if ( LOG ) Log.i(TAG, "World#handleInput. Speeding up.");
 				changeVelocity(INITIAL_VELOCITY / 10f);
 				return true;
 				
 			case KEYCODE_DPAD_DOWN: 
-				if ( LOG ) Log.i(SevenWondersGLSurfaceView.class.getName(), "Slowing down.");
+				if ( LOG ) Log.i(TAG, "World#handleInput. Slowing down.");
 				changeVelocity(-INITIAL_VELOCITY / 10f);
 				return true;
 		}

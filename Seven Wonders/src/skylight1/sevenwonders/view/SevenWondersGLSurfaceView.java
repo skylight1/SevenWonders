@@ -1,5 +1,6 @@
 package skylight1.sevenwonders.view;
 
+import static skylight1.sevenwonders.Configuration.*;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
@@ -30,7 +31,7 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	@Override
 	public boolean onKeyDown(final int keyCode, final KeyEvent event) {
 		//final int keyCode = event.getKeyCode();
-		Log.i(SevenWondersGLSurfaceView.class.getName(), "Key Down: " + keyCode);
+		if ( LOG ) Log.i(TAG, "SevenWondersGLSurfaceView#onKeyDown. Key Down: " + keyCode);
 		
 		switch( keyCode ) {
 			case KeyEvent.KEYCODE_BACK:
