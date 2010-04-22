@@ -5,6 +5,7 @@ import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
 import skylight1.sevenwonders.view.RendererListener;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class SevenWondersActivity extends Activity {
 
@@ -22,15 +24,26 @@ public class SevenWondersActivity extends Activity {
 	private final static int GAMELAYER = 0;
 	private final static int MENULAYER = 1;
 
-	//handler to remove splash screen
-    private Handler handler = new Handler() {
+	//Handler to remove splash screen
+    private Handler splashHandler = new Handler() {
     	public void handleMessage(Message msg) {
     		if(mainLayout!=null) {
+		    	Log.i(TAG,"startedRendering()");
+				SoundTracks.getInstance().fadeoutSplashSoundTrack(SoundTracks.SOUNDTRACK);
     			splashView.setVisibility(View.INVISIBLE);
     		}
     	}
     };
+	//Handler to draw debug info (fps)
+    private Handler debugHandler = new Handler() {
+    	public void handleMessage(Message msg) {
+    		if(mainLayout!=null) {
+				debugView.setText(Integer.toString(msg.arg1));
+    		}
+    	}
+    };
 	private ImageView splashView;
+	private TextView debugView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -48,14 +61,19 @@ public class SevenWondersActivity extends Activity {
 
 				@Override
 			    public void startedRendering() {
-			    	Log.i(TAG,"startedRendering()");
-					SoundTracks.getInstance().fadeoutSplashSoundTrack(SoundTracks.SOUNDTRACK);
-					handler.sendMessage(handler.obtainMessage());
-			    }});
+					splashHandler.sendMessage(splashHandler.obtainMessage());
+			    }
+
+				@Override
+				public void drawFPS(int fPS) {
+					Message msg  = debugHandler.obtainMessage();
+					msg.arg1 = fPS;
+					debugHandler.sendMessage(msg);
+				}
+			});
 		}
 
 //		setContentView(gLSurfaceView);
-
 //		setContentView(R.layout.main);
 //		gLSurfaceView = (GLSurfaceView) findViewById(R.id.swglsurface);
 
@@ -64,15 +82,23 @@ public class SevenWondersActivity extends Activity {
 			RelativeLayout.LayoutParams.FILL_PARENT,
 			RelativeLayout.LayoutParams.FILL_PARENT));
 
-		splashView = new ImageView(this);
-
-		splashView.setBackgroundResource(R.drawable.bg);
-
 		mainLayout.addView(gLSurfaceView, new RelativeLayout.LayoutParams(
 			RelativeLayout.LayoutParams.FILL_PARENT,
 			RelativeLayout.LayoutParams.FILL_PARENT));
 
+		splashView = new ImageView(this);
+		splashView.setBackgroundResource(R.drawable.bg);
+
 		mainLayout.addView(splashView, new RelativeLayout.LayoutParams(
+			RelativeLayout.LayoutParams.FILL_PARENT,
+			RelativeLayout.LayoutParams.FILL_PARENT));
+
+		debugView = new TextView(this);
+		debugView.setTextSize(14, 14f);
+		debugView.setText("--");
+		debugView.setBackgroundColor(Color.TRANSPARENT);
+		debugView.setTextColor(Color.MAGENTA);
+		mainLayout.addView(debugView, new RelativeLayout.LayoutParams(
 			RelativeLayout.LayoutParams.FILL_PARENT,
 			RelativeLayout.LayoutParams.FILL_PARENT));
 

@@ -67,7 +67,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	private OpenGLGeometry spellGeometry;
 
 	private OpenGLGeometry sphinxGeometry;
-	
+
 	private OpenGLGeometry pyramidGeometry;
 
 	//Start a little back so that we aren't inside the pyramid.
@@ -76,7 +76,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	private float angYaw;
 	private float angPitch;
 	private float angRoll;
-	
+
 	private float velocity = INITIAL_VELOCITY;
 	private float velocityX = INITIAL_VELOCITY;
 	private float velocityY = 0;
@@ -89,6 +89,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
 
+		try {
+
 		Log.i(TAG,"- onSurfaceCreated - ");
 
 		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory
@@ -96,15 +98,15 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		//Add ground and pyramid to a single drawable geometry for the world.
 		openGLGeometryBuilder.startGeometry();
-		
+
 		addGroundToGeometry(openGLGeometryBuilder);
-		
+
 		worldGeometry = openGLGeometryBuilder.endGeometry();
 
 		sphinxGeometry = loadRequiredObj(R.raw.sphinx_scaled, openGLGeometryBuilder);
 
 		pyramidGeometry = loadRequiredObj(R.raw.pyramid, openGLGeometryBuilder);
-		
+
 		addSpellsToGeometry(openGLGeometryBuilder);
 
 		//Add carpet to a separate drawable geometry.
@@ -139,6 +141,11 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
 		aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, new float[] { 0.1f, 0.1f, 0.1f, 1.0f }, 0);
 		aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, new float[] { 50.0f }, 0);
+
+		} catch(Throwable t) {
+			t.printStackTrace();
+
+		}
 	}
 
 	private void addSpellsToGeometry(
@@ -229,7 +236,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		drawSpell(aGl);
 
-		fPSLogger.frameRendered();
+		rendererListener.drawFPS(fPSLogger.frameRendered());
 	}
 
 	private void applyMovement(final GL10 aGl) {
@@ -240,20 +247,20 @@ public class SevenWondersGLRenderer implements Renderer {
         roll=angRoll / 180f * Math.PI ;
         /* Now although VelocityY and VelocityZ are Zero I am keeping them
          * in the equation as later on we might want to make them non zero
-         * and put some more conrol.
+         * and put some more control.
          */
         float facingX=(float)(Math.cos(pitch)*Math.cos(yaw)*velocityX +
         		(Math.sin(roll)*Math.sin(pitch)*Math.cos(yaw)-Math.cos(roll)*Math.sin(yaw))*velocityY+
         		(Math.sin(roll)*Math.sin(yaw)+Math.cos(roll)*Math.sin(pitch)*Math.cos(yaw))*velocityZ);
- 
+
         float facingY=(float)(Math.cos(pitch)*Math.sin(yaw)*velocityX +
         		(Math.sin(roll)*Math.sin(pitch)*Math.sin(yaw)-Math.cos(roll)*Math.cos(yaw))*velocityY+
         		(Math.cos(roll)*Math.sin(pitch)*Math.sin(yaw)-Math.sin(roll)*Math.cos(yaw))*velocityZ);
-        
+
         float facingZ=(float)((-1.0)*Math.sin(pitch)*velocityX +
         		(Math.sin(roll)*Math.cos(pitch))*velocityY+
         		(Math.cos(roll)*Math.cos(pitch))*velocityZ);
- 
+
 	//	final float facingX = (float) Math.sin( playerFacing1 / 180f * Math.PI );
     //    final float facingZ = -(float) Math.cos( playerFacing2 / 180f * Math.PI );
 		//playerWorldPosition.x += facingX * velocity * timeDeltaMS;
@@ -300,7 +307,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	private void drawPyramid(final GL10 aGl, final int x, final int y , final int z) {
-		
+
 		aGl.glPushMatrix();
 		aGl.glTranslatef(x, y, z);
 
@@ -324,7 +331,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glEnable(GL10.GL_CULL_FACE);
 	}
 
-	public void setPlayerVelocity(int aNewVelocity) {	
+	public void setPlayerVelocity(int aNewVelocity) {
 		velocityX = aNewVelocity;
 		velocityY = 0;
 		velocityZ = 0;
@@ -334,11 +341,11 @@ public class SevenWondersGLRenderer implements Renderer {
 		angYaw += yaw;
 		angPitch += pitch;
 		angRoll += roll;
-		Log.i("angle now ", "" + yaw);
-		Log.i("angle now ", "" + pitch);
-		Log.i("angle now ", "" + roll);
+//		Log.i("angle now ", "" + yaw);
+//		Log.i("angle now ", "" + pitch);
+//		Log.i("angle now ", "" + roll);
 	}
-	
+
 	public void setPlayerFacing(float yaw, float pitch, float roll){
 		angYaw = yaw;
 		angPitch = pitch;
@@ -347,7 +354,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public void changeVelocity(float aVelocityIncrement) {
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, velocity + aVelocityIncrement));
-		Log.i("velocity now ", "" + velocity);
+//		Log.i("velocity now ", "" + velocity);
 	}
 
 	public void setRendererListener(RendererListener rendererListener2) {

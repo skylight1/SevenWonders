@@ -1,6 +1,5 @@
 package skylight1.sevenwonders.view;
 
-import skylight1.sevenwonders.SevenWondersActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -20,7 +19,7 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView implements SensorEv
 	private SensorManager sensorManager;
 	private long lastSystemTime;
 
-	
+
 //	sensorManager = (SensorManager) android.app.Activity.g   (android.content.Context.SENSOR_SERVICE);
 
 
@@ -92,7 +91,7 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView implements SensorEv
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	@Override
 	public void onSensorChanged(SensorEvent event) {
@@ -102,18 +101,18 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView implements SensorEv
 			return;
 		if ((time-lastSystemTime)<200)
 			return;
-		
+
 		lastSystemTime = time;
 		float[] values = event.values;
 
 		final float azimuth = values[0];
 		final float pitch = values[1];
 		final float roll = values[2];
-		
+
 		renderer.turn(azimuth,pitch,roll);
 		/*if (one > 4){ // turn right
 			renderer.turn(zero);
-			
+
 		}
 		else if (one < -4){ // turn left
 			renderer.turn(-1f);

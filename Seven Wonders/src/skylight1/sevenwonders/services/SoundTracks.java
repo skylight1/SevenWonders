@@ -153,6 +153,7 @@ public class SoundTracks
     	fadeThread.start();
     	if(track==SOUNDTRACK) {
     		Log.i(TAG, "soundtack fading out, resume wind");
+    		soundPool.setVolume(streamIds[WIND], 1.0f*streamVolume, 1.0f*streamVolume);
     		resume(WIND,-1);
     	}
     }
