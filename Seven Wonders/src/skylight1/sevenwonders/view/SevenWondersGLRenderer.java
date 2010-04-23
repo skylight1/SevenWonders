@@ -6,6 +6,7 @@ import static javax.microedition.khronos.opengles.GL10.GL_CW;
 import static skylight1.sevenwonders.view.GameTexture.SPELL;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -160,6 +161,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY, spellZ, xRight, spellY + spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t2, SPELL.s2, SPELL.t1);
 		openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY + spellEdgeLength, spellZ, xLeft, spellY + spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t1, SPELL.s1, SPELL.t1);;
 		spellGeometry = openGLGeometryBuilder.endGeometry();
+		Log.i(SevenWondersGLRenderer.class.getName(), String.format("Bounding sphere for spell is %s", Arrays.toString(spellGeometry.getBoundingSphere())));
 	}
 
 	private void addGroundToGeometry(
