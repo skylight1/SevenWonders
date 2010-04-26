@@ -72,11 +72,11 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView implements SensorEv
 			return true;
 			// left/q -> left
 		} else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_Q) {
-			renderer.turn(-5f,0,0);
+			renderer.turn(-5f);
 			return true;
 			// right/w -> right
 		} else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_W) {
-			renderer.turn(+5f,0,0);
+			renderer.turn(+5f);
 			return true;
 			// up -> pause
 		} else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
@@ -101,21 +101,21 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView implements SensorEv
 			return;
 		if ((time-lastSystemTime)<200)
 			return;
-
+		
 		lastSystemTime = time;
 		float[] values = event.values;
 
-		final float azimuth = values[0];
-		final float pitch = values[1];
-		final float roll = values[2];
+		final float zero = values[0];
+		final float one = values[1];
+		final float two = values[2];
+		
 
-		renderer.turn(azimuth,pitch,roll);
-		/*if (one > 4){ // turn right
-			renderer.turn(zero);
-
+		if (one > 4){ // turn right
+			renderer.turn(1f);
+			
 		}
 		else if (one < -4){ // turn left
 			renderer.turn(-1f);
-		}*/
+		}
 	}
 }

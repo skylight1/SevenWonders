@@ -73,15 +73,15 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	//Start a little back so that we aren't inside the pyramid.
 	private Position playerWorldPosition = new Position(0, 0, 200);
-
-	private float angYaw;
+	private float playerFacing;
+	/*private float angYaw;
 	private float angPitch;
-	private float angRoll;
+	private float angRoll; */
 
 	private float velocity = INITIAL_VELOCITY;
-	private float velocityX = INITIAL_VELOCITY;
+/*	private float velocityX = INITIAL_VELOCITY;
 	private float velocityY = 0;
-	private float velocityZ = 0;
+	private float velocityZ = 0; */
 	private long timeAtLastOnRenderCall;
 
 	public SevenWondersGLRenderer(Context aContext) {
@@ -241,16 +241,13 @@ public class SevenWondersGLRenderer implements Renderer {
 		rendererListener.drawFPS(fPSLogger.frameRendered());
 	}
 
-	private void applyMovement(final GL10 aGl) {
+	/*private void applyMovement(final GL10 aGl) {
         final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
         double yaw,pitch,roll;
         yaw=angYaw / 180f * Math.PI;
         pitch=angPitch / 180f * Math.PI ;
         roll=angRoll / 180f * Math.PI ;
-        /* Now although VelocityY and VelocityZ are Zero I am keeping them
-         * in the equation as later on we might want to make them non zero
-         * and put some more control.
-         */
+       
         float facingX=(float)(Math.cos(pitch)*Math.cos(yaw)*velocityX +
         		(Math.sin(roll)*Math.sin(pitch)*Math.cos(yaw)-Math.cos(roll)*Math.sin(yaw))*velocityY+
         		(Math.sin(roll)*Math.sin(yaw)+Math.cos(roll)*Math.sin(pitch)*Math.cos(yaw))*velocityZ);
@@ -263,11 +260,6 @@ public class SevenWondersGLRenderer implements Renderer {
         		(Math.sin(roll)*Math.cos(pitch))*velocityY+
         		(Math.cos(roll)*Math.cos(pitch))*velocityZ);
 
-	//	final float facingX = (float) Math.sin( playerFacing1 / 180f * Math.PI );
-    //    final float facingZ = -(float) Math.cos( playerFacing2 / 180f * Math.PI );
-		//playerWorldPosition.x += facingX * velocity * timeDeltaMS;
-		//playerWorldPosition.y += facingY * velocity * timeDeltaMS;
-		//playerWorldPosition.z += facingZ * velocity * timeDeltaMS;
 		playerWorldPosition.x += facingX * timeDeltaMS;
 		if ((playerWorldPosition.y+facingY * timeDeltaMS)>0){//Over ground
 			playerWorldPosition.y += facingY * timeDeltaMS;
@@ -275,12 +267,20 @@ public class SevenWondersGLRenderer implements Renderer {
 			facingY=0;
 		}
 		playerWorldPosition.z += facingZ * timeDeltaMS;
-
-	//	GLU.gluLookAt(aGl, playerWorldPosition.x, HEIGHT_OF_CARPET_FROM_GROUND,
-	//		playerWorldPosition.z, playerWorldPosition.x + facingX, HEIGHT_OF_CARPET_FROM_GROUND,
-	//		playerWorldPosition.z + facingZ, 0f, 1f, 0f);
 		GLU.gluLookAt(aGl, playerWorldPosition.x, playerWorldPosition.y,
 			playerWorldPosition.z, playerWorldPosition.x + facingX,  playerWorldPosition.y + facingY,
+			playerWorldPosition.z + facingZ, 0f, 1f, 0f);
+	}*/
+	private void applyMovement(final GL10 aGl) {
+        final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
+
+		final float facingX = (float) Math.sin( playerFacing / 180f * Math.PI );
+        final float facingZ = -(float) Math.cos( playerFacing / 180f * Math.PI );
+		playerWorldPosition.x += facingX * velocity * timeDeltaMS;
+		playerWorldPosition.z += facingZ * velocity * timeDeltaMS;
+
+		GLU.gluLookAt(aGl, playerWorldPosition.x, HEIGHT_OF_CARPET_FROM_GROUND,
+			playerWorldPosition.z, playerWorldPosition.x + facingX, HEIGHT_OF_CARPET_FROM_GROUND,
 			playerWorldPosition.z + facingZ, 0f, 1f, 0f);
 	}
 
@@ -332,26 +332,38 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glDepthMask(true);
 		aGl.glEnable(GL10.GL_CULL_FACE);
 	}
-
+	/*
 	public void setPlayerVelocity(int aNewVelocity) {
 		velocityX = aNewVelocity;
 		velocityY = 0;
 		velocityZ = 0;
+	}*/
+	public void setPlayerVelocity(int aNewVelocity) {
+		velocity = aNewVelocity;
 	}
-
-	public void turn(float yaw, float pitch, float roll) {
+	/*public void turn(float yaw, float pitch, float roll) {
 		angYaw += yaw;
 		angPitch += pitch;
 		angRoll += roll;
 //		Log.i("angle now ", "" + yaw);
 //		Log.i("angle now ", "" + pitch);
 //		Log.i("angle now ", "" + roll);
+	} */
+	public void turn(float anAngleOfTurn) {
+		playerFacing += anAngleOfTurn;
+		Log.i("angle now ", "" + playerFacing);
 	}
-
+	
+/*
 	public void setPlayerFacing(float yaw, float pitch, float roll){
 		angYaw = yaw;
 		angPitch = pitch;
 		angRoll = roll;
+	}
+*/	
+	public void setPlayerFacing(float anAngleAbosulte){
+		playerFacing = anAngleAbosulte;
+		
 	}
 
 	public void changeVelocity(float aVelocityIncrement) {
