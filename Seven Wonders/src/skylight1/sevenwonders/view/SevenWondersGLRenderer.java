@@ -24,6 +24,8 @@ import skylight1.sevenwonders.R;
 import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLU;
+import android.opengl.Matrix;
+import android.opengl.Visibility;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.SystemClock;
 import android.util.Log;
@@ -229,7 +231,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glFrontFace(GL_CCW);
 
 		applyMovement(aGl);
-
+		
+		detectCollisions();
+		
 		worldGeometry.draw(aGl);
 		drawSphinx(aGl);
 		drawPyramid(aGl, 90, 0, 5);
@@ -239,6 +243,23 @@ public class SevenWondersGLRenderer implements Renderer {
 		drawSpell(aGl);
 
 		rendererListener.drawFPS(fPSLogger.frameRendered());
+	}
+
+	private void detectCollisions() {
+		float[] carpetBoundingBox = new float[16];
+		// TODO should we use Matrix.orthoM()
+		Matrix.frustumM(carpetBoundingBox, 0, -0.5f, 0.5f, HEIGHT_OF_CARPET_FROM_GROUND, HEIGHT_OF_CARPET_FROM_GROUND + 2f, 0.1f, 1f);
+		// Log.i(SevenWondersGLRenderer.class.getName(), "carpet frustum is " + Arrays.toString(carpetFrustum));
+
+		// Rotate first, otherwise map rotates around center point we translated away from.
+		Matrix.rotateM(carpetBoundingBox, 0, playerFacing, 0, 1, 0);
+		Matrix.translateM(carpetBoundingBox, 0, -playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
+
+		float[] spheres = spellGeometry.getBoundingSphere();
+		int[] collisionResults = new int[spheres.length / 4];
+		int numberOfCollisions = Visibility.frustumCullSpheres(carpetBoundingBox, 0, spheres, 0, 1, collisionResults, 0, collisionResults.length);
+		Log.i(SevenWondersGLRenderer.class.getName(), "there were " + numberOfCollisions + " collisions, indexes are "
+				+ Arrays.toString(collisionResults));
 	}
 
 	/*private void applyMovement(final GL10 aGl) {
