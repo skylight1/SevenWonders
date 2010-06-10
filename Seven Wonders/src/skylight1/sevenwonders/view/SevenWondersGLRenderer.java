@@ -388,7 +388,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	 */
 	public void turn(float anAngleOfTurn) {
 		playerFacing += anAngleOfTurn;
-		Log.i("angle now ", "" + playerFacing);
+		// Log.i("angle now ", "" + playerFacing);
 	}
 
 	/*
