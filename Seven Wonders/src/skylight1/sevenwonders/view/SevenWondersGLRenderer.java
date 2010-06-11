@@ -12,6 +12,8 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import skylight1.opengl.CollisionDetector;
+import skylight1.opengl.FastGeometryBuilder;
+import skylight1.opengl.FastGeometryBuilderFactory;
 import skylight1.opengl.GeometryBuilder;
 import skylight1.opengl.OpenGLGeometry;
 import skylight1.opengl.OpenGLGeometryBuilder;
@@ -23,11 +25,11 @@ import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
 import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
 import skylight1.opengl.files.ObjFileLoader;
 import skylight1.sevenwonders.R;
+import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLU;
 import android.opengl.Matrix;
-import android.opengl.Visibility;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.SystemClock;
 import android.util.Log;
@@ -57,6 +59,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	private static final float MAXIMUM_VELOCITY = INITIAL_VELOCITY * 3f;
 
 	private static final int NUMBER_OF_SPELLS = 10;
+
+	private FastGeometryBuilder<?, ?> somewhereFarFarAway;
 
 	private final Context context;
 
@@ -191,10 +195,19 @@ public class SevenWondersGLRenderer implements Renderer {
 				@Override
 				public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
 					Log.i(SevenWondersGLRenderer.class.getName(), String.format("collided with " + anOpenGLGeometry));
+
+					anOpenGLGeometry.updateModel(somewhereFarFarAway);
+
+					SoundTracks.getInstance().play(SoundTracks.SPELL);
 				}
 			});
 		}
 		allSpellsGeometry = openGLGeometryBuilder.endGeometry();
+
+		// create a fast geometry that is out of sight
+		somewhereFarFarAway = FastGeometryBuilderFactory.createTexturableNormalizable(spellGeometries[0]);
+		somewhereFarFarAway.add3DTriangle(0, 0, -100, 0, 0, -100, 0, 0, -100);
+		somewhereFarFarAway.add3DTriangle(0, 0, -100, 0, 0, -100, 0, 0, -100);
 	}
 
 	private void addGroundToGeometry(
