@@ -1,6 +1,7 @@
 package skylight1.sevenwonders;
 
 import skylight1.sevenwonders.services.SoundTracks;
+import skylight1.sevenwonders.view.SevenWondersGLRenderer;
 import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
 import skylight1.sevenwonders.view.RendererListener;
 import android.app.Activity;
@@ -70,19 +71,29 @@ public class SevenWondersActivity extends Activity {
 					msg.arg1 = fPS;
 					debugHandler.sendMessage(msg);
 				}
-			});
+			}, new SevenWondersGLRenderer.ScoreObserver(){
+				@Override
+				public void observerNewScore(final int aNewScore) {
+					// TODO don't create a new object every time... don't want the GC to kick in
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							TextView scoreTextView = (TextView) findViewById(R.id.Score);
+							scoreTextView.setText(""+ aNewScore);
+						}});
+				}});
 		}
 
 //		setContentView(gLSurfaceView);
 //		setContentView(R.layout.main);
 //		gLSurfaceView = (GLSurfaceView) findViewById(R.id.swglsurface);
 
-		mainLayout = new RelativeLayout(this);
-		mainLayout.setLayoutParams(new RelativeLayout.LayoutParams(
-			RelativeLayout.LayoutParams.FILL_PARENT,
-			RelativeLayout.LayoutParams.FILL_PARENT));
 
-		mainLayout.addView(gLSurfaceView, new RelativeLayout.LayoutParams(
+		setContentView(R.layout.main);
+		
+		mainLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
+
+		mainLayout.addView(gLSurfaceView, 0, new RelativeLayout.LayoutParams(
 			RelativeLayout.LayoutParams.FILL_PARENT,
 			RelativeLayout.LayoutParams.FILL_PARENT));
 
@@ -101,9 +112,6 @@ public class SevenWondersActivity extends Activity {
 		mainLayout.addView(debugView, new RelativeLayout.LayoutParams(
 			RelativeLayout.LayoutParams.FILL_PARENT,
 			RelativeLayout.LayoutParams.FILL_PARENT));
-
-		setContentView(mainLayout);
-
 	}
     @Override
     protected void onPause() {

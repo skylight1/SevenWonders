@@ -36,6 +36,10 @@ import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
 
+	public static interface ScoreObserver {
+		void observerNewScore(int aNewScore);
+	}
+
 	private RendererListener rendererListener;
 
 	private static final String TAG = SevenWondersGLRenderer.class.getName();
@@ -100,8 +104,13 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private CollisionDetector collisionDetector;
 
-	public SevenWondersGLRenderer(Context aContext) {
+	private int score;
+	
+	private ScoreObserver scoreObserver;
+	
+	public SevenWondersGLRenderer(Context aContext, ScoreObserver aScoreObserver) {
 		context = aContext;
+		scoreObserver = aScoreObserver;
 	}
 
 	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
@@ -198,6 +207,12 @@ public class SevenWondersGLRenderer implements Renderer {
 
 					anOpenGLGeometry.updateModel(somewhereFarFarAway);
 
+					// add one to the score for colliding with a spell
+					score++;
+					
+					// notify the observer
+					scoreObserver.observerNewScore(score);
+					
 					SoundTracks.getInstance().play(SoundTracks.SPELL);
 				}
 			});
@@ -305,28 +320,6 @@ public class SevenWondersGLRenderer implements Renderer {
 		collisionDetector.detectCollisions(carpetBoundingBox);
 	}
 
-	/*
-	 * private void applyMovement(final GL10 aGl) { final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
-	 * double yaw,pitch,roll; yaw=angYaw / 180f * Math.PI; pitch=angPitch / 180f * Math.PI ; roll=angRoll / 180f *
-	 * Math.PI ;
-	 * 
-	 * float facingX=(float)(Math.cos(pitch)*Math.cos(yaw)*velocityX +
-	 * (Math.sin(roll)*Math.sin(pitch)*Math.cos(yaw)-Math.cos(roll)*Math.sin(yaw))*velocityY+
-	 * (Math.sin(roll)*Math.sin(yaw)+Math.cos(roll)*Math.sin(pitch)*Math.cos(yaw))*velocityZ);
-	 * 
-	 * float facingY=(float)(Math.cos(pitch)*Math.sin(yaw)*velocityX +
-	 * (Math.sin(roll)*Math.sin(pitch)*Math.sin(yaw)-Math.cos(roll)*Math.cos(yaw))*velocityY+
-	 * (Math.cos(roll)*Math.sin(pitch)*Math.sin(yaw)-Math.sin(roll)*Math.cos(yaw))*velocityZ);
-	 * 
-	 * float facingZ=(float)((-1.0)*Math.sin(pitch)*velocityX + (Math.sin(roll)*Math.cos(pitch))*velocityY+
-	 * (Math.cos(roll)*Math.cos(pitch))*velocityZ);
-	 * 
-	 * playerWorldPosition.x += facingX * timeDeltaMS; if ((playerWorldPosition.y+facingY * timeDeltaMS)>0){//Over
-	 * ground playerWorldPosition.y += facingY * timeDeltaMS; }else{// Do not go underground facingY=0; }
-	 * playerWorldPosition.z += facingZ * timeDeltaMS; GLU.gluLookAt(aGl, playerWorldPosition.x, playerWorldPosition.y,
-	 * playerWorldPosition.z, playerWorldPosition.x + facingX, playerWorldPosition.y + facingY, playerWorldPosition.z +
-	 * facingZ, 0f, 1f, 0f); }
-	 */
 	private void applyMovement(final GL10 aGl) {
 		final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
 

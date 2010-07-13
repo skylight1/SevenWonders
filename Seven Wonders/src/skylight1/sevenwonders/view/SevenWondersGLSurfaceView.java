@@ -1,5 +1,6 @@
 package skylight1.sevenwonders.view;
 
+import skylight1.sevenwonders.view.SevenWondersGLRenderer.ScoreObserver;
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -16,14 +17,12 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	protected static final String TAG = SevenWondersGLSurfaceView.class.getName();
 	private SevenWondersGLRenderer renderer;
 	private RendererListener rendererListener;
+	private ScoreObserver scoreObserver;
 
-	public SevenWondersGLSurfaceView(Context context, RendererListener listener) {
+	public SevenWondersGLSurfaceView(Context context, RendererListener listener, ScoreObserver aScoreObserver) {
 		super(context);
 		rendererListener = listener;
-		init(context);
-	}
-	public SevenWondersGLSurfaceView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+		scoreObserver = aScoreObserver;
 		init(context);
 	}
 
@@ -32,7 +31,6 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	}
 
 	private void init(Context context) {
-
 		SensorManager sensorManager = (SensorManager) ((Activity)context).getSystemService(android.content.Context.SENSOR_SERVICE);
 		SensorEventListener sensorEventListener = new SensorEventListener() {
 
@@ -59,15 +57,14 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 				final int turnAmt = one;
 			
 				renderer.turn(turnAmt *turnRate);
-				
 			}
-			
 		};
+
 		sensorManager.registerListener(sensorEventListener, sensorManager.getDefaultSensor(SensorManager.SENSOR_ORIENTATION),SensorManager.SENSOR_DELAY_GAME);
 
 		setDebugFlags(DEBUG_CHECK_GL_ERROR);
 
-		renderer = new SevenWondersGLRenderer(context);
+		renderer = new SevenWondersGLRenderer(context, scoreObserver);
 		renderer.setRendererListener(rendererListener);
 		setRenderer(renderer);
 
