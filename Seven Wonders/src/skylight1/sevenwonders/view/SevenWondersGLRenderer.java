@@ -199,25 +199,27 @@ public class SevenWondersGLRenderer implements Renderer {
 
 			// add to collision detector
 			collisionDetector.addGeometry(spellGeometry);
-
-			collisionDetector.addCollisionObserver(new CollisionObserver() {
-				@Override
-				public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
-					Log.i(SevenWondersGLRenderer.class.getName(), String.format("collided with " + anOpenGLGeometry));
-
-					anOpenGLGeometry.updateModel(somewhereFarFarAway);
-
-					// add one to the score for colliding with a spell
-					score++;
-					
-					// notify the observer
-					scoreObserver.observerNewScore(score);
-					
-					SoundTracks.getInstance().play(SoundTracks.SPELL);
-				}
-			});
 		}
 		allSpellsGeometry = openGLGeometryBuilder.endGeometry();
+		
+		collisionDetector.addCollisionObserver(new CollisionObserver() {
+			@Override
+			public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
+				Log.i(SevenWondersGLRenderer.class.getName(), String.format("collided with " + anOpenGLGeometry));
+				
+				collisionDetector.removeGeometry(anOpenGLGeometry);
+				
+				anOpenGLGeometry.updateModel(somewhereFarFarAway);
+				
+				// add one to the score for colliding with a spell
+				score++;
+				
+				// notify the observer
+				scoreObserver.observerNewScore(score);
+				
+				SoundTracks.getInstance().play(SoundTracks.SPELL);
+			}
+		});
 
 		// create a fast geometry that is out of sight
 		somewhereFarFarAway = FastGeometryBuilderFactory.createTexturableNormalizable(spellGeometries[0]);
