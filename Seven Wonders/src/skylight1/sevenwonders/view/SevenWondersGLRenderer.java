@@ -6,7 +6,6 @@ import static javax.microedition.khronos.opengles.GL10.GL_CW;
 import static skylight1.sevenwonders.view.GameTexture.SPELL;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -19,6 +18,7 @@ import skylight1.opengl.OpenGLGeometry;
 import skylight1.opengl.OpenGLGeometryBuilder;
 import skylight1.opengl.OpenGLGeometryBuilderFactory;
 import skylight1.opengl.Texture;
+import skylight1.opengl.TransformingGeometryBuilder;
 import skylight1.opengl.CollisionDetector.CollisionObserver;
 import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
 import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
@@ -128,9 +128,22 @@ public class SevenWondersGLRenderer implements Renderer {
 
 			worldGeometry = openGLGeometryBuilder.endGeometry();
 
-			sphinxGeometry = loadRequiredObj(R.raw.sphinx_scaled, openGLGeometryBuilder);
+			float[] coordinateTransform = new float[16];
+			Matrix.setIdentityM(coordinateTransform, 0);
+			Matrix.rotateM(coordinateTransform, 0, 90, 0, 1, 0);
+			float[] textureTransform = new float[16];
+			Matrix.setIdentityM(textureTransform, 0);
 
-			pyramidGeometry = loadRequiredObj(R.raw.pyramid, openGLGeometryBuilder);
+			openGLGeometryBuilder.startGeometry();
+			TransformingGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> transformingGeometryBuilder = 
+				new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, textureTransform);
+			loadRequiredObj(R.raw.sphinx_scaled, transformingGeometryBuilder);
+			sphinxGeometry = openGLGeometryBuilder.endGeometry();
+
+			openGLGeometryBuilder.startGeometry();
+//			loadRequiredObj(R.raw.pyramid, transformingGeometryBuilder);
+			loadRequiredObj(R.raw.pyramid, openGLGeometryBuilder);
+			pyramidGeometry = openGLGeometryBuilder.endGeometry();
 
 			addSpellsToGeometry(openGLGeometryBuilder);
 
@@ -234,16 +247,16 @@ public class SevenWondersGLRenderer implements Renderer {
 		terrain.addToGeometry(context, GameTexture.SAND, TERRAIN_DENSITY, anOpenGLGeometryBuilder);
 	}
 
-	private OpenGLGeometry loadRequiredObj(
+	private void loadRequiredObj(
 			final int aObjId,
-			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> aBuilder) {
+			final GeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> aBuilder) {
 		final ObjFileLoader loader;
 		try {
 			loader = new ObjFileLoader(context, aObjId);
 		} catch (IOException e) {
 			throw new RuntimeException("Error loading required geometry from OBJ file:" + aObjId, e);
 		}
-		return loader.createGeometry(aBuilder);
+		loader.createGeometry(aBuilder);
 	}
 
 	private void addCarpetToGeometry(
@@ -251,7 +264,9 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		carpetGeometry = new OpenGLGeometry[CARPET_OBJ_IDS.length];
 		for (int i = 0; i < CARPET_OBJ_IDS.length; i++) {
-			carpetGeometry[i] = loadRequiredObj(CARPET_OBJ_IDS[i], anOpenGLGeometryBuilder);
+			anOpenGLGeometryBuilder.startGeometry();
+			loadRequiredObj(CARPET_OBJ_IDS[i], anOpenGLGeometryBuilder);
+			carpetGeometry[i] = anOpenGLGeometryBuilder.endGeometry();
 		}
 	}
 
