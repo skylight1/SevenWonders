@@ -412,6 +412,11 @@ public class SevenWondersGLRenderer implements Renderer {
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, velocity + aVelocityIncrement));
 		// Log.i("velocity now ", "" + velocity);
 	}
+	
+	public void setVelocity(float aVelocity){
+		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, aVelocity));
+		 //Log.i("velocity now ", "" + velocity);
+	}
 
 	public void setRendererListener(RendererListener rendererListener2) {
 		rendererListener = rendererListener2;

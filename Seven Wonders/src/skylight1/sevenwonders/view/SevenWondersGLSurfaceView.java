@@ -51,12 +51,14 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 
 				final int zero = (int) values[0]; // not needed yet
 				final int one = (int) values[1]; 
-				final int two = (int) values[2]; // not needed yet
+				final float two =  values[2]; // not needed yet
 				
 				final int turnRate = 1;
 				final int turnAmt = one;
 			
-				renderer.turn(turnAmt *turnRate);
+				renderer.turn(turnAmt *turnRate);			
+				renderer.setVelocity(two * .005f);
+				// TODO fix magic numbers
 			}
 		};
 
