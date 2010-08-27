@@ -36,6 +36,8 @@ import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
 
+	private static final int PERIOD_FOR_CARPET_ANIMATION_CYCLE = 800;
+
 	public static interface ScoreObserver {
 		void observerNewScore(int aNewScore);
 	}
@@ -46,7 +48,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public static final float INITIAL_VELOCITY = 35f * 1000f / 60f / 60f / 1000f;
 
-	private static final float HEIGHT_OF_CARPET_FROM_GROUND = 10f;
+	private static final float HEIGHT_OF_CARPET_FROM_GROUND = 8f;
 
 	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
 
@@ -192,21 +194,39 @@ public class SevenWondersGLRenderer implements Renderer {
 		collisionDetector = new CollisionDetector();
 
 		// create a number of spells
+
+		final ObjFileLoader fileLoader;
+		try {
+			fileLoader = new ObjFileLoader(context, R.raw.spellobject);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
 		openGLGeometryBuilder.startGeometry();
 		spellGeometries = new OpenGLGeometry[NUMBER_OF_SPELLS];
+		float[] coordinateTransform = new float[16];
+		float[] textureTransform = new float[16];
+		Matrix.setIdentityM(textureTransform, 0);
 		for (int spellIndex = 0; spellIndex < NUMBER_OF_SPELLS; spellIndex++) {
 			openGLGeometryBuilder.startGeometry();
-			float spellX = -25;
-			float spellY = HEIGHT_OF_CARPET_FROM_GROUND;
-			float spellZ = 25 + spellIndex * 25;
-			float spellEdgeLength = 4;
-			final float xLeft = spellX - spellEdgeLength / 2f;
-			final float xRight = spellX + spellEdgeLength / 2f;
-			openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY, spellZ, xRight, spellY
-					+ spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t2, SPELL.s2, SPELL.t1);
-			openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY + spellEdgeLength, spellZ, xLeft, spellY
-					+ spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t1, SPELL.s1, SPELL.t1);
-			;
+//			float spellX = -25;
+//			float spellY = HEIGHT_OF_CARPET_FROM_GROUND;
+//			float spellZ = 25 + spellIndex * 25;
+//			float spellEdgeLength = 4;
+//			final float xLeft = spellX - spellEdgeLength / 2f;
+//			final float xRight = spellX + spellEdgeLength / 2f;
+//			openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY, spellZ, xRight, spellY
+//					+ spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t2, SPELL.s2, SPELL.t1);
+//			openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY + spellEdgeLength, spellZ, xLeft, spellY
+//					+ spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t1, SPELL.s1, SPELL.t1);
+//			;
+
+			Matrix.setIdentityM(coordinateTransform, 0);
+//			Matrix.rotateM(coordinateTransform, 0, 90, 0, 1, 0);
+			Matrix.translateM(coordinateTransform, 0, -25, HEIGHT_OF_CARPET_FROM_GROUND, 25 - spellIndex * 25);
+			TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, textureTransform);
+			fileLoader.createGeometry(transformingGeometryBuilder);
+			
 			final OpenGLGeometry spellGeometry = openGLGeometryBuilder.endGeometry();
 			spellGeometries[spellIndex] = spellGeometry;
 
@@ -305,7 +325,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		// XXX Hack to fix the carpet being drawn face down. Should probably change geometry or disable culling for the
 		// carpet instead.
 		aGl.glFrontFace(GL_CW);
-		final int carpetIndex = (int) ((SystemClock.uptimeMillis() % 800 + 1) / 100f);
+		final int carpetIndex = (int) ((SystemClock.uptimeMillis() % PERIOD_FOR_CARPET_ANIMATION_CYCLE) / (PERIOD_FOR_CARPET_ANIMATION_CYCLE / carpetGeometry.length));
 		carpetGeometry[carpetIndex].draw(aGl);
 		aGl.glFrontFace(GL_CCW);
 
