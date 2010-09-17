@@ -66,6 +66,10 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final int NUMBER_OF_SPELLS = 10;
 
+	private static final int NUMBER_OF_SPELL_ANIMATION_FRAMES = 16;
+
+	private static final int PERIOD_FOR_SPELL_ANIMATION_CYCLE = 1000;
+
 	private FastGeometryBuilder<?, ?> somewhereFarFarAway;
 
 	private final Context context;
@@ -80,9 +84,9 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private OpenGLGeometry[] carpetGeometry;
 
-	private OpenGLGeometry allSpellsGeometry;
+	private OpenGLGeometry[] allSpellsGeometry = new OpenGLGeometry[NUMBER_OF_SPELL_ANIMATION_FRAMES];
 
-	private OpenGLGeometry[] spellGeometries;
+	private OpenGLGeometry[][] spellGeometries = new OpenGLGeometry[NUMBER_OF_SPELL_ANIMATION_FRAMES][];
 
 	private OpenGLGeometry sphinxGeometry;
 
@@ -107,86 +111,77 @@ public class SevenWondersGLRenderer implements Renderer {
 	private CollisionDetector collisionDetector;
 
 	private int score;
-	
+
 	private ScoreObserver scoreObserver;
-	
+
 	public SevenWondersGLRenderer(Context aContext, ScoreObserver aScoreObserver) {
 		context = aContext;
 		scoreObserver = aScoreObserver;
 	}
 
 	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
+		Log.i(TAG, "- onSurfaceCreated - ");
 
-		try {
+		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable();
 
-			Log.i(TAG, "- onSurfaceCreated - ");
+		// Add ground and pyramid to a single drawable geometry for the world.
+		openGLGeometryBuilder.startGeometry();
 
-			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable();
+		addGroundToGeometry(openGLGeometryBuilder);
 
-			// Add ground and pyramid to a single drawable geometry for the world.
-			openGLGeometryBuilder.startGeometry();
+		worldGeometry = openGLGeometryBuilder.endGeometry();
 
-			addGroundToGeometry(openGLGeometryBuilder);
+		float[] coordinateTransform = new float[16];
+		Matrix.setIdentityM(coordinateTransform, 0);
+		Matrix.rotateM(coordinateTransform, 0, 90, 0, 1, 0);
+		float[] textureTransform = new float[16];
+		Matrix.setIdentityM(textureTransform, 0);
 
-			worldGeometry = openGLGeometryBuilder.endGeometry();
+		openGLGeometryBuilder.startGeometry();
+		TransformingGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, textureTransform);
+		loadRequiredObj(R.raw.sphinx_scaled, transformingGeometryBuilder);
+		sphinxGeometry = openGLGeometryBuilder.endGeometry();
 
-			float[] coordinateTransform = new float[16];
-			Matrix.setIdentityM(coordinateTransform, 0);
-			Matrix.rotateM(coordinateTransform, 0, 90, 0, 1, 0);
-			float[] textureTransform = new float[16];
-			Matrix.setIdentityM(textureTransform, 0);
+		openGLGeometryBuilder.startGeometry();
+		// loadRequiredObj(R.raw.pyramid, transformingGeometryBuilder);
+		loadRequiredObj(R.raw.pyramid, openGLGeometryBuilder);
+		pyramidGeometry = openGLGeometryBuilder.endGeometry();
 
-			openGLGeometryBuilder.startGeometry();
-			TransformingGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> transformingGeometryBuilder = 
-				new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, textureTransform);
-			loadRequiredObj(R.raw.sphinx_scaled, transformingGeometryBuilder);
-			sphinxGeometry = openGLGeometryBuilder.endGeometry();
+		addSpellsToGeometry(openGLGeometryBuilder);
 
-			openGLGeometryBuilder.startGeometry();
-//			loadRequiredObj(R.raw.pyramid, transformingGeometryBuilder);
-			loadRequiredObj(R.raw.pyramid, openGLGeometryBuilder);
-			pyramidGeometry = openGLGeometryBuilder.endGeometry();
+		// Add carpet to a separate drawable geometry.
+		// Allows the world to be translated separately from the carpet later.
+		addCarpetToGeometry(openGLGeometryBuilder);
 
-			addSpellsToGeometry(openGLGeometryBuilder);
+		openGLGeometryBuilder.enable(aGl);
 
-			// Add carpet to a separate drawable geometry.
-			// Allows the world to be translated separately from the carpet later.
-			addCarpetToGeometry(openGLGeometryBuilder);
+		aGl.glColor4f(1, 1, 1, 1);
+		aGl.glClearColor(0.5f, 0.5f, 1, 1.0f);
 
-			openGLGeometryBuilder.enable(aGl);
+		// Don't draw inside facing surfaces on things like the pyramid and sphinx.
+		// This fixes a z-fighting issue: At long distances OpenGL doesn't have enough precision in the depth buffer
+		// to tell if the front is closer or if the inside of a nearby back surface is closer and gets it wrong some
+		// times.
+		aGl.glEnable(GL10.GL_CULL_FACE);
 
-			aGl.glColor4f(1, 1, 1, 1);
-			aGl.glClearColor(0.5f, 0.5f, 1, 1.0f);
+		aGl.glEnable(GL10.GL_DEPTH_TEST);
 
-			// Don't draw inside facing surfaces on things like the pyramid and sphinx.
-			// This fixes a z-fighting issue: At long distances OpenGL doesn't have enough precision in the depth buffer
-			// to tell if the front is closer or if the inside of a nearby back surface is closer and gets it wrong some
-			// times.
-			aGl.glEnable(GL10.GL_CULL_FACE);
+		aGl.glDisable(GL10.GL_BLEND);
+		aGl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
-			aGl.glEnable(GL10.GL_DEPTH_TEST);
+		aGl.glShadeModel(GL10.GL_SMOOTH);
 
-			aGl.glDisable(GL10.GL_BLEND);
-			aGl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		aGl.glEnable(GL10.GL_LIGHTING);
+		aGl.glLightModelfv(GL10.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.75f, 0.75f, 0.75f, 1f }, 0);
 
-			aGl.glShadeModel(GL10.GL_SMOOTH);
+		aGl.glEnable(GL10.GL_LIGHT0);
+		aGl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, new float[] { -1f, 0f, 1f, 0.0f }, 0);
+		aGl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, new float[] { 0.5f, 0.5f, 0.5f, 1f }, 0);
 
-			aGl.glEnable(GL10.GL_LIGHTING);
-			aGl.glLightModelfv(GL10.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.75f, 0.75f, 0.75f, 1f }, 0);
-
-			aGl.glEnable(GL10.GL_LIGHT0);
-			aGl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, new float[] { -1f, 0f, 1f, 0.0f }, 0);
-			aGl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, new float[] { 0.5f, 0.5f, 0.5f, 1f }, 0);
-
-			aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
-			aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
-			aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, new float[] { 0.1f, 0.1f, 0.1f, 1.0f }, 0);
-			aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, new float[] { 50.0f }, 0);
-
-		} catch (Throwable t) {
-			t.printStackTrace();
-
-		}
+		aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
+		aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, new float[] { 1.0f, 1.0f, 1.0f, 1.0f }, 0);
+		aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, new float[] { 0.1f, 0.1f, 0.1f, 1.0f }, 0);
+		aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, new float[] { 50.0f }, 0);
 	}
 
 	private void addSpellsToGeometry(
@@ -201,61 +196,56 @@ public class SevenWondersGLRenderer implements Renderer {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		
-		openGLGeometryBuilder.startGeometry();
-		spellGeometries = new OpenGLGeometry[NUMBER_OF_SPELLS];
-		float[] coordinateTransform = new float[16];
-		float[] textureTransform = new float[16];
-		Matrix.setIdentityM(textureTransform, 0);
-		for (int spellIndex = 0; spellIndex < NUMBER_OF_SPELLS; spellIndex++) {
+
+		for (int spellAnimationIndex = 0; spellAnimationIndex < NUMBER_OF_SPELL_ANIMATION_FRAMES; spellAnimationIndex++) {
 			openGLGeometryBuilder.startGeometry();
-//			float spellX = -25;
-//			float spellY = HEIGHT_OF_CARPET_FROM_GROUND;
-//			float spellZ = 25 + spellIndex * 25;
-//			float spellEdgeLength = 4;
-//			final float xLeft = spellX - spellEdgeLength / 2f;
-//			final float xRight = spellX + spellEdgeLength / 2f;
-//			openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY, spellZ, xRight, spellY
-//					+ spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t2, SPELL.s2, SPELL.t1);
-//			openGLGeometryBuilder.add3DTriangle(xLeft, spellY, spellZ, xRight, spellY + spellEdgeLength, spellZ, xLeft, spellY
-//					+ spellEdgeLength, spellZ).setTextureCoordinates(SPELL.s1, SPELL.t2, SPELL.s2, SPELL.t1, SPELL.s1, SPELL.t1);
-//			;
+			spellGeometries[spellAnimationIndex] = new OpenGLGeometry[NUMBER_OF_SPELLS];
+			float[] coordinateTransform = new float[16];
+			float[] textureTransform = new float[16];
+			Matrix.setIdentityM(textureTransform, 0);
+			for (int spellIndex = 0; spellIndex < NUMBER_OF_SPELLS; spellIndex++) {
+				openGLGeometryBuilder.startGeometry();
+				Matrix.setIdentityM(coordinateTransform, 0);
+				Matrix.translateM(coordinateTransform, 0, -25, HEIGHT_OF_CARPET_FROM_GROUND, 25 - spellIndex * 25);
+				Matrix.rotateM(coordinateTransform, 0, 180f * (float) spellAnimationIndex
+						/ (float) NUMBER_OF_SPELL_ANIMATION_FRAMES, 0, 1, 0);
+				TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, textureTransform);
+				fileLoader.createGeometry(transformingGeometryBuilder);
 
-			Matrix.setIdentityM(coordinateTransform, 0);
-//			Matrix.rotateM(coordinateTransform, 0, 90, 0, 1, 0);
-			Matrix.translateM(coordinateTransform, 0, -25, HEIGHT_OF_CARPET_FROM_GROUND, 25 - spellIndex * 25);
-			TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, textureTransform);
-			fileLoader.createGeometry(transformingGeometryBuilder);
-			
-			final OpenGLGeometry spellGeometry = openGLGeometryBuilder.endGeometry();
-			spellGeometries[spellIndex] = spellGeometry;
-
-			// add to collision detector
-			collisionDetector.addGeometry(spellGeometry);
-		}
-		allSpellsGeometry = openGLGeometryBuilder.endGeometry();
-		
-		collisionDetector.addCollisionObserver(new CollisionObserver() {
-			@Override
-			public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
-				Log.i(SevenWondersGLRenderer.class.getName(), String.format("collided with " + anOpenGLGeometry));
-				
-				collisionDetector.removeGeometry(anOpenGLGeometry);
-				
-				anOpenGLGeometry.updateModel(somewhereFarFarAway);
-				
-				// add one to the score for colliding with a spell
-				score++;
-				
-				// notify the observer
-				scoreObserver.observerNewScore(score);
-				
-				SoundTracks.getInstance().play(SoundTracks.SPELL);
+				final OpenGLGeometry spellGeometry = openGLGeometryBuilder.endGeometry();
+				spellGeometries[spellAnimationIndex][spellIndex] = spellGeometry;
 			}
-		});
+			allSpellsGeometry[spellAnimationIndex] = openGLGeometryBuilder.endGeometry();
+		}
+
+		// add to collision detector
+		for (int spellIndex = 0; spellIndex < NUMBER_OF_SPELLS; spellIndex++) {
+			final int finalSpellIndex = spellIndex;
+			
+			collisionDetector.addGeometry(spellGeometries[0][spellIndex], new CollisionObserver() {
+				@Override
+				public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
+					Log.i(SevenWondersGLRenderer.class.getName(), String.format("collided with " + anOpenGLGeometry));
+
+					collisionDetector.removeGeometry(anOpenGLGeometry);
+
+					for (int spellAnimationIndex = 0; spellAnimationIndex < NUMBER_OF_SPELL_ANIMATION_FRAMES; spellAnimationIndex++) {
+						spellGeometries[spellAnimationIndex][finalSpellIndex].updateModel(somewhereFarFarAway);
+					}
+
+					// add one to the score for colliding with a spell
+					score++;
+
+					// notify the observer
+					scoreObserver.observerNewScore(score);
+
+					SoundTracks.getInstance().play(SoundTracks.SPELL);
+				}
+			});
+		}
 
 		// create a fast geometry that is out of sight
-		somewhereFarFarAway = FastGeometryBuilderFactory.createTexturableNormalizable(spellGeometries[0]);
+		somewhereFarFarAway = FastGeometryBuilderFactory.createTexturableNormalizable(spellGeometries[0][0]);
 		somewhereFarFarAway.add3DTriangle(0, 0, -100, 0, 0, -100, 0, 0, -100);
 		somewhereFarFarAway.add3DTriangle(0, 0, -100, 0, 0, -100, 0, 0, -100);
 	}
@@ -411,7 +401,8 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glDepthMask(false);
 		aGl.glEnable(GL_BLEND);
 
-		allSpellsGeometry.draw(aGl);
+		final int spellAnimationIndex = (int) ((SystemClock.uptimeMillis() % PERIOD_FOR_SPELL_ANIMATION_CYCLE) / (PERIOD_FOR_SPELL_ANIMATION_CYCLE / NUMBER_OF_SPELL_ANIMATION_FRAMES));
+		allSpellsGeometry[spellAnimationIndex].draw(aGl);
 
 		aGl.glDisable(GL_BLEND);
 		aGl.glDepthMask(true);
@@ -447,10 +438,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, velocity + aVelocityIncrement));
 		// Log.i("velocity now ", "" + velocity);
 	}
-	
-	public void setVelocity(float aVelocity){
+
+	public void setVelocity(float aVelocity) {
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, aVelocity));
-		 //Log.i("velocity now ", "" + velocity);
+		// Log.i("velocity now ", "" + velocity);
 	}
 
 	public void setRendererListener(RendererListener rendererListener2) {
