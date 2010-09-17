@@ -401,7 +401,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glDepthMask(false);
 		aGl.glEnable(GL_BLEND);
 
-		final int spellAnimationIndex = (int) ((SystemClock.uptimeMillis() % PERIOD_FOR_SPELL_ANIMATION_CYCLE) / (PERIOD_FOR_SPELL_ANIMATION_CYCLE / NUMBER_OF_SPELL_ANIMATION_FRAMES));
+		final int spellAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPELL_ANIMATION_CYCLE) / (float) PERIOD_FOR_SPELL_ANIMATION_CYCLE * (float) NUMBER_OF_SPELL_ANIMATION_FRAMES);
 		allSpellsGeometry[spellAnimationIndex].draw(aGl);
 
 		aGl.glDisable(GL_BLEND);
