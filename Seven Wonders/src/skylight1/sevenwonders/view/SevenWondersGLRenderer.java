@@ -188,27 +188,32 @@ public class SevenWondersGLRenderer implements Renderer {
 			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder) {
 		collisionDetector = new CollisionDetector();
 
-		// create a number of spells
-
 		final ObjFileLoader fileLoader;
 		try {
-			fileLoader = new ObjFileLoader(context, R.raw.spellobject);
+			fileLoader = new ObjFileLoader(context, R.raw.ankh);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 
+		// the texture is within the main texture, so it needs a little transformation to map onto the spell
+		float[] textureTransform = new float[16];
+		Matrix.setIdentityM(textureTransform, 0);
+		Matrix.translateM(textureTransform, 0, 576f / 1024f, 0, 0);
+		Matrix.scaleM(textureTransform, 0, 0.25f, 0.25f, 1f);
+
+		// create a number of spells, in a number of orientations
 		for (int spellAnimationIndex = 0; spellAnimationIndex < NUMBER_OF_SPELL_ANIMATION_FRAMES; spellAnimationIndex++) {
 			openGLGeometryBuilder.startGeometry();
 			spellGeometries[spellAnimationIndex] = new OpenGLGeometry[NUMBER_OF_SPELLS];
 			float[] coordinateTransform = new float[16];
-			float[] textureTransform = new float[16];
-			Matrix.setIdentityM(textureTransform, 0);
 			for (int spellIndex = 0; spellIndex < NUMBER_OF_SPELLS; spellIndex++) {
 				openGLGeometryBuilder.startGeometry();
 				Matrix.setIdentityM(coordinateTransform, 0);
-				Matrix.translateM(coordinateTransform, 0, -25, HEIGHT_OF_CARPET_FROM_GROUND, 25 - spellIndex * 25);
+				Matrix.translateM(coordinateTransform, 0, -25, HEIGHT_OF_CARPET_FROM_GROUND - 1, 25 - spellIndex * 25);
 				Matrix.rotateM(coordinateTransform, 0, 180f * (float) spellAnimationIndex
 						/ (float) NUMBER_OF_SPELL_ANIMATION_FRAMES, 0, 1, 0);
+				// this final rotate is to "stand up" the ankh
+				Matrix.rotateM(coordinateTransform, 0, -90f, 1, 0, 0);
 				TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, textureTransform);
 				fileLoader.createGeometry(transformingGeometryBuilder);
 
@@ -246,8 +251,10 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		// create a fast geometry that is out of sight
 		somewhereFarFarAway = FastGeometryBuilderFactory.createTexturableNormalizable(spellGeometries[0][0]);
-		somewhereFarFarAway.add3DTriangle(0, 0, -100, 0, 0, -100, 0, 0, -100);
-		somewhereFarFarAway.add3DTriangle(0, 0, -100, 0, 0, -100, 0, 0, -100);
+		// TODO there has to be a better way to make a correctly sized geometry, than to know it has 60 quads = 120 triangles
+		for (int silly = 0; silly < 60 * 2; silly++) {
+			somewhereFarFarAway.add3DTriangle(0, 0, -100, 0, 0, -100, 0, 0, -100);
+		}
 	}
 
 	private void addGroundToGeometry(
@@ -328,7 +335,6 @@ public class SevenWondersGLRenderer implements Renderer {
 		drawPyramid(aGl, 90, 0, 5);
 		drawPyramid(aGl, 255, 0, -2);
 		drawPyramid(aGl, -320, -7, 100);
-
 		drawSpell(aGl);
 
 		rendererListener.drawFPS(fPSLogger.frameRendered());
@@ -338,7 +344,6 @@ public class SevenWondersGLRenderer implements Renderer {
 		float[] carpetBoundingBox = new float[16];
 		// TODO should we use Matrix.orthoM()
 		Matrix.frustumM(carpetBoundingBox, 0, -0.5f, 0.5f, HEIGHT_OF_CARPET_FROM_GROUND, HEIGHT_OF_CARPET_FROM_GROUND + 2f, 0.1f, 1f);
-		// Log.i(SevenWondersGLRenderer.class.getName(), "carpet frustum is " + Arrays.toString(carpetFrustum));
 
 		// Rotate first, otherwise map rotates around center point we translated away from.
 		Matrix.rotateM(carpetBoundingBox, 0, playerFacing, 0, 1, 0);
@@ -384,7 +389,6 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	private void drawPyramid(final GL10 aGl, final int x, final int y, final int z) {
-
 		aGl.glPushMatrix();
 		aGl.glTranslatef(x, y, z);
 
@@ -394,41 +398,18 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	private void drawSpell(final GL10 aGl) {
-
-		// The spell only has one surface at the moment, that we want to be visible from both sides.
-		aGl.glDisable(GL10.GL_CULL_FACE);
-		// Disable depth writing so that transparent pixels don't block things behind them.
-		aGl.glDepthMask(false);
-		aGl.glEnable(GL_BLEND);
-
 		final int spellAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPELL_ANIMATION_CYCLE) / (float) PERIOD_FOR_SPELL_ANIMATION_CYCLE * (float) NUMBER_OF_SPELL_ANIMATION_FRAMES);
 		allSpellsGeometry[spellAnimationIndex].draw(aGl);
-
-		aGl.glDisable(GL_BLEND);
-		aGl.glDepthMask(true);
-		aGl.glEnable(GL10.GL_CULL_FACE);
 	}
 
-	/*
-	 * public void setPlayerVelocity(int aNewVelocity) { velocityX = aNewVelocity; velocityY = 0; velocityZ = 0; }
-	 */
 	public void setPlayerVelocity(int aNewVelocity) {
 		velocity = aNewVelocity;
 	}
 
-	/*
-	 * public void turn(float yaw, float pitch, float roll) { angYaw += yaw; angPitch += pitch; angRoll += roll; //
-	 * Log.i("angle now ", "" + yaw); // Log.i("angle now ", "" + pitch); // Log.i("angle now ", "" + roll); }
-	 */
 	public void turn(float anAngleOfTurn) {
 		playerFacing += anAngleOfTurn;
-		// Log.i("angle now ", "" + playerFacing);
 	}
 
-	/*
-	 * public void setPlayerFacing(float yaw, float pitch, float roll){ angYaw = yaw; angPitch = pitch; angRoll = roll;
-	 * }
-	 */
 	public void setPlayerFacing(float anAngleAbosulte) {
 		playerFacing = anAngleAbosulte;
 
@@ -436,16 +417,13 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public void changeVelocity(float aVelocityIncrement) {
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, velocity + aVelocityIncrement));
-		// Log.i("velocity now ", "" + velocity);
 	}
 
 	public void setVelocity(float aVelocity) {
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, aVelocity));
-		// Log.i("velocity now ", "" + velocity);
 	}
 
 	public void setRendererListener(RendererListener rendererListener2) {
 		rendererListener = rendererListener2;
 	}
-
 }
