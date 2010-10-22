@@ -1,16 +1,15 @@
 package skylight1.sevenwonders;
 
 import skylight1.sevenwonders.services.SoundTracks;
+import skylight1.sevenwonders.view.RendererListener;
 import skylight1.sevenwonders.view.SevenWondersGLRenderer;
 import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
-import skylight1.sevenwonders.view.RendererListener;
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -24,6 +23,10 @@ public class SevenWondersActivity extends Activity {
 
 	private final static int GAMELAYER = 0;
 	private final static int MENULAYER = 1;
+	protected static final int FPS_MESSAGE = 0;
+	protected static final int COUNTDOWN_MESSAGE = 1;
+	private static final long ONE_SECOND_IN_MILLISECONDS = 1000;
+	protected static final int TOTAL_TIME_ALLOWED = 180;
 
 	//Handler to remove splash screen
     private Handler splashHandler = new Handler() {
@@ -31,18 +34,42 @@ public class SevenWondersActivity extends Activity {
     		if(mainLayout!=null) {
 		    	Log.i(TAG,"startedRendering()");
 				SoundTracks.getInstance().fadeoutSplashSoundTrack(SoundTracks.SOUNDTRACK);
-    			splashView.setVisibility(View.INVISIBLE);
+    			splashView.setVisibility(View.GONE);
+    			
+    			// start the countdown NOW!
+    			countdownStartTime = SystemClock.uptimeMillis();
+    			sendUpdateCountdownMessage();
     		}
     	}
     };
-	//Handler to draw debug info (fps)
+	private TextView countdownView;
+
+	private long countdownStartTime;
+	
+	private void sendUpdateCountdownMessage() {
+		final Message countdownMessage = debugHandler.obtainMessage(COUNTDOWN_MESSAGE);
+		debugHandler.sendMessageDelayed(countdownMessage, ONE_SECOND_IN_MILLISECONDS);
+	}
+	
+    //Handler to draw debug info (fps)
     private Handler debugHandler = new Handler() {
     	public void handleMessage(Message msg) {
     		if(mainLayout!=null) {
-				debugView.setText(Integer.toString(msg.arg1));
+    			switch (msg.what) {
+    				case FPS_MESSAGE:
+    					debugView.setText(Integer.toString(msg.arg1));
+    					break;
+    				case COUNTDOWN_MESSAGE:
+						int remainingTime = TOTAL_TIME_ALLOWED - (int) ((SystemClock.uptimeMillis() - countdownStartTime)
+								/ ONE_SECOND_IN_MILLISECONDS);
+    					countdownView.setText(Integer.toString(remainingTime));
+    					sendUpdateCountdownMessage();
+    					break;
+    			}
     		}
     	}
     };
+    
 	private ImageView splashView;
 	private TextView debugView;
 
@@ -103,16 +130,11 @@ public class SevenWondersActivity extends Activity {
 		mainLayout.addView(splashView, new RelativeLayout.LayoutParams(
 			RelativeLayout.LayoutParams.FILL_PARENT,
 			RelativeLayout.LayoutParams.FILL_PARENT));
-
-		debugView = new TextView(this);
-		debugView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22f);
-		debugView.setText("");
-		debugView.setBackgroundColor(Color.TRANSPARENT);
-		debugView.setTextColor(Color.YELLOW);
-		mainLayout.addView(debugView, new RelativeLayout.LayoutParams(
-			RelativeLayout.LayoutParams.FILL_PARENT,
-			RelativeLayout.LayoutParams.FILL_PARENT));
+		
+		countdownView = (TextView) findViewById(R.id.Countdown);
+		debugView = (TextView) findViewById(R.id.FPS);
 	}
+	
     @Override
     protected void onPause() {
         super.onPause();

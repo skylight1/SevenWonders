@@ -66,7 +66,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final int NUMBER_OF_SPELLS = 10;
 
-	private static final int NUMBER_OF_SPELL_ANIMATION_FRAMES = 16;
+	private static final int NUMBER_OF_SPELL_ANIMATION_FRAMES = 32;
 
 	private static final int PERIOD_FOR_SPELL_ANIMATION_CYCLE = 1000;
 
@@ -210,7 +210,7 @@ public class SevenWondersGLRenderer implements Renderer {
 				openGLGeometryBuilder.startGeometry();
 				Matrix.setIdentityM(coordinateTransform, 0);
 				Matrix.translateM(coordinateTransform, 0, -25, HEIGHT_OF_CARPET_FROM_GROUND - 1, 25 - spellIndex * 25);
-				Matrix.rotateM(coordinateTransform, 0, 180f * (float) spellAnimationIndex
+				Matrix.rotateM(coordinateTransform, 0, 360f * (float) spellAnimationIndex
 						/ (float) NUMBER_OF_SPELL_ANIMATION_FRAMES, 0, 1, 0);
 				// this final rotate is to "stand up" the ankh
 				Matrix.rotateM(coordinateTransform, 0, -90f, 1, 0, 0);
