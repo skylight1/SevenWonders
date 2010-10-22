@@ -5,12 +5,12 @@ import skylight1.sevenwonders.view.SevenWondersGLRenderer;
 import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
 import skylight1.sevenwonders.view.RendererListener;
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -105,10 +105,10 @@ public class SevenWondersActivity extends Activity {
 			RelativeLayout.LayoutParams.FILL_PARENT));
 
 		debugView = new TextView(this);
-		debugView.setTextSize(14, 14f);
-		debugView.setText("--");
+		debugView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22f);
+		debugView.setText("");
 		debugView.setBackgroundColor(Color.TRANSPARENT);
-		debugView.setTextColor(Color.MAGENTA);
+		debugView.setTextColor(Color.YELLOW);
 		mainLayout.addView(debugView, new RelativeLayout.LayoutParams(
 			RelativeLayout.LayoutParams.FILL_PARENT,
 			RelativeLayout.LayoutParams.FILL_PARENT));
