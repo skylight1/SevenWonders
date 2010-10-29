@@ -2,4 +2,7 @@
 <resources>
     <string name="hello">Hello World, SevenWondersActivity!</string>
     <string name="app_name">Seven Wonders</string>
+    
+    <string name="yourScore">Congratulations!  Your score is %1$s.</string>
+    <string name="playAgain">Play Again</string>
 </resources>

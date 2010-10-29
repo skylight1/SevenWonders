@@ -5,6 +5,7 @@ import skylight1.sevenwonders.view.RendererListener;
 import skylight1.sevenwonders.view.SevenWondersGLRenderer;
 import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,6 +28,9 @@ public class SevenWondersActivity extends Activity {
 	protected static final int COUNTDOWN_MESSAGE = 1;
 	private static final long ONE_SECOND_IN_MILLISECONDS = 1000;
 	protected static final int TOTAL_TIME_ALLOWED = 180;
+	
+	static final String KEY_SCORE_EXTRA = "SCORE";
+	static final int COLLECTED_OBJECTS_GOAL = 10;
 
 	//Handler to remove splash screen
     private Handler splashHandler = new Handler() {
@@ -105,6 +109,13 @@ public class SevenWondersActivity extends Activity {
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
+							if (aNewScore >= COLLECTED_OBJECTS_GOAL) {
+								Intent intent = new Intent().setClass(SevenWondersActivity.this, ScoreActivity.class);
+								//TODO - should we keep the score (countdown) somewhere besides a TextView?
+								intent.putExtra(KEY_SCORE_EXTRA, countdownView.getText().toString()); 
+								startActivity(intent);
+								finish();
+							}
 							TextView scoreTextView = (TextView) findViewById(R.id.Score);
 							scoreTextView.setText(""+ aNewScore);
 						}});
