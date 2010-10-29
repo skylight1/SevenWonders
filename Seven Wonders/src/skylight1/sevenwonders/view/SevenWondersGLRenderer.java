@@ -6,6 +6,10 @@ import static javax.microedition.khronos.opengles.GL10.GL_CW;
 import static skylight1.sevenwonders.view.GameTexture.SPELL;
 
 import java.io.IOException;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -35,8 +39,8 @@ import android.os.SystemClock;
 import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
-
-	private static final int PERIOD_FOR_CARPET_ANIMATION_CYCLE = 800;
+	
+	
 
 	public static interface ScoreObserver {
 		void observerNewScore(int aNewScore);
@@ -56,9 +60,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final int TERRAIN_DENSITY = 25;
 
-	private static final int[] CARPET_OBJ_IDS = new int[] { R.raw.carpet_wave_0, R.raw.carpet_wave_1,
-			R.raw.carpet_wave_2, R.raw.carpet_wave_3, R.raw.carpet_wave_4, R.raw.carpet_wave_5, R.raw.carpet_wave_6,
-			R.raw.carpet_wave_7, R.raw.carpet_wave_8, R.raw.carpet_wave_9 };
+
 
 	private static final float MINIMUM_VELOCITY = -INITIAL_VELOCITY / 10f;
 
@@ -80,9 +82,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private FPSLogger fPSLogger = new FPSLogger(SevenWondersGLRenderer.class.getName(), FRAMES_BETWEEN_LOGGING_FPS);
 
-	private OpenGLGeometry worldGeometry;
-
-	private OpenGLGeometry[] carpetGeometry;
+	private OpenGLGeometry worldGeometry;	
 
 	private OpenGLGeometry[] allSpellsGeometry = new OpenGLGeometry[NUMBER_OF_SPELL_ANIMATION_FRAMES];
 
@@ -114,9 +114,12 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private ScoreObserver scoreObserver;
 
+	private Carpet carpet;
+
 	public SevenWondersGLRenderer(Context aContext, ScoreObserver aScoreObserver) {
 		context = aContext;
 		scoreObserver = aScoreObserver;
+		carpet = new Carpet(this);
 	}
 
 	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
@@ -147,12 +150,8 @@ public class SevenWondersGLRenderer implements Renderer {
 		loadRequiredObj(R.raw.pyramid, openGLGeometryBuilder);
 		pyramidGeometry = openGLGeometryBuilder.endGeometry();
 
-		addSpellsToGeometry(openGLGeometryBuilder);
-
-		// Add carpet to a separate drawable geometry.
-		// Allows the world to be translated separately from the carpet later.
-		addCarpetToGeometry(openGLGeometryBuilder);
-
+		addSpellsToGeometry(openGLGeometryBuilder);				
+		carpet.createGeometry(openGLGeometryBuilder);
 		openGLGeometryBuilder.enable(aGl);
 
 		aGl.glColor4f(1, 1, 1, 1);
@@ -163,17 +162,12 @@ public class SevenWondersGLRenderer implements Renderer {
 		// to tell if the front is closer or if the inside of a nearby back surface is closer and gets it wrong some
 		// times.
 		aGl.glEnable(GL10.GL_CULL_FACE);
-
-		aGl.glEnable(GL10.GL_DEPTH_TEST);
-
+		aGl.glEnable(GL10.GL_DEPTH_TEST);		
 		aGl.glDisable(GL10.GL_BLEND);
 		aGl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
-
-		aGl.glShadeModel(GL10.GL_SMOOTH);
-
+		aGl.glShadeModel(GL10.GL_SMOOTH);		
 		aGl.glEnable(GL10.GL_LIGHTING);
 		aGl.glLightModelfv(GL10.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.75f, 0.75f, 0.75f, 1f }, 0);
-
 		aGl.glEnable(GL10.GL_LIGHT0);
 		aGl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, new float[] { -1f, 0f, 1f, 0.0f }, 0);
 		aGl.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, new float[] { 0.5f, 0.5f, 0.5f, 1f }, 0);
@@ -264,7 +258,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		terrain.addToGeometry(context, GameTexture.SAND, TERRAIN_DENSITY, anOpenGLGeometryBuilder);
 	}
 
-	private void loadRequiredObj(
+	void loadRequiredObj(
 			final int aObjId,
 			final GeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> aBuilder) {
 		final ObjFileLoader loader;
@@ -276,16 +270,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		loader.createGeometry(aBuilder);
 	}
 
-	private void addCarpetToGeometry(
-			final OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> anOpenGLGeometryBuilder) {
 
-		carpetGeometry = new OpenGLGeometry[CARPET_OBJ_IDS.length];
-		for (int i = 0; i < CARPET_OBJ_IDS.length; i++) {
-			anOpenGLGeometryBuilder.startGeometry();
-			loadRequiredObj(CARPET_OBJ_IDS[i], anOpenGLGeometryBuilder);
-			carpetGeometry[i] = anOpenGLGeometryBuilder.endGeometry();
-		}
-	}
 
 	public void onSurfaceChanged(final GL10 aGl, final int aW, final int aH) {
 		aGl.glMatrixMode(GL10.GL_PROJECTION);
@@ -322,8 +307,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		// XXX Hack to fix the carpet being drawn face down. Should probably change geometry or disable culling for the
 		// carpet instead.
 		aGl.glFrontFace(GL_CW);
-		final int carpetIndex = (int) ((SystemClock.uptimeMillis() % PERIOD_FOR_CARPET_ANIMATION_CYCLE) / (PERIOD_FOR_CARPET_ANIMATION_CYCLE / carpetGeometry.length));
-		carpetGeometry[carpetIndex].draw(aGl);
+		
+		carpet.draw(aGl);
+		
 		aGl.glFrontFace(GL_CCW);
 
 		applyMovement(aGl);
@@ -339,6 +325,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		rendererListener.drawFPS(fPSLogger.frameRendered());
 	}
+
+	
 
 	private void detectCollisions() {
 		float[] carpetBoundingBox = new float[16];
@@ -381,9 +369,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		// XXX Since this is permanent, we could actually alter the geometry instead.
 		aGl.glPushMatrix();
 		aGl.glTranslatef(-100, -25, 0);
-
 		sphinxGeometry.draw(aGl);
-
 		aGl.glPopMatrix();
 		atlasTexture.activateTexture();
 	}
@@ -391,9 +377,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	private void drawPyramid(final GL10 aGl, final int x, final int y, final int z) {
 		aGl.glPushMatrix();
 		aGl.glTranslatef(x, y, z);
-
 		pyramidGeometry.draw(aGl);
-
 		aGl.glPopMatrix();
 	}
 
@@ -408,11 +392,11 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public void turn(float anAngleOfTurn) {
 		playerFacing += anAngleOfTurn;
-	}
+		carpet.recordTurnAngle(anAngleOfTurn);
+    }
 
 	public void setPlayerFacing(float anAngleAbosulte) {
 		playerFacing = anAngleAbosulte;
-
 	}
 
 	public void changeVelocity(float aVelocityIncrement) {
