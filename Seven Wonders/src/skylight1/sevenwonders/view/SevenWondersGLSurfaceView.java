@@ -8,12 +8,24 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 public class SevenWondersGLSurfaceView extends GLSurfaceView {
+	
+	/** 
+	 * The tilt from the horizontal along the y-axis that should produce no 
+	 * speed up or slow down.
+	 */
+	private static final float NO_ACCEL_Y_TILT = 7.5f;
+	
+	/**
+	 * Conversion from roll to velocity. Higher numbers mean faster per amount 
+	 * of roll.
+	 */
+	private static final float ROLL_TO_VELOCITY_FACTOR = 0.5f;
+	
 	protected static final String TAG = SevenWondersGLSurfaceView.class.getName();
 	private SevenWondersGLRenderer renderer;
 	private RendererListener rendererListener;
@@ -42,27 +54,25 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 
 			@Override
 			public void onSensorChanged(SensorEvent event) {
-				long time = android.os.SystemClock.elapsedRealtime();
-
-				if (event.sensor.getType() != SensorManager.SENSOR_ORIENTATION || event.values.length < 3)
+				if (event.sensor.getType() != SensorManager.SENSOR_ORIENTATION 
+						|| event.values.length < 3) {
 					return;
-				
-				float[] values = event.values;
+				}
 
-				final int zero = (int) values[0]; // not needed yet
-				final int one = (int) values[1]; 
-				final float two =  values[2]; // not needed yet
+				// event.values[0] is the azimuth, rotation around the z-aixs
+				final int pitch = (int) event.values[1]; //rotation around x-axis
+				renderer.turn(pitch);	
 				
-				final int turnRate = 1;
-				final int turnAmt = one;
-			
-				renderer.turn(turnAmt *turnRate);			
-				renderer.setVelocity(two * .005f);
-				// TODO fix magic numbers
+				final float roll =  event.values[2]; // rotation around y-axis	
+				final float velocityChange = 
+					(roll - NO_ACCEL_Y_TILT) * ROLL_TO_VELOCITY_FACTOR;
+				renderer.setVelocity(velocityChange);
 			}
 		};
 
-		sensorManager.registerListener(sensorEventListener, sensorManager.getDefaultSensor(SensorManager.SENSOR_ORIENTATION),SensorManager.SENSOR_DELAY_GAME);
+		sensorManager.registerListener(sensorEventListener, 
+			sensorManager.getDefaultSensor(SensorManager.SENSOR_ORIENTATION),
+			SensorManager.SENSOR_DELAY_GAME);
 
 		setDebugFlags(DEBUG_CHECK_GL_ERROR);
 
