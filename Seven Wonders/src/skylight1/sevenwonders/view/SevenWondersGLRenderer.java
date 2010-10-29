@@ -1,15 +1,8 @@
 package skylight1.sevenwonders.view;
 
-import static javax.microedition.khronos.opengles.GL10.GL_BLEND;
-import static javax.microedition.khronos.opengles.GL10.GL_CCW;
-import static javax.microedition.khronos.opengles.GL10.GL_CW;
-import static skylight1.sevenwonders.view.GameTexture.SPELL;
+import static javax.microedition.khronos.opengles.GL10.*;
 
 import java.io.IOException;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -40,17 +33,15 @@ import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
 	
-	
-
 	public static interface ScoreObserver {
 		void observerNewScore(int aNewScore);
 	}
 
+	public static final float MAXIMUM_VELOCITY = 300f * 1000f / 60f / 60f / 1000f;
+
 	private RendererListener rendererListener;
 
 	private static final String TAG = SevenWondersGLRenderer.class.getName();
-
-	public static final float INITIAL_VELOCITY = 35f * 1000f / 60f / 60f / 1000f;
 
 	private static final float HEIGHT_OF_CARPET_FROM_GROUND = 12f;
 
@@ -60,12 +51,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final int TERRAIN_DENSITY = 25;
 
-
-
-	private static final float MINIMUM_VELOCITY = -INITIAL_VELOCITY / 10f;
-
-	private static final float MAXIMUM_VELOCITY = INITIAL_VELOCITY * 3f;
-
+	private static final float MINIMUM_VELOCITY = -MAXIMUM_VELOCITY / 10f;
+	
 	private static final int NUMBER_OF_SPELLS = 10;
 
 	private static final int NUMBER_OF_SPELL_ANIMATION_FRAMES = 32;
@@ -101,7 +88,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	 * private float angYaw; private float angPitch; private float angRoll;
 	 */
 
-	private float velocity = INITIAL_VELOCITY;
+	private float velocity;
 
 	/*
 	 * private float velocityX = INITIAL_VELOCITY; private float velocityY = 0; private float velocityZ = 0;
@@ -405,6 +392,31 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public void setVelocity(float aVelocity) {
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, aVelocity));
+	}
+
+	/**
+	 * Sets the player's velocity via a percentage of the maximum velocity.
+	 * This prevents calling code from having to understand the actual velocity 
+	 * maximum when calculating a new velocity to set due to the player 
+	 * using the controls.
+	 * 
+	 * @param aPercent float percent from -1 to 1
+	 */
+	public void setVelocityPercent(final float aPercent) {
+		final float newVelocity = aPercent < 0 ? MINIMUM_VELOCITY * aPercent :
+			MAXIMUM_VELOCITY * aPercent;
+		velocity = constrainVelocity(newVelocity);
+	}
+	
+	/**
+	 * Constrains a candidate velocity to an allowed velocity range.
+	 * @param aCandidateVelocity float candidate velocity in meters per second
+	 * @return allowable velocity
+	 */
+	private float constrainVelocity(final float aCandidateVelocity) {
+		return aCandidateVelocity < MINIMUM_VELOCITY ? MINIMUM_VELOCITY : 
+				aCandidateVelocity > MAXIMUM_VELOCITY ? MAXIMUM_VELOCITY : 
+						aCandidateVelocity;
 	}
 
 	public void setRendererListener(RendererListener rendererListener2) {
