@@ -121,8 +121,8 @@ public class SoundTracks
 			for(int i = 0; i < soundIds.length; i++) {
 				soundPool.stop(streamIds[i]);
 			}
-	    	release();
     	}
+    	release();
     }
 
     // for now this is just for 1st soundtrack
