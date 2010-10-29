@@ -36,8 +36,8 @@ public class Carpet {
 			this.value = value;
 		}
 
-		public long createdHowManyMillisAgo() {
-			return SystemClock.uptimeMillis() - time;
+		public long createdHowManyMillisAgo(final long aGivenTime) {
+			return aGivenTime - time;
 		}
 
 		public void setValues(long time, float value) {
@@ -102,17 +102,18 @@ public class Carpet {
 	public float getRollAngle() {
 			float angle = 0;			
 			synchronized (this) {
+				final long timeOfMostRecentEvent = turnEventsHistory.getLast().time;
 				final Iterator<TimestampedFloat> iterator = turnEventsHistory.iterator();
 				while (iterator.hasNext()) {
 					TimestampedFloat v = iterator.next();
-					long millisSinceCreation = v.createdHowManyMillisAgo();					
+					long millisSinceCreation = v.createdHowManyMillisAgo(timeOfMostRecentEvent);					
 					if (millisSinceCreation > 0 && millisSinceCreation <  TIMESPAN_IN_MILLIS_TO_CONSIDER_FOR_CARPET_ROLLING ) {
 						float fractionOfWindow = (float) millisSinceCreation / TIMESPAN_IN_MILLIS_TO_CONSIDER_FOR_CARPET_ROLLING;
 						angle += v.value * (1f-fractionOfWindow); 
 					}
 				}
 			}
-			angle = -1*angle;
+			angle = -1.0f*angle;
 			priorTolastAngle = lastAngle; 
 			angle = (lastAngle+angle+priorTolastAngle)/3;
 			lastAngle = angle;
