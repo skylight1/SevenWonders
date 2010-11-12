@@ -7,35 +7,23 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-public class MenuActivity extends Activity implements OnClickListener{ 
+public class MenuActivity extends Activity {
 
-		public void onCreate(final Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
+	private static final String TAG = MenuActivity.class.getName();
 
-			Log.i("seven wonders menu activity", "started");
-			setContentView(R.layout.menu);
-			View button = findViewById(R.id.EnterEgypt);
-			button.setOnClickListener(this);
-		}
-		@Override
-		protected void onResume() {
-			super.onResume();
-		}
+	@Override
+	public void onCreate(final Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-		@Override
-		protected void onDestroy() {
-			super.onPause();
-		}
-		@Override
-		public void onClick(View arg0) {
-			
-			Intent gameActivity = new Intent(this, SevenWondersActivity.class);
-			this.startActivity(gameActivity);
-		}
-
-		@Override
-		protected void onPause() {
-			super.onPause();
-		}
+		Log.i(TAG, "started");
+		setContentView(R.layout.menu);
+		final View button = findViewById(R.id.EnterEgypt);
+		button.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View aV) {
+				final Intent gameActivity = new Intent(MenuActivity.this, SevenWondersActivity.class);
+				startActivity(gameActivity);
+			}
+		});
 	}
-
+}
