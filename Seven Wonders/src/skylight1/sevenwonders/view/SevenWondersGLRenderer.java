@@ -1,6 +1,7 @@
 package skylight1.sevenwonders.view;
 
-import static javax.microedition.khronos.opengles.GL10.*;
+import static javax.microedition.khronos.opengles.GL10.GL_CCW;
+import static javax.microedition.khronos.opengles.GL10.GL_CW;
 
 import java.io.IOException;
 
@@ -32,7 +33,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
-	
+
 	public static interface ScoreObserver {
 		void observerNewScore(int aNewScore);
 	}
@@ -52,7 +53,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	private static final int TERRAIN_DENSITY = 25;
 
 	private static final float MINIMUM_VELOCITY = -MAXIMUM_VELOCITY / 10f;
-	
+
 	private static final int NUMBER_OF_SPELLS = 10;
 
 	private static final int NUMBER_OF_SPELL_ANIMATION_FRAMES = 32;
@@ -69,7 +70,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private FPSLogger fPSLogger = new FPSLogger(SevenWondersGLRenderer.class.getName(), FRAMES_BETWEEN_LOGGING_FPS);
 
-	private OpenGLGeometry worldGeometry;	
+	private OpenGLGeometry worldGeometry;
 
 	private OpenGLGeometry[] allSpellsGeometry = new OpenGLGeometry[NUMBER_OF_SPELL_ANIMATION_FRAMES];
 
@@ -95,13 +96,15 @@ public class SevenWondersGLRenderer implements Renderer {
 	 */
 	private long timeAtLastOnRenderCall;
 
-	private CollisionDetector collisionDetector;
+	private final CollisionDetector collisionDetector = new CollisionDetector();
 
 	private int score;
 
 	private ScoreObserver scoreObserver;
 
 	private Carpet carpet;
+
+	private OpenGLGeometry[] pyramidGeometries = new OpenGLGeometry[3];
 
 	public SevenWondersGLRenderer(Context aContext, ScoreObserver aScoreObserver) {
 		context = aContext;
@@ -133,11 +136,12 @@ public class SevenWondersGLRenderer implements Renderer {
 		sphinxGeometry = openGLGeometryBuilder.endGeometry();
 
 		openGLGeometryBuilder.startGeometry();
-		// loadRequiredObj(R.raw.pyramid, transformingGeometryBuilder);
-		loadRequiredObj(R.raw.pyramid, openGLGeometryBuilder);
+		pyramidGeometries [0] = addPyramid(openGLGeometryBuilder, 90, 0, 5);
+		pyramidGeometries[1] = addPyramid(openGLGeometryBuilder, 255, 0, -2);
+		pyramidGeometries[2] = addPyramid(openGLGeometryBuilder, -320, -7, 100);
 		pyramidGeometry = openGLGeometryBuilder.endGeometry();
-
-		addSpellsToGeometry(openGLGeometryBuilder);				
+		
+		addSpellsToGeometry(openGLGeometryBuilder);
 		carpet.createGeometry(openGLGeometryBuilder);
 		openGLGeometryBuilder.enable(aGl);
 
@@ -149,10 +153,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		// to tell if the front is closer or if the inside of a nearby back surface is closer and gets it wrong some
 		// times.
 		aGl.glEnable(GL10.GL_CULL_FACE);
-		aGl.glEnable(GL10.GL_DEPTH_TEST);		
+		aGl.glEnable(GL10.GL_DEPTH_TEST);
 		aGl.glDisable(GL10.GL_BLEND);
 		aGl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		aGl.glShadeModel(GL10.GL_SMOOTH);		
+		aGl.glShadeModel(GL10.GL_SMOOTH);
 		aGl.glEnable(GL10.GL_LIGHTING);
 		aGl.glLightModelfv(GL10.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.75f, 0.75f, 0.75f, 1f }, 0);
 		aGl.glEnable(GL10.GL_LIGHT0);
@@ -165,9 +169,23 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, new float[] { 50.0f }, 0);
 	}
 
+	private OpenGLGeometry addPyramid(
+			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder,
+			final float x, final float y, final float z) {
+		float[] pyramidCoordinateTransform = new float[16];
+		Matrix.setIdentityM(pyramidCoordinateTransform, 0);
+		Matrix.translateM(pyramidCoordinateTransform, 0, x, y, z);
+		float[] pyramidTextureTransform = new float[16];
+		Matrix.setIdentityM(pyramidTextureTransform, 0);
+
+		openGLGeometryBuilder.startGeometry();
+		TransformingGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> pyramidTransformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, pyramidCoordinateTransform, pyramidTextureTransform);
+		loadRequiredObj(R.raw.pyramid, pyramidTransformingGeometryBuilder);
+		return openGLGeometryBuilder.endGeometry();
+	}
+
 	private void addSpellsToGeometry(
 			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder) {
-		collisionDetector = new CollisionDetector();
 
 		final ObjFileLoader fileLoader;
 		try {
@@ -207,7 +225,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		// add to collision detector
 		for (int spellIndex = 0; spellIndex < NUMBER_OF_SPELLS; spellIndex++) {
 			final int finalSpellIndex = spellIndex;
-			
+
 			collisionDetector.addGeometry(spellGeometries[0][spellIndex], new CollisionObserver() {
 				@Override
 				public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
@@ -232,7 +250,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		// create a fast geometry that is out of sight
 		somewhereFarFarAway = FastGeometryBuilderFactory.createTexturableNormalizable(spellGeometries[0][0]);
-		// TODO there has to be a better way to make a correctly sized geometry, than to know it has 60 quads = 120 triangles
+		// TODO there has to be a better way to make a correctly sized geometry, than to know it has 60 quads = 120
+		// triangles
 		for (int silly = 0; silly < 60 * 2; silly++) {
 			somewhereFarFarAway.add3DTriangle(0, 0, -100, 0, 0, -100, 0, 0, -100);
 		}
@@ -256,8 +275,6 @@ public class SevenWondersGLRenderer implements Renderer {
 		}
 		loader.createGeometry(aBuilder);
 	}
-
-
 
 	public void onSurfaceChanged(final GL10 aGl, final int aW, final int aH) {
 		aGl.glMatrixMode(GL10.GL_PROJECTION);
@@ -294,9 +311,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		// XXX Hack to fix the carpet being drawn face down. Should probably change geometry or disable culling for the
 		// carpet instead.
 		aGl.glFrontFace(GL_CW);
-		
+
 		carpet.draw(aGl);
-		
+
 		aGl.glFrontFace(GL_CCW);
 
 		applyMovement(aGl);
@@ -305,15 +322,11 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		worldGeometry.draw(aGl);
 		drawSphinx(aGl);
-		drawPyramid(aGl, 90, 0, 5);
-		drawPyramid(aGl, 255, 0, -2);
-		drawPyramid(aGl, -320, -7, 100);
+		drawPyramid(aGl);
 		drawSpell(aGl);
 
 		rendererListener.drawFPS(fPSLogger.frameRendered());
 	}
-
-	
 
 	private void detectCollisions() {
 		float[] carpetBoundingBox = new float[16];
@@ -361,15 +374,13 @@ public class SevenWondersGLRenderer implements Renderer {
 		atlasTexture.activateTexture();
 	}
 
-	private void drawPyramid(final GL10 aGl, final int x, final int y, final int z) {
-		aGl.glPushMatrix();
-		aGl.glTranslatef(x, y, z);
+	private void drawPyramid(final GL10 aGl) {
 		pyramidGeometry.draw(aGl);
-		aGl.glPopMatrix();
 	}
 
 	private void drawSpell(final GL10 aGl) {
-		final int spellAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPELL_ANIMATION_CYCLE) / (float) PERIOD_FOR_SPELL_ANIMATION_CYCLE * (float) NUMBER_OF_SPELL_ANIMATION_FRAMES);
+		final int spellAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPELL_ANIMATION_CYCLE)
+				/ (float) PERIOD_FOR_SPELL_ANIMATION_CYCLE * (float) NUMBER_OF_SPELL_ANIMATION_FRAMES);
 		allSpellsGeometry[spellAnimationIndex].draw(aGl);
 	}
 
@@ -380,7 +391,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	public void turn(float anAngleOfTurn) {
 		playerFacing += anAngleOfTurn;
 		carpet.recordTurnAngle(anAngleOfTurn);
-    }
+	}
 
 	public void setPlayerFacing(float anAngleAbosulte) {
 		playerFacing = anAngleAbosulte;
@@ -395,28 +406,28 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	/**
-	 * Sets the player's velocity via a percentage of the maximum velocity.
-	 * This prevents calling code from having to understand the actual velocity 
-	 * maximum when calculating a new velocity to set due to the player 
-	 * using the controls.
+	 * Sets the player's velocity via a percentage of the maximum velocity. This prevents calling code from having to
+	 * understand the actual velocity maximum when calculating a new velocity to set due to the player using the
+	 * controls.
 	 * 
-	 * @param aPercent float percent from -1 to 1
+	 * @param aPercent
+	 *            float percent from -1 to 1
 	 */
 	public void setVelocityPercent(final float aPercent) {
-		final float newVelocity = aPercent < 0 ? MINIMUM_VELOCITY * aPercent :
-			MAXIMUM_VELOCITY * aPercent;
+		final float newVelocity = aPercent < 0 ? MINIMUM_VELOCITY * aPercent : MAXIMUM_VELOCITY * aPercent;
 		velocity = constrainVelocity(newVelocity);
 	}
-	
+
 	/**
 	 * Constrains a candidate velocity to an allowed velocity range.
-	 * @param aCandidateVelocity float candidate velocity in meters per second
+	 * 
+	 * @param aCandidateVelocity
+	 *            float candidate velocity in meters per second
 	 * @return allowable velocity
 	 */
 	private float constrainVelocity(final float aCandidateVelocity) {
-		return aCandidateVelocity < MINIMUM_VELOCITY ? MINIMUM_VELOCITY : 
-				aCandidateVelocity > MAXIMUM_VELOCITY ? MAXIMUM_VELOCITY : 
-						aCandidateVelocity;
+		return aCandidateVelocity < MINIMUM_VELOCITY ? MINIMUM_VELOCITY
+				: aCandidateVelocity > MAXIMUM_VELOCITY ? MAXIMUM_VELOCITY : aCandidateVelocity;
 	}
 
 	public void setRendererListener(RendererListener rendererListener2) {
