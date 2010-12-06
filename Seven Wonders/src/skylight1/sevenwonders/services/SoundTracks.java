@@ -14,15 +14,17 @@ public class SoundTracks
 	public static final int SOUNDTRACK = 0;
 	public static final int WIND = 1;
 	public static final int SPELL = 2;
-
-	//todo: use a map? not yet...
-	private final int SOUNDPOOL_STREAMS = 3;
+	public static final int BUMP = 3;
 
 	private final int soundResources[] = {
-			R.raw.soundtrack,
-			R.raw.wind,
-			R.raw.spell
+			R.raw.soundtrack, //loops
+			R.raw.wind, //loops
+			R.raw.spell,
+			R.raw.bump
 			};
+
+	private final int SOUNDPOOL_STREAMS = soundResources.length;
+	private final int SOUNDPOOL_LOOPS = 2;
 
 	private int soundIds[]  = new int[SOUNDPOOL_STREAMS];
 	private int streamIds[] = new int[SOUNDPOOL_STREAMS];
@@ -66,9 +68,11 @@ public class SoundTracks
     	new Thread(new Runnable() {
         	public void run() {
         		if(soundPool==null) {
-        			Log.i(TAG,"sound init: soundPool is null!");
+        			Log.w(TAG,"sound init: soundPool is null!");
         			return;
         		}
+    			Log.d(TAG,"sound init: loading all sounds");
+
 				// "load" tracks (play actually loads into memory) then play at no volume and pause streams
 	    		for (int i = 0; i < SOUNDPOOL_STREAMS; i++) {
 	    			soundIds[i]  =  soundPool.load(context, soundResources[i], 1);
@@ -77,24 +81,24 @@ public class SoundTracks
 
 	    		// except do play the first soundtrack with volume (looped)
     			while(streamIds[SOUNDTRACK]==0 && running) {
-    				try { Thread.sleep(300); } catch(InterruptedException e) { } //TODO optimize this wait
+    				try { Thread.sleep(200); } catch(InterruptedException e) { } //TODO optimize this wait
 					streamIds[SOUNDTRACK] =  soundPool.play(soundIds[SOUNDTRACK], 1.0f*streamVolume, 1.0f*streamVolume, 0, -1, 1f);
     			}
 
 	    		//play (load / get streamids) for rest of streams - ready to resume
-	            for (int i = WIND; i < SOUNDPOOL_STREAMS; i++) {
+/*	            for (int i = SOUNDPOOL_LOOPS-1; i < SOUNDPOOL_STREAMS; i++) {
 	    			while(streamIds[i]==0 && running) {
 	    				try { Thread.sleep(200); } catch(InterruptedException e) { } //TODO optimize
-	    				if(i>WIND) { // don't loop non soundtrack sounds
+	    				if(i>=SOUNDPOOL_LOOPS) { // don't loop non soundtrack sounds
 	    					streamIds[i] =  soundPool.play(soundIds[i], 0f, 0f, 1, 0, 1f);  // no loop
 	    				} else {
 	    					streamIds[i] =  soundPool.play(soundIds[i], 0f, 0f, 1, -1, 1f); // loop
 	    				}
 	    			}
     				soundPool.pause(streamIds[i]);
-    				Log.i(TAG, "paused stream "+i);
+    				Log.d(TAG, "paused stream "+i);
 	    		}
-
+*/
 	    		initCompleted=true;
             	Log.i(TAG, "all sounds loaded");
         	}
@@ -113,10 +117,13 @@ public class SoundTracks
     	if(soundPool != null && initCompleted) {
         	running = false;
         	context = null;
-			for(int i = 0; i <= WIND; i++) { // stop looping sounds (only 2 for now)
+			for(int i = 0; i <= SOUNDPOOL_LOOPS; i++) { // stop looping sounds
 				soundPool.setLoop(streamIds[i], 0);
 			}
+			
+			//fade out last loop
 			fadeout();
+			
 			// stop all sounds
 			for(int i = 0; i < soundIds.length; i++) {
 				soundPool.stop(streamIds[i]);
@@ -133,29 +140,32 @@ public class SoundTracks
 		soundPool.setLoop(track, 0);
     	Thread fadeThread = new Thread( new Runnable() {
 	    	public void run() {
-				for (float f = 1.0f; f >= 0.0f; f-=0.002f) {
-					try {Thread.sleep(10);} catch(InterruptedException ioe) { }
+				for (float f = 1.0f; f > 0.0f; f-=0.05f) {
+					try {Thread.sleep(100);} catch(InterruptedException ioe) { }
 					if(soundPool!=null) {
 						soundPool.setVolume(streamIds[track], f*streamVolume, f*streamVolume);
 					} else {
-						Log.i(TAG,"soundPool is null while fading out "+track);
+						Log.d(TAG,"soundPool is null while fading out "+track);
 						return;
 					}
 				}
 				if(soundPool!=null) {
-					soundPool.stop(track);
+					Log.d(TAG,"soundPool stopping and unloading soundtrack");					
+					soundPool.stop(streamIds[track]);
+		    		soundPool.unload(streamIds[track]);
 				} else {
 					Log.i(TAG,"soundPool is null while stopping "+track);
 					return;
 				}
 			}
     	});
-    	fadeThread.start();
     	if(track==SOUNDTRACK) {
-    		Log.i(TAG, "soundtack fading out, resume wind");
-    		soundPool.setVolume(streamIds[WIND], 1.0f*streamVolume, 1.0f*streamVolume);
-    		resume(WIND,-1);
+    		Log.d(TAG, "starting wind");
+    		//soundPool.setVolume(streamIds[WIND], 1.0f*streamVolume, 1.0f*streamVolume);
+    		//resume(WIND,-1);
+    		play(WIND,-1);
     	}
+    	fadeThread.start();
     }
     public void fadeout() {
     	if(soundPool==null || !initCompleted || paused) {
@@ -163,9 +173,9 @@ public class SoundTracks
     	}
     	Thread fadeThread = new Thread( new Runnable() {
 	    	public void run() {
-				for (float f = 1.0f; f >= 0.0f; f-=0.005f) {
-					for(int i = 0; i < soundIds.length; i++) {
-						try { Thread.sleep(10); } catch(InterruptedException e) { }
+				for (float f = 1.0f; f >= 0.0f; f-=0.1f) {
+					for(int i = 0; i < SOUNDPOOL_LOOPS; i++) {
+						try { Thread.sleep(100); } catch(InterruptedException e) { }
 						if(soundPool!=null) {
 							soundPool.setVolume(streamIds[i], f*streamVolume, f*streamVolume);
 						} else {
@@ -201,7 +211,7 @@ public class SoundTracks
     	}
     }
     public void resume(final int track, final int repeats) {
-    	if(soundPool!=null && initCompleted && paused) {
+    	if(soundPool!=null && initCompleted && !paused) {
     		soundPool.setLoop(streamIds[track], repeats);
     		soundPool.resume(streamIds[track]);
     	}
