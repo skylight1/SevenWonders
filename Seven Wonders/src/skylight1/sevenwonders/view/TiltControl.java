@@ -26,7 +26,7 @@ public class TiltControl {
 	 * the carpet without fully tilting the phone to vertical, which 
 	 * makes the screen tough to read.
 	 */
-	private static final int MINIMUM_ROLL_TO_MOVE_DEGREES = 45;
+	private static final int MINIMUM_ROLL_TO_MOVE_DEGREES = 25;
 
 	/**
 	 * Value to start inverting the roll from. The phone's roll goes down
