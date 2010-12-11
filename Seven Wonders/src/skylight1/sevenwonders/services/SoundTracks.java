@@ -15,12 +15,14 @@ public class SoundTracks
 	public static final int WIND = 1;
 	public static final int SPELL = 2;
 	public static final int BUMP = 3;
+	public static final int DEATH = 4;
 
 	private final int soundResources[] = {
 			R.raw.soundtrack, //loops
 			R.raw.wind, //loops
 			R.raw.spell,
-			R.raw.bump
+			R.raw.bump,
+			R.raw.death
 			};
 
 	private final int SOUNDPOOL_STREAMS = soundResources.length;
