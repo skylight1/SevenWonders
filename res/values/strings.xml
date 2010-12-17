@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, SevenWondersActivity!</string>
+    <string name="app_name">Seven Wonders</string>
+<string name="playAgain">Play Again</string>
+<string name="yourScore">Your Score</string>
+<string name="StartEgypt">Enter</string>
+</resources>
