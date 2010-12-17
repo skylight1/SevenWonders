@@ -34,6 +34,8 @@ import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
 
+	private static final int WORLD_SPELL_MARGIN = 200;
+
 	public static interface ScoreObserver {
 		void observerNewScore(int aNewScore);
 	}
@@ -54,7 +56,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final float MINIMUM_VELOCITY = -MAXIMUM_VELOCITY / 10f;
 
-	private static final int NUMBER_OF_SPELLS = 10;
+	private static final int NUMBER_OF_SPELLS = 20;
 
 	private static final int NUMBER_OF_SPELL_ANIMATION_FRAMES = 32;
 
@@ -103,7 +105,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	private ScoreObserver scoreObserver;
 
 	private Carpet carpet;
-
+		
 	private OpenGLGeometry[] pyramidGeometries = new OpenGLGeometry[3];
 
 	public SevenWondersGLRenderer(Context aContext, ScoreObserver aScoreObserver) {
@@ -194,6 +196,18 @@ public class SevenWondersGLRenderer implements Renderer {
 			throw new RuntimeException(e);
 		}
 
+		// create random locations for the spells
+		final float[] randomX = new float[NUMBER_OF_SPELLS];
+		final float[] randomZ = new float[NUMBER_OF_SPELLS];
+		final float minX1 = (CubeBounds.TERRAIN.x1 + WORLD_SPELL_MARGIN);
+		final float minX2 = (CubeBounds.TERRAIN.x2 - WORLD_SPELL_MARGIN);
+		final float minZ1 = (CubeBounds.TERRAIN.z1 + WORLD_SPELL_MARGIN);
+		final float minZ2 = (CubeBounds.TERRAIN.z2 - WORLD_SPELL_MARGIN);
+		for (int spellIndex = 0; spellIndex < NUMBER_OF_SPELLS; spellIndex++) {
+			randomX[spellIndex] = minX1 + (float)(Math.random() * ((minX2 - minX1) + 1));	
+			randomZ[spellIndex] = minZ1 + (float)(Math.random() * ((minZ2 - minZ1) + 1));	
+		}
+		
 		// the texture is within the main texture, so it needs a little transformation to map onto the spell
 		float[] textureTransform = new float[16];
 		Matrix.setIdentityM(textureTransform, 0);
@@ -208,7 +222,10 @@ public class SevenWondersGLRenderer implements Renderer {
 			for (int spellIndex = 0; spellIndex < NUMBER_OF_SPELLS; spellIndex++) {
 				openGLGeometryBuilder.startGeometry();
 				Matrix.setIdentityM(coordinateTransform, 0);
-				Matrix.translateM(coordinateTransform, 0, -25, HEIGHT_OF_CARPET_FROM_GROUND - 1, 25 - spellIndex * 25);
+				//Ankh have to be placed randomly - using CubeBounds for the width of the world
+				
+				Matrix.translateM(coordinateTransform, 0, randomX[spellIndex], HEIGHT_OF_CARPET_FROM_GROUND - 1, randomZ[spellIndex]); 
+					//randomX[spellIndex] - spellIndex * randomX[spellIndex]);
 				Matrix.rotateM(coordinateTransform, 0, 360f * (float) spellAnimationIndex
 						/ (float) NUMBER_OF_SPELL_ANIMATION_FRAMES, 0, 1, 0);
 				// this final rotate is to "stand up" the ankh
