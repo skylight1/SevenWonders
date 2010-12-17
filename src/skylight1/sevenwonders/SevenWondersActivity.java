@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -31,6 +33,8 @@ public class SevenWondersActivity extends Activity {
 	
 	static final String KEY_SCORE_EXTRA = "SCORE";
 	static final int COLLECTED_OBJECTS_GOAL = 10;
+	
+	static final private int MENU_ITEM = Menu.FIRST;
 
 	//Handler to remove splash screen
     private Handler splashHandler = new Handler() {
@@ -145,6 +149,49 @@ public class SevenWondersActivity extends Activity {
 		countdownView = (TextView) findViewById(R.id.Countdown);
 		debugView = (TextView) findViewById(R.id.FPS);
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		
+		// Create an options menu so that the user can get to the
+		// "About 7 Wonders" screen.
+		
+		// Group ID
+		int groupId = 0;
+		
+		// Unique menu item identifier, used for event handling
+		int menuItemId = MENU_ITEM;
+		
+		// The order position of the item
+		int menuItemOrder = Menu.NONE;
+		
+		// The text to be displayed for this menu item
+		int menuItemText = R.string.menu_item;
+		
+		// Create the menu item and keep a reference to it
+		MenuItem menuItem = menu.add(groupId, menuItemId, menuItemOrder, menuItemText);
+		
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		
+		switch (item.getItemId()) {
+			case (MENU_ITEM):
+				// Perform menu handler actions here - 
+				// call the About 7 Wonders activity
+				 Intent intent = new Intent(this, About7WondersActivity.class);
+				 startActivity(intent);
+				return true;
+		}
+		
+		// return false if you have not handled the menu item
+		return false;
+	}
+	
 	
     @Override
     protected void onPause() {

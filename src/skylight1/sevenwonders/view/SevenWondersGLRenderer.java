@@ -53,10 +53,10 @@ public class SevenWondersGLRenderer implements Renderer {
 	private static final int TERRAIN_MAP_RESOURCE = R.raw.terrain_dunes;
 
 	private static final int TERRAIN_DENSITY = 25;
-
 	private static final float MINIMUM_VELOCITY = -MAXIMUM_VELOCITY / 10f;
+	
 
-	private static final int NUMBER_OF_SPELLS = 20;
+	private static final int NUMBER_OF_SPELLS = 10;
 
 	private static final int NUMBER_OF_SPELL_ANIMATION_FRAMES = 32;
 
