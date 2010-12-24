@@ -83,10 +83,9 @@ public class SevenWondersActivity extends Activity {
 
 		Log.i(TAG,"onCreate()");
 
-		SoundTracks.setEnabled(true);
-
+		SoundTracks.setEnabled(getIntent().getBooleanExtra("ENABLESOUND", true));
 		SoundTracks soundTrack = SoundTracks.getInstance();
-		soundTrack.init(getApplicationContext());
+		soundTrack.init(getApplicationContext());		
 
 		if(gLSurfaceView==null) {
 			gLSurfaceView = new SevenWondersGLSurfaceView(this, new RendererListener() {
