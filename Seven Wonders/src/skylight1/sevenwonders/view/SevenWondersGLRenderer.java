@@ -35,6 +35,7 @@ import android.util.Log;
 public class SevenWondersGLRenderer implements Renderer {
 
 	private static final int WORLD_SPELL_MARGIN = 200;
+	private static final int END_OF_WORLD_MARGIN = 100;
 
 	public static interface ScoreObserver {
 		void observerNewScore(int aNewScore);
@@ -362,9 +363,23 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		final float facingX = (float) Math.sin(playerFacing / 180f * Math.PI);
 		final float facingZ = -(float) Math.cos(playerFacing / 180f * Math.PI);
-		playerWorldPosition.x += facingX * velocity * timeDeltaMS;
-		playerWorldPosition.z += facingZ * velocity * timeDeltaMS;
-
+		
+		final float newPositionX = playerWorldPosition.x + facingX * velocity * timeDeltaMS;
+		final float newPositionZ = playerWorldPosition.z + facingZ * velocity * timeDeltaMS;
+		
+		//TODO: CHECK FOR END OF WORLD
+		if(newPositionX > (CubeBounds.TERRAIN.x1 + END_OF_WORLD_MARGIN)&&
+			newPositionX < (CubeBounds.TERRAIN.x2 - END_OF_WORLD_MARGIN)){
+			//playerWorldPosition.x += facingX * velocity * timeDeltaMS;
+			playerWorldPosition.x = newPositionX;
+		}
+		
+		if(	newPositionZ > (CubeBounds.TERRAIN.z1 + END_OF_WORLD_MARGIN) &&
+			newPositionZ < (CubeBounds.TERRAIN.z2 - END_OF_WORLD_MARGIN)){
+			//playerWorldPosition.z += facingZ * velocity * timeDeltaMS;
+			playerWorldPosition.z = newPositionZ;
+		}
+		
 		GLU.gluLookAt(aGl, playerWorldPosition.x, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z, playerWorldPosition.x
 				+ facingX, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z + facingZ, 0f, 1f, 0f);
 	}
