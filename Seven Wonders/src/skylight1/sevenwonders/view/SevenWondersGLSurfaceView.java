@@ -3,6 +3,7 @@ package skylight1.sevenwonders.view;
 import skylight1.sevenwonders.view.SevenWondersGLRenderer.ScoreObserver;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -20,14 +21,15 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	private final TiltControl tiltControl;
 	
 	public SevenWondersGLSurfaceView(final Context aContext, 
-			final RendererListener aListener, final ScoreObserver aScoreObserver) {
+			final RendererListener aListener, final ScoreObserver aScoreObserver,
+			final Handler aEndGameHandler) {
 		super(aContext);
 		rendererListener = aListener;
 		scoreObserver = aScoreObserver;
 
 		setDebugFlags(DEBUG_CHECK_GL_ERROR);
 	
-		renderer = new SevenWondersGLRenderer(aContext, scoreObserver);
+		renderer = new SevenWondersGLRenderer(aContext, scoreObserver, aEndGameHandler);
 		renderer.setRendererListener(rendererListener);
 		setRenderer(renderer);
 		tiltControl = new TiltControl(aContext, renderer);

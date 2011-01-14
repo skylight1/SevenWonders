@@ -46,6 +46,13 @@ public class SevenWondersActivity extends Activity {
     		}
     	}
     };
+    
+    private Handler endGameHandler = new Handler() {
+    	public void handleMessage(Message msg) {
+    		finish();
+    	}
+    };
+    
 	private TextView countdownView;
 
 	private long countdownStartTime;
@@ -118,7 +125,7 @@ public class SevenWondersActivity extends Activity {
 							TextView scoreTextView = (TextView) findViewById(R.id.Score);
 							scoreTextView.setText(""+ aNewScore);
 						}});
-				}});
+				}}, endGameHandler);
 		}
 
 //		setContentView(gLSurfaceView);

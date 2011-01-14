@@ -29,6 +29,7 @@ import android.content.Context;
 import android.opengl.GLU;
 import android.opengl.Matrix;
 import android.opengl.GLSurfaceView.Renderer;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -110,11 +111,14 @@ public class SevenWondersGLRenderer implements Renderer {
 	private Carpet carpet;
 		
 	private OpenGLGeometry[] pyramidGeometries = new OpenGLGeometry[3];
+	
+	private Handler endGameHandler;
 
-	public SevenWondersGLRenderer(Context aContext, ScoreObserver aScoreObserver) {
+	public SevenWondersGLRenderer(Context aContext, ScoreObserver aScoreObserver, Handler aEndGameHandler) {
 		context = aContext;
 		scoreObserver = aScoreObserver;
 		carpet = new Carpet(this);
+		endGameHandler = aEndGameHandler;
 	}
 
 	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
@@ -247,9 +251,8 @@ public class SevenWondersGLRenderer implements Renderer {
 		collisionDetector.addGeometry(swordGeometries[0], new CollisionObserver() {
 			@Override
 			public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
-				Log.i(SevenWondersGLRenderer.class.getName(), String.format("collided with " + anOpenGLGeometry));
-
-				// TODO make user restart level
+				Log.i(SevenWondersGLRenderer.class.getName(), String.format("Player hit a sword!"));
+				endGameHandler.sendEmptyMessage(0);
 			}
 		});
 	}
