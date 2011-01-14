@@ -58,7 +58,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final float MINIMUM_VELOCITY = -MAXIMUM_VELOCITY / 10f;
 
-	private static final int NUMBER_OF_SPELLS = 10;
+	private static final int NUMBER_OF_SPELLS = 5;
 
 	private static final int NUMBER_OF_SPINNING_ANIMATION_FRAMES = 16;
 
@@ -124,12 +124,13 @@ public class SevenWondersGLRenderer implements Renderer {
 	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
 		Log.i(TAG, "- onSurfaceCreated - ");
 
-		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(100000);
+		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable();
 
 		// Add ground and pyramid to a single drawable geometry for the world.
 		openGLGeometryBuilder.startGeometry();
-//		loadRequiredObj(R.raw.ground, openGLGeometryBuilder);
-		addGroundToGeometry(openGLGeometryBuilder);
+		loadRequiredObj(R.raw.ground, openGLGeometryBuilder);
+
+//		addGroundToGeometry(openGLGeometryBuilder);
 
 		worldGeometry = openGLGeometryBuilder.endGeometry();
 
