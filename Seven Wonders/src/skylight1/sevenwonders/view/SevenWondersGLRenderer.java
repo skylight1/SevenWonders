@@ -127,9 +127,8 @@ public class SevenWondersGLRenderer implements Renderer {
 		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(100000);
 
 		// Add ground and pyramid to a single drawable geometry for the world.
-//		loadRequiredObj(R.raw.ground, openGLGeometryBuilder);
 		openGLGeometryBuilder.startGeometry();
-
+//		loadRequiredObj(R.raw.ground, openGLGeometryBuilder);
 		addGroundToGeometry(openGLGeometryBuilder);
 
 		worldGeometry = openGLGeometryBuilder.endGeometry();
