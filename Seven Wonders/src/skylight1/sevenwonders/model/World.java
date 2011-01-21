@@ -107,7 +107,7 @@ public class World {
 	private void addGroundToGeometry(final Context aContext, 
 			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> anOpenGLGeometryBuilder) {
 
-		final Terrain terrain = new Terrain(TERRAIN_MAP_RESOURCE, CubeBounds.TERRAIN);
+		final Terrain terrain = new Terrain(TERRAIN_MAP_RESOURCE, Cube.TERRAIN);
 		terrain.addToGeometry(aContext, GameTexture.SAND, TERRAIN_DENSITY, anOpenGLGeometryBuilder);
 	}
 
@@ -118,7 +118,9 @@ public class World {
 		} catch (IOException e) {
 			throw new RuntimeException("Error loading required geometry from OBJ file:" + aObjId, e);
 		}		
-		return loader.createGeometry(aBuilder);		
+		aBuilder.startGeometry();
+		loader.createGeometry(aBuilder);		
+		return aBuilder.endGeometry();
 	}
 	
 	private void addCarpetToGeometry(final Context aContext, 

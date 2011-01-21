@@ -4,7 +4,7 @@
 	android:versionName="1.0">
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
 		android:debuggable="false" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
-		<activity android:name=".activity.SevenWondersActivity" android:label="@string/app_name"
+		<activity android:name=".activity.Play" android:label="@string/app_name"
 			android:screenOrientation="landscape" android:configChanges="keyboard|keyboardHidden|orientation">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />

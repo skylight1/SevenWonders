@@ -27,7 +27,7 @@ public class Terrain {
 
 	private int mapResource;
 
-	private CubeBounds bounds;
+	private Cube bounds;
 
 	/**
 	 * Create terrain.
@@ -37,7 +37,7 @@ public class Terrain {
 	 * @param boundsParam
 	 *			CubeBounds area terrain should be generated in
 	 */
-	public Terrain(int mapResourceParam, CubeBounds boundsParam) {
+	public Terrain(int mapResourceParam, Cube boundsParam) {
 		mapResource = mapResourceParam;
 		bounds = boundsParam;
 	}

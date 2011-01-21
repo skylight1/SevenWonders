@@ -6,7 +6,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
 
-public class SevenWondersActivity extends Activity {
+public class Play extends Activity {
 
 	private GLSurfaceView surfaceView;
 	

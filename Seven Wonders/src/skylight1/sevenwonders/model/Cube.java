@@ -4,9 +4,9 @@ package skylight1.sevenwonders.model;
  * Cube used to specify bounds in 3D space.
  *
  */
-public class CubeBounds {
+public class Cube {
 	
-	public static final CubeBounds TERRAIN = new CubeBounds(
+	public static final Cube TERRAIN = new Cube(
 		-1000, 1000,
 		-50f, 0f,
 		-1000, 1000
@@ -40,7 +40,7 @@ public class CubeBounds {
 	 * @param z1Param starting z coordinate
 	 * @param z2Param ending z coordinate
 	 */
-	private CubeBounds(float x1Param, float x2Param, float y1Param, float y2Param, float z1Param, float z2Param) {
+	private Cube(float x1Param, float x2Param, float y1Param, float y2Param, float z1Param, float z2Param) {
 		if ( x1Param > x2Param || y1Param > y2Param || z1Param > z2Param ) {
 			throw new IllegalArgumentException("Start before end.");
 		}
