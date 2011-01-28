@@ -3,7 +3,33 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:gravity="center"
     >
+    
+    <TextView android:text="@string/yourCollectedSpellCount"
+    		  android:layout_width="fill_parent"
+    		  android:layout_height="wrap_content"
+    		  />
+    
+    <TextView android:id="@+id/yourCollectedSpellCount"
+    		  android:layout_width="fill_parent"
+    		  android:layout_height="wrap_content"
+    		  />
+    
+    <TextView android:text="@string/yourRemainingTimeSeconds"
+    		  android:layout_width="fill_parent"
+    		  android:layout_height="wrap_content"
+    		  />
+    
+    <TextView android:id="@+id/yourRemainingTimeSeconds"
+    		  android:layout_width="fill_parent"
+    		  android:layout_height="wrap_content"
+    		  />
+    		      
+    <TextView android:text="@string/yourScore"
+    		  android:layout_width="fill_parent"
+    		  android:layout_height="wrap_content"
+    		  />
     
     <TextView android:id="@+id/yourScore"
     		  android:layout_width="fill_parent"

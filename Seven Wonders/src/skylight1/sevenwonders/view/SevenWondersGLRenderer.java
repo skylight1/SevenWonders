@@ -1,7 +1,6 @@
 package skylight1.sevenwonders.view;
 
-import static javax.microedition.khronos.opengles.GL10.GL_CCW;
-import static javax.microedition.khronos.opengles.GL10.GL_CW;
+import static javax.microedition.khronos.opengles.GL10.*;
 
 import java.io.IOException;
 
@@ -9,26 +8,27 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import skylight1.opengl.CollisionDetector;
+import skylight1.opengl.CollisionDetector.CollisionObserver;
 import skylight1.opengl.FastGeometryBuilder;
 import skylight1.opengl.FastGeometryBuilderFactory;
 import skylight1.opengl.GeometryBuilder;
+import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
+import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
+import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
 import skylight1.opengl.OpenGLGeometry;
 import skylight1.opengl.OpenGLGeometryBuilder;
 import skylight1.opengl.OpenGLGeometryBuilderFactory;
 import skylight1.opengl.Texture;
 import skylight1.opengl.TransformingGeometryBuilder;
-import skylight1.opengl.CollisionDetector.CollisionObserver;
-import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
-import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
-import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
 import skylight1.opengl.files.ObjFileLoader;
 import skylight1.sevenwonders.R;
+import skylight1.sevenwonders.SevenWondersActivity;
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.util.FPSLogger;
 import android.content.Context;
+import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 import android.opengl.Matrix;
-import android.opengl.GLSurfaceView.Renderer;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
@@ -58,7 +58,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final float MINIMUM_VELOCITY = -MAXIMUM_VELOCITY / 10f;
 
-	private static final int NUMBER_OF_SPELLS = 5;
+	public static final int NUMBER_OF_SPELLS = 5;
 
 	private static final int NUMBER_OF_SPINNING_ANIMATION_FRAMES = 16;
 
@@ -253,7 +253,7 @@ public class SevenWondersGLRenderer implements Renderer {
 			@Override
 			public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
 				Log.i(SevenWondersGLRenderer.class.getName(), String.format("Player hit a sword!"));
-				endGameHandler.sendEmptyMessage(0);
+				endGameHandler.sendEmptyMessage(SevenWondersActivity.END_GAME_MESSAGE);
 			}
 		});
 	}
