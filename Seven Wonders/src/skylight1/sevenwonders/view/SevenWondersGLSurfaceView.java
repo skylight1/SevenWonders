@@ -1,9 +1,10 @@
 package skylight1.sevenwonders.view;
 
-import skylight1.sevenwonders.view.SevenWondersGLRenderer.ScoreObserver;
+import skylight1.sevenwonders.GameLevel;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -12,27 +13,25 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	
 	protected static final String TAG = SevenWondersGLSurfaceView.class.getName();
 	
-	private final SevenWondersGLRenderer renderer;
+	private SevenWondersGLRenderer renderer;
 	
-	private final RendererListener rendererListener;
+	private TiltControl tiltControl;
 	
-	private final ScoreObserver scoreObserver;
+	public SevenWondersGLSurfaceView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
 
-	private final TiltControl tiltControl;
-	
-	public SevenWondersGLSurfaceView(final Context aContext, 
-			final RendererListener aListener, final ScoreObserver aScoreObserver,
-			final Handler aEndGameHandler) {
-		super(aContext);
-		rendererListener = aListener;
-		scoreObserver = aScoreObserver;
+	public SevenWondersGLSurfaceView(Context context) {
+		super(context);
+	}
 
+	public void initialize(final Handler aUpdateUiHandler,
+			final GameLevel aLevel) {
 		setDebugFlags(DEBUG_CHECK_GL_ERROR);
 	
-		renderer = new SevenWondersGLRenderer(aContext, scoreObserver, aEndGameHandler);
-		renderer.setRendererListener(rendererListener);
+		renderer = new SevenWondersGLRenderer(getContext(), aUpdateUiHandler, aLevel);
 		setRenderer(renderer);
-		tiltControl = new TiltControl(aContext, renderer);
+		tiltControl = new TiltControl(getContext(), renderer);
 	
 		setClickable(true);
 		setFocusable(true);

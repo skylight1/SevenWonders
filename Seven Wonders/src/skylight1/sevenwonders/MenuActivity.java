@@ -31,7 +31,7 @@ public class MenuActivity extends Activity {
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View aV) {
-				final Intent gameActivity = new Intent(MenuActivity.this, SevenWondersActivity.class);
+				final Intent gameActivity = new Intent(MenuActivity.this, PlayActivity.class);
 				gameActivity.putExtra("ENABLESOUND", SOUNDENABLED);
 				startActivity(gameActivity);
 			}

@@ -47,7 +47,7 @@ public class ScoreActivity extends Activity {
 		playAgain.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent().setClass(ScoreActivity.this, SevenWondersActivity.class);
+				Intent intent = new Intent().setClass(ScoreActivity.this, PlayActivity.class);
 				startActivity(intent);
 				finish();
 			}

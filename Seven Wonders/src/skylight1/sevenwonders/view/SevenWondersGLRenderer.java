@@ -21,8 +21,9 @@ import skylight1.opengl.OpenGLGeometryBuilderFactory;
 import skylight1.opengl.Texture;
 import skylight1.opengl.TransformingGeometryBuilder;
 import skylight1.opengl.files.ObjFileLoader;
+import skylight1.sevenwonders.GameLevel;
 import skylight1.sevenwonders.R;
-import skylight1.sevenwonders.SevenWondersActivity;
+import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.util.FPSLogger;
 import android.content.Context;
@@ -30,21 +31,17 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 import android.opengl.Matrix;
 import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
 
-	private static final int WORLD_SPELL_MARGIN = 200;
-	private static final int END_OF_WORLD_MARGIN = 100;
-
-	public static interface ScoreObserver {
-		void observerNewScore(int aNewScore);
-	}
-
 	public static final float MAXIMUM_VELOCITY = 300f * 1000f / 60f / 60f / 1000f;
 
-	private RendererListener rendererListener;
+	private static final int WORLD_SPELL_MARGIN = 200;
+
+	private static final int END_OF_WORLD_MARGIN = 100;
 
 	private static final String TAG = SevenWondersGLRenderer.class.getName();
 
@@ -52,13 +49,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
 
-	private static final int TERRAIN_MAP_RESOURCE = R.raw.terrain_dunes;
-
-	private static final int TERRAIN_DENSITY = 25;
-
 	private static final float MINIMUM_VELOCITY = -MAXIMUM_VELOCITY / 10f;
-
-	public static final int NUMBER_OF_SPELLS = 5;
 
 	private static final int NUMBER_OF_SPINNING_ANIMATION_FRAMES = 16;
 
@@ -91,34 +82,28 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private float playerFacing;
 
-	/*
-	 * private float angYaw; private float angPitch; private float angRoll;
-	 */
-
 	private float velocity;
 
-	/*
-	 * private float velocityX = INITIAL_VELOCITY; private float velocityY = 0; private float velocityZ = 0;
-	 */
 	private long timeAtLastOnRenderCall;
 
 	private final CollisionDetector collisionDetector = new CollisionDetector();
 
 	private int score;
 
-	private ScoreObserver scoreObserver;
-
 	private Carpet carpet;
 		
 	private OpenGLGeometry[] pyramidGeometries = new OpenGLGeometry[3];
 	
-	private Handler endGameHandler;
+	private final Handler updateUiHandler;
+	
+	private final GameLevel level;
 
-	public SevenWondersGLRenderer(Context aContext, ScoreObserver aScoreObserver, Handler aEndGameHandler) {
+	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel) {
+		Log.i(TAG, "SevenWondersGLRenderer()");
 		context = aContext;
-		scoreObserver = aScoreObserver;
 		carpet = new Carpet(this);
-		endGameHandler = aEndGameHandler;
+		level = aLevel;
+		updateUiHandler = aUpdateUiHandler;
 	}
 
 	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
@@ -129,9 +114,6 @@ public class SevenWondersGLRenderer implements Renderer {
 		// Add ground and pyramid to a single drawable geometry for the world.
 		openGLGeometryBuilder.startGeometry();
 		loadRequiredObj(R.raw.ground, openGLGeometryBuilder);
-
-//		addGroundToGeometry(openGLGeometryBuilder);
-
 		worldGeometry = openGLGeometryBuilder.endGeometry();
 
 		float[] coordinateTransform = new float[16];
@@ -253,7 +235,7 @@ public class SevenWondersGLRenderer implements Renderer {
 			@Override
 			public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
 				Log.i(SevenWondersGLRenderer.class.getName(), String.format("Player hit a sword!"));
-				endGameHandler.sendEmptyMessage(SevenWondersActivity.END_GAME_MESSAGE);
+				updateUiHandler.sendEmptyMessage(PlayActivity.END_GAME_MESSAGE);
 			}
 		});
 	}
@@ -273,8 +255,8 @@ public class SevenWondersGLRenderer implements Renderer {
 		final float minX2 = (CubeBounds.TERRAIN.x2 - WORLD_SPELL_MARGIN);
 		final float minZ1 = (CubeBounds.TERRAIN.z1 + WORLD_SPELL_MARGIN);
 		final float minZ2 = (CubeBounds.TERRAIN.z2 - WORLD_SPELL_MARGIN);
-		final float[] randomX = fillRandom(minX1, minX2, new float[NUMBER_OF_SPELLS]);
-		final float[] randomZ = fillRandom(minZ1, minZ2, new float[NUMBER_OF_SPELLS]);
+		final float[] randomX = fillRandom(minX1, minX2, new float[level.getNumberOfSpells()]);
+		final float[] randomZ = fillRandom(minZ1, minZ2, new float[level.getNumberOfSpells()]);
 
 		// the texture is within the main texture, so it needs a little transformation to map onto the spell
 		float[] textureTransform = new float[16];
@@ -285,9 +267,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		// create a number of spells, in a number of orientations
 		for (int spellAnimationIndex = 0; spellAnimationIndex < NUMBER_OF_SPINNING_ANIMATION_FRAMES; spellAnimationIndex++) {
 			openGLGeometryBuilder.startGeometry();
-			spellGeometries[spellAnimationIndex] = new OpenGLGeometry[NUMBER_OF_SPELLS];
+			spellGeometries[spellAnimationIndex] = new OpenGLGeometry[level.getNumberOfSpells()];
 			float[] coordinateTransform = new float[16];
-			for (int spellIndex = 0; spellIndex < NUMBER_OF_SPELLS; spellIndex++) {
+			for (int spellIndex = 0; spellIndex < level.getNumberOfSpells(); spellIndex++) {
 				openGLGeometryBuilder.startGeometry();
 				Matrix.setIdentityM(coordinateTransform, 0);
 				//Ankh have to be placed randomly - using CubeBounds for the width of the world
@@ -308,7 +290,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		}
 
 		// add to collision detector
-		for (int spellIndex = 0; spellIndex < NUMBER_OF_SPELLS; spellIndex++) {
+		for (int spellIndex = 0; spellIndex < level.getNumberOfSpells(); spellIndex++) {
 			final int finalSpellIndex = spellIndex;
 
 			collisionDetector.addGeometry(spellGeometries[0][spellIndex], new CollisionObserver() {
@@ -326,7 +308,8 @@ public class SevenWondersGLRenderer implements Renderer {
 					score++;
 
 					// notify the observer
-					scoreObserver.observerNewScore(score);
+					Message message = updateUiHandler.obtainMessage(PlayActivity.NEW_SCORE_MESSAGE, score, 0);
+					updateUiHandler.sendMessage(message);
 
 					SoundTracks.getInstance().play(SoundTracks.SPELL);
 				}
@@ -340,13 +323,6 @@ public class SevenWondersGLRenderer implements Renderer {
 		for (int silly = 0; silly < 60 * 2; silly++) {
 			somewhereFarFarAway.add3DTriangle(0, 0, -100, 0, 0, -100, 0, 0, -100);
 		}
-	}
-
-	private void addGroundToGeometry(
-			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> anOpenGLGeometryBuilder) {
-
-		final Terrain terrain = new Terrain(TERRAIN_MAP_RESOURCE, CubeBounds.TERRAIN);
-		terrain.addToGeometry(context, GameTexture.SAND, TERRAIN_DENSITY, anOpenGLGeometryBuilder);
 	}
 
 	void loadRequiredObj(
@@ -383,9 +359,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		atlasTexture.activateTexture();
 
-		if (rendererListener != null) {
-			rendererListener.startedRendering();
-		}
+		updateUiHandler.sendEmptyMessage(PlayActivity.START_RENDERING_MESSAGE);
 	}
 
 	public void onDrawFrame(final GL10 aGl) {
@@ -411,7 +385,8 @@ public class SevenWondersGLRenderer implements Renderer {
 		drawSpell(aGl);
 		drawSword(aGl);
 
-		rendererListener.drawFPS(fPSLogger.frameRendered());
+		Message msg  = updateUiHandler.obtainMessage(PlayActivity.FPS_MESSAGE, fPSLogger.frameRendered(), 0);
+		updateUiHandler.sendMessage(msg);
 	}
 
 	private void detectCollisions() {
@@ -534,9 +509,5 @@ public class SevenWondersGLRenderer implements Renderer {
 	private float constrainVelocity(final float aCandidateVelocity) {
 		return aCandidateVelocity < MINIMUM_VELOCITY ? MINIMUM_VELOCITY
 				: aCandidateVelocity > MAXIMUM_VELOCITY ? MAXIMUM_VELOCITY : aCandidateVelocity;
-	}
-
-	public void setRendererListener(RendererListener rendererListener2) {
-		rendererListener = rendererListener2;
 	}
 }
