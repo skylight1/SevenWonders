@@ -1,35 +1,40 @@
 package skylight1.sevenwonders.view;
 
-import static javax.microedition.khronos.opengles.GL10.*;
+import static javax.microedition.khronos.opengles.GL10.GL_CCW;
+import static javax.microedition.khronos.opengles.GL10.GL_CW;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import skylight1.opengl.CollisionDetector;
-import skylight1.opengl.CollisionDetector.CollisionObserver;
 import skylight1.opengl.FastGeometryBuilder;
 import skylight1.opengl.FastGeometryBuilderFactory;
 import skylight1.opengl.GeometryBuilder;
-import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
-import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
-import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
 import skylight1.opengl.OpenGLGeometry;
 import skylight1.opengl.OpenGLGeometryBuilder;
 import skylight1.opengl.OpenGLGeometryBuilderFactory;
 import skylight1.opengl.Texture;
 import skylight1.opengl.TransformingGeometryBuilder;
+import skylight1.opengl.CollisionDetector.CollisionObserver;
+import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
+import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
+import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
 import skylight1.opengl.files.ObjFileLoader;
-import skylight1.sevenwonders.GameLevel;
-import skylight1.sevenwonders.R;
 import skylight1.sevenwonders.PlayActivity;
+import skylight1.sevenwonders.R;
+import skylight1.sevenwonders.levels.GameLevel;
+import skylight1.sevenwonders.levels.GameObjectDescriptor;
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.util.FPSLogger;
 import android.content.Context;
-import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 import android.opengl.Matrix;
+import android.opengl.GLSurfaceView.Renderer;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -39,7 +44,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public static final float MAXIMUM_VELOCITY = 300f * 1000f / 60f / 60f / 1000f;
 
-	private static final int WORLD_SPELL_MARGIN = 200;
+	private static final int WORLD_SWORDS_MARGIN = 200;
 
 	private static final int END_OF_WORLD_MARGIN = 100;
 
@@ -70,7 +75,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	private OpenGLGeometry[] allSpellsGeometry = new OpenGLGeometry[NUMBER_OF_SPINNING_ANIMATION_FRAMES];
 
 	private OpenGLGeometry[][] spellGeometries = new OpenGLGeometry[NUMBER_OF_SPINNING_ANIMATION_FRAMES][];
-	
+
 	private OpenGLGeometry[] swordGeometries = new OpenGLGeometry[NUMBER_OF_SPINNING_ANIMATION_FRAMES];
 
 	private OpenGLGeometry sphinxGeometry;
@@ -91,11 +96,11 @@ public class SevenWondersGLRenderer implements Renderer {
 	private int score;
 
 	private Carpet carpet;
-		
+
 	private OpenGLGeometry[] pyramidGeometries = new OpenGLGeometry[3];
-	
+
 	private final Handler updateUiHandler;
-	
+
 	private final GameLevel level;
 
 	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel) {
@@ -128,11 +133,11 @@ public class SevenWondersGLRenderer implements Renderer {
 		sphinxGeometry = openGLGeometryBuilder.endGeometry();
 
 		openGLGeometryBuilder.startGeometry();
-		pyramidGeometries [0] = addPyramid(openGLGeometryBuilder, 90, 0, 5);
+		pyramidGeometries[0] = addPyramid(openGLGeometryBuilder, 90, 0, 5);
 		pyramidGeometries[1] = addPyramid(openGLGeometryBuilder, 255, 0, -2);
 		pyramidGeometries[2] = addPyramid(openGLGeometryBuilder, -320, -7, 100);
 		pyramidGeometry = openGLGeometryBuilder.endGeometry();
-		
+
 		addSpellsToGeometry(openGLGeometryBuilder);
 		addSwordToGeometry(openGLGeometryBuilder);
 		carpet.createGeometry(openGLGeometryBuilder);
@@ -176,19 +181,19 @@ public class SevenWondersGLRenderer implements Renderer {
 		loadRequiredObj(R.raw.pyramid, pyramidTransformingGeometryBuilder);
 		return openGLGeometryBuilder.endGeometry();
 	}
-	
+
 	private static final float[] fillRandom(final float min, final float max, final float[] dest) {
 		if (null == dest) {
 			return null;
 		}
-		
+
 		float range = max - min + 1;
-		for(int i = 0; i < dest.length; i++) {
+		for (int i = 0; i < dest.length; i++) {
 			dest[i] = (float) (min + Math.random() * range);
 		}
 		return dest;
 	}
-	
+
 	private static final float getRandom(final float min, final float max) {
 		float range = max - min + 1;
 		return (float) (min + Math.random() * range);
@@ -205,10 +210,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		}
 
 		// create random location for the sword
-		final float minX1 = (CubeBounds.TERRAIN.x1 + WORLD_SPELL_MARGIN);
-		final float minX2 = (CubeBounds.TERRAIN.x2 - WORLD_SPELL_MARGIN);
-		final float minZ1 = (CubeBounds.TERRAIN.z1 + WORLD_SPELL_MARGIN);
-		final float minZ2 = (CubeBounds.TERRAIN.z2 - WORLD_SPELL_MARGIN);
+		final float minX1 = (CubeBounds.TERRAIN.x1 + WORLD_SWORDS_MARGIN);
+		final float minX2 = (CubeBounds.TERRAIN.x2 - WORLD_SWORDS_MARGIN);
+		final float minZ1 = (CubeBounds.TERRAIN.z1 + WORLD_SWORDS_MARGIN);
+		final float minZ2 = (CubeBounds.TERRAIN.z2 - WORLD_SWORDS_MARGIN);
 		final float randomX = getRandom(minX1, minX2);
 		final float randomZ = getRandom(minZ1, minZ2);
 
@@ -218,15 +223,15 @@ public class SevenWondersGLRenderer implements Renderer {
 			float[] coordinateTransform = new float[16];
 
 			Matrix.setIdentityM(coordinateTransform, 0);
-			//Sword placed randomly - using CubeBounds for the width of the world
-				
-			Matrix.translateM(coordinateTransform, 0, randomX, HEIGHT_OF_CARPET_FROM_GROUND - 1, randomZ); 
+			// Sword placed randomly - using CubeBounds for the width of the world
+
+			Matrix.translateM(coordinateTransform, 0, randomX, HEIGHT_OF_CARPET_FROM_GROUND - 1, randomZ);
 			Matrix.rotateM(coordinateTransform, 0, 360f * (float) animationIndex
 					/ (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES, 0, 1, 0);
 			Matrix.rotateM(coordinateTransform, 0, -90f, 1, 0, 0);
 			TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, null);
 			fileLoader.createGeometry(transformingGeometryBuilder);
-		
+
 			swordGeometries[animationIndex] = openGLGeometryBuilder.endGeometry();
 		}
 
@@ -239,24 +244,9 @@ public class SevenWondersGLRenderer implements Renderer {
 			}
 		});
 	}
-	
+
 	private void addSpellsToGeometry(
 			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder) {
-
-		final ObjFileLoader fileLoader;
-		try {
-			fileLoader = new ObjFileLoader(context, R.raw.ankh);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		// create random locations for the spells
-		final float minX1 = (CubeBounds.TERRAIN.x1 + WORLD_SPELL_MARGIN);
-		final float minX2 = (CubeBounds.TERRAIN.x2 - WORLD_SPELL_MARGIN);
-		final float minZ1 = (CubeBounds.TERRAIN.z1 + WORLD_SPELL_MARGIN);
-		final float minZ2 = (CubeBounds.TERRAIN.z2 - WORLD_SPELL_MARGIN);
-		final float[] randomX = fillRandom(minX1, minX2, new float[level.getNumberOfSpells()]);
-		final float[] randomZ = fillRandom(minZ1, minZ2, new float[level.getNumberOfSpells()]);
 
 		// the texture is within the main texture, so it needs a little transformation to map onto the spell
 		float[] textureTransform = new float[16];
@@ -264,27 +254,41 @@ public class SevenWondersGLRenderer implements Renderer {
 		Matrix.translateM(textureTransform, 0, 576f / 1024f, 0, 0);
 		Matrix.scaleM(textureTransform, 0, 0.25f, 0.25f, 1f);
 
+		final Map<Integer, ObjFileLoader> resourceIdToObjFileLoaderMap = new HashMap<Integer, ObjFileLoader>();
+
+		final Collection<GameObjectDescriptor> spellCollection = level.getSpells();
+
 		// create a number of spells, in a number of orientations
 		for (int spellAnimationIndex = 0; spellAnimationIndex < NUMBER_OF_SPINNING_ANIMATION_FRAMES; spellAnimationIndex++) {
 			openGLGeometryBuilder.startGeometry();
 			spellGeometries[spellAnimationIndex] = new OpenGLGeometry[level.getNumberOfSpells()];
 			float[] coordinateTransform = new float[16];
-			for (int spellIndex = 0; spellIndex < level.getNumberOfSpells(); spellIndex++) {
+
+			int spellIndex = 0;
+			for (final GameObjectDescriptor spellDescriptor : spellCollection) {
+				final int objectFileResourceId = spellDescriptor.objectFileResourceId;
+				ObjFileLoader objFileLoader = resourceIdToObjFileLoaderMap.get(objectFileResourceId);
+				if (objFileLoader == null) {
+					try {
+						objFileLoader = new ObjFileLoader(context, objectFileResourceId);
+					} catch (IOException e) {
+						throw new RuntimeException("could not load file", e);
+					}
+					resourceIdToObjFileLoaderMap.put(objectFileResourceId, objFileLoader);
+				}
 				openGLGeometryBuilder.startGeometry();
-				Matrix.setIdentityM(coordinateTransform, 0);
-				//Ankh have to be placed randomly - using CubeBounds for the width of the world
 				
-				Matrix.translateM(coordinateTransform, 0, randomX[spellIndex], HEIGHT_OF_CARPET_FROM_GROUND - 1, randomZ[spellIndex]); 
-					//randomX[spellIndex] - spellIndex * randomX[spellIndex]);
+				System.arraycopy(spellDescriptor.transformationMatrix, 0, coordinateTransform, 0, coordinateTransform.length);
+
 				Matrix.rotateM(coordinateTransform, 0, 360f * (float) spellAnimationIndex
 						/ (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES, 0, 1, 0);
 				// this final rotate is to "stand up" the ankh
 				Matrix.rotateM(coordinateTransform, 0, -90f, 1, 0, 0);
 				TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, textureTransform);
-				fileLoader.createGeometry(transformingGeometryBuilder);
+				objFileLoader.createGeometry(transformingGeometryBuilder);
 
 				final OpenGLGeometry spellGeometry = openGLGeometryBuilder.endGeometry();
-				spellGeometries[spellAnimationIndex][spellIndex] = spellGeometry;
+				spellGeometries[spellAnimationIndex][spellIndex++] = spellGeometry;
 			}
 			allSpellsGeometry[spellAnimationIndex] = openGLGeometryBuilder.endGeometry();
 		}
@@ -385,7 +389,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		drawSpell(aGl);
 		drawSword(aGl);
 
-		Message msg  = updateUiHandler.obtainMessage(PlayActivity.FPS_MESSAGE, fPSLogger.frameRendered(), 0);
+		Message msg = updateUiHandler.obtainMessage(PlayActivity.FPS_MESSAGE, fPSLogger.frameRendered(), 0);
 		updateUiHandler.sendMessage(msg);
 	}
 
@@ -406,23 +410,23 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		final float facingX = (float) Math.sin(playerFacing / 180f * Math.PI);
 		final float facingZ = -(float) Math.cos(playerFacing / 180f * Math.PI);
-		
+
 		final float newPositionX = playerWorldPosition.x + facingX * velocity * timeDeltaMS;
 		final float newPositionZ = playerWorldPosition.z + facingZ * velocity * timeDeltaMS;
-		
-		//TODO: CHECK FOR END OF WORLD
-		if(newPositionX > (CubeBounds.TERRAIN.x1 + END_OF_WORLD_MARGIN)&&
-			newPositionX < (CubeBounds.TERRAIN.x2 - END_OF_WORLD_MARGIN)){
-			//playerWorldPosition.x += facingX * velocity * timeDeltaMS;
+
+		// TODO: CHECK FOR END OF WORLD
+		if (newPositionX > (CubeBounds.TERRAIN.x1 + END_OF_WORLD_MARGIN)
+				&& newPositionX < (CubeBounds.TERRAIN.x2 - END_OF_WORLD_MARGIN)) {
+			// playerWorldPosition.x += facingX * velocity * timeDeltaMS;
 			playerWorldPosition.x = newPositionX;
 		}
-		
-		if(	newPositionZ > (CubeBounds.TERRAIN.z1 + END_OF_WORLD_MARGIN) &&
-			newPositionZ < (CubeBounds.TERRAIN.z2 - END_OF_WORLD_MARGIN)){
-			//playerWorldPosition.z += facingZ * velocity * timeDeltaMS;
+
+		if (newPositionZ > (CubeBounds.TERRAIN.z1 + END_OF_WORLD_MARGIN)
+				&& newPositionZ < (CubeBounds.TERRAIN.z2 - END_OF_WORLD_MARGIN)) {
+			// playerWorldPosition.z += facingZ * velocity * timeDeltaMS;
 			playerWorldPosition.z = newPositionZ;
 		}
-		
+
 		GLU.gluLookAt(aGl, playerWorldPosition.x, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z, playerWorldPosition.x
 				+ facingX, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z + facingZ, 0f, 1f, 0f);
 	}

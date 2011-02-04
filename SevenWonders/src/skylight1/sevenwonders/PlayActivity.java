@@ -1,5 +1,6 @@
 package skylight1.sevenwonders;
 
+import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
 import android.app.Activity;
