@@ -1,6 +1,6 @@
 package skylight1.sevenwonders.view;
 
-import skylight1.sevenwonders.GameLevel;
+import skylight1.sevenwonders.levels.GameLevel;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
