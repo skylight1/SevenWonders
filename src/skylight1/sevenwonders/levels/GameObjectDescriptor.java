@@ -11,12 +11,15 @@ public class GameObjectDescriptor {
 	 * android.opengl.Matrix.translateM(m, 0, x, y, z);
 	 * </code>
 	 */
-	public final float[] transformationMatrix;
+	public final float[] coordinateTransformationMatrix;
+
+	public final float[] textureTransformationMatrix;
 
 	public final int objectFileResourceId; // the resource id of the OBJ file, e.g., spell.obj
 
-	public GameObjectDescriptor(final float[] aTransformationMatrix, final int anObjectFileResourceId) {
-		transformationMatrix = aTransformationMatrix;
+	public GameObjectDescriptor(final float[] aCoordinateTransformationMatrix, float[] aTextureTransformationMatrix, final int anObjectFileResourceId) {
+		coordinateTransformationMatrix = aCoordinateTransformationMatrix;
+		textureTransformationMatrix = aTextureTransformationMatrix;
 		objectFileResourceId = anObjectFileResourceId;
 	}
 }

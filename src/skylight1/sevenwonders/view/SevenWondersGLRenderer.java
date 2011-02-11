@@ -12,8 +12,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import skylight1.opengl.CollisionDetector;
-import skylight1.opengl.FastGeometryBuilder;
-import skylight1.opengl.FastGeometryBuilderFactory;
 import skylight1.opengl.GeometryBuilder;
 import skylight1.opengl.OpenGLGeometry;
 import skylight1.opengl.OpenGLGeometryBuilder;
@@ -29,7 +27,6 @@ import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.R;
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.levels.GameObjectDescriptor;
-import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLU;
@@ -41,6 +38,8 @@ import android.os.SystemClock;
 import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
+
+	static final int ANIMATION_INDEX_FOR_COLLISION_DETECTION = 0;
 
 	public static final float MAXIMUM_VELOCITY = 300f * 1000f / 60f / 60f / 1000f;
 
@@ -56,11 +55,9 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final float MINIMUM_VELOCITY = -MAXIMUM_VELOCITY / 10f;
 
-	private static final int NUMBER_OF_SPINNING_ANIMATION_FRAMES = 16;
+	static final int NUMBER_OF_SPINNING_ANIMATION_FRAMES = 16;
 
 	private static final int PERIOD_FOR_SPINNING_ANIMATION_CYCLE = 1000;
-
-	private FastGeometryBuilder<?, ?> somewhereFarFarAway;
 
 	private final Context context;
 
@@ -72,9 +69,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private OpenGLGeometry worldGeometry;
 
-	private OpenGLGeometry[] allSpellsGeometry = new OpenGLGeometry[NUMBER_OF_SPINNING_ANIMATION_FRAMES];
-
-	private OpenGLGeometry[][] spellGeometries = new OpenGLGeometry[NUMBER_OF_SPINNING_ANIMATION_FRAMES][];
+	private OpenGLGeometry[] allSpellsGeometry;
 
 	private OpenGLGeometry[] swordGeometries = new OpenGLGeometry[NUMBER_OF_SPINNING_ANIMATION_FRAMES];
 
@@ -138,7 +133,8 @@ public class SevenWondersGLRenderer implements Renderer {
 		pyramidGeometries[2] = addPyramid(openGLGeometryBuilder, -320, -7, 100);
 		pyramidGeometry = openGLGeometryBuilder.endGeometry();
 
-		addSpellsToGeometry(openGLGeometryBuilder);
+		final SpellCollisionHandler spellsCollisionHandler = new SpellCollisionHandler(collisionDetector, level, updateUiHandler, this);
+		allSpellsGeometry = addSpellsToGeometry(openGLGeometryBuilder, spellsCollisionHandler, level.getSpells());
 		addSwordToGeometry(openGLGeometryBuilder);
 		carpet.createGeometry(openGLGeometryBuilder);
 		openGLGeometryBuilder.enable(aGl);
@@ -245,28 +241,23 @@ public class SevenWondersGLRenderer implements Renderer {
 		});
 	}
 
-	private void addSpellsToGeometry(
-			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder) {
+	private OpenGLGeometry[] addSpellsToGeometry(
+			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder, final SpellCollisionHandler aCollisionObserver,
+			final Collection<GameObjectDescriptor> objectDescriptorCollection) {
 
-		// the texture is within the main texture, so it needs a little transformation to map onto the spell
-		float[] textureTransform = new float[16];
-		Matrix.setIdentityM(textureTransform, 0);
-		Matrix.translateM(textureTransform, 0, 576f / 1024f, 0, 0);
-		Matrix.scaleM(textureTransform, 0, 0.25f, 0.25f, 1f);
+		final OpenGLGeometry[] objectGeometries = new OpenGLGeometry[NUMBER_OF_SPINNING_ANIMATION_FRAMES];
 
 		final Map<Integer, ObjFileLoader> resourceIdToObjFileLoaderMap = new HashMap<Integer, ObjFileLoader>();
 
-		final Collection<GameObjectDescriptor> spellCollection = level.getSpells();
-
-		// create a number of spells, in a number of orientations
-		for (int spellAnimationIndex = 0; spellAnimationIndex < NUMBER_OF_SPINNING_ANIMATION_FRAMES; spellAnimationIndex++) {
+		// create a number of objects, in a number of orientations
+		final int numberOfObjects = objectDescriptorCollection.size();
+		float[] coordinateTransform = new float[16];
+		for (int animationIndex = 0; animationIndex < NUMBER_OF_SPINNING_ANIMATION_FRAMES; animationIndex++) {
 			openGLGeometryBuilder.startGeometry();
-			spellGeometries[spellAnimationIndex] = new OpenGLGeometry[level.getNumberOfSpells()];
-			float[] coordinateTransform = new float[16];
 
-			int spellIndex = 0;
-			for (final GameObjectDescriptor spellDescriptor : spellCollection) {
-				final int objectFileResourceId = spellDescriptor.objectFileResourceId;
+			int objectIndex = 0;
+			for (final GameObjectDescriptor objectDescriptor : objectDescriptorCollection) {
+				final int objectFileResourceId = objectDescriptor.objectFileResourceId;
 				ObjFileLoader objFileLoader = resourceIdToObjFileLoaderMap.get(objectFileResourceId);
 				if (objFileLoader == null) {
 					try {
@@ -278,55 +269,30 @@ public class SevenWondersGLRenderer implements Renderer {
 				}
 				openGLGeometryBuilder.startGeometry();
 				
-				System.arraycopy(spellDescriptor.transformationMatrix, 0, coordinateTransform, 0, coordinateTransform.length);
+				System.arraycopy(objectDescriptor.coordinateTransformationMatrix, 0, coordinateTransform, 0, coordinateTransform.length);
 
-				Matrix.rotateM(coordinateTransform, 0, 360f * (float) spellAnimationIndex
+				Matrix.rotateM(coordinateTransform, 0, 360f * (float) animationIndex
 						/ (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES, 0, 1, 0);
 				// this final rotate is to "stand up" the ankh
 				Matrix.rotateM(coordinateTransform, 0, -90f, 1, 0, 0);
-				TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, textureTransform);
+
+				// load the object into the geometry
+				TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, objectDescriptor.textureTransformationMatrix);
 				objFileLoader.createGeometry(transformingGeometryBuilder);
+				final OpenGLGeometry objectGeometry = openGLGeometryBuilder.endGeometry();
 
-				final OpenGLGeometry spellGeometry = openGLGeometryBuilder.endGeometry();
-				spellGeometries[spellAnimationIndex][spellIndex++] = spellGeometry;
-			}
-			allSpellsGeometry[spellAnimationIndex] = openGLGeometryBuilder.endGeometry();
-		}
-
-		// add to collision detector
-		for (int spellIndex = 0; spellIndex < level.getNumberOfSpells(); spellIndex++) {
-			final int finalSpellIndex = spellIndex;
-
-			collisionDetector.addGeometry(spellGeometries[0][spellIndex], new CollisionObserver() {
-				@Override
-				public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
-					Log.i(SevenWondersGLRenderer.class.getName(), String.format("collided with " + anOpenGLGeometry));
-
-					collisionDetector.removeGeometry(anOpenGLGeometry);
-
-					for (int spellAnimationIndex = 0; spellAnimationIndex < NUMBER_OF_SPINNING_ANIMATION_FRAMES; spellAnimationIndex++) {
-						spellGeometries[spellAnimationIndex][finalSpellIndex].updateModel(somewhereFarFarAway);
-					}
-
-					// add one to the score for colliding with a spell
-					score++;
-
-					// notify the observer
-					Message message = updateUiHandler.obtainMessage(PlayActivity.NEW_SCORE_MESSAGE, score, 0);
-					updateUiHandler.sendMessage(message);
-
-					SoundTracks.getInstance().play(SoundTracks.SPELL);
+				// add it to the collision observer (it may care!)
+				aCollisionObserver.addGeometry(objectGeometry, animationIndex, objectIndex++);
+				
+				// if this is frame 0, add it to the collision detector
+				if (animationIndex == ANIMATION_INDEX_FOR_COLLISION_DETECTION) {
+					collisionDetector.addGeometry(objectGeometry, aCollisionObserver);
 				}
-			});
+			}
+			objectGeometries[animationIndex] = openGLGeometryBuilder.endGeometry();
 		}
-
-		// create a fast geometry that is out of sight
-		somewhereFarFarAway = FastGeometryBuilderFactory.createTexturableNormalizable(spellGeometries[0][0]);
-		// TODO there has to be a better way to make a correctly sized geometry, than to know it has 60 quads = 120
-		// triangles
-		for (int silly = 0; silly < 60 * 2; silly++) {
-			somewhereFarFarAway.add3DTriangle(0, 0, -100, 0, 0, -100, 0, 0, -100);
-		}
+		
+		return objectGeometries;
 	}
 
 	void loadRequiredObj(
@@ -513,5 +479,10 @@ public class SevenWondersGLRenderer implements Renderer {
 	private float constrainVelocity(final float aCandidateVelocity) {
 		return aCandidateVelocity < MINIMUM_VELOCITY ? MINIMUM_VELOCITY
 				: aCandidateVelocity > MAXIMUM_VELOCITY ? MAXIMUM_VELOCITY : aCandidateVelocity;
+	}
+	
+	protected int incrementScore(final int anIncrement) {
+		score += anIncrement;
+		return score;
 	}
 }
