@@ -5,15 +5,19 @@ import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class PlayActivity extends Activity {
 
@@ -45,7 +49,8 @@ public class PlayActivity extends Activity {
 	
 	private int latestScore;
 
-	private int latestRemainingTimeSeconds;
+	private int latestRemainingTimeSeconds=250;
+	
 	
     //Handler to draw debug info (fps) and countdown and end the game
     private Handler updateUiHandler = new Handler() {
@@ -60,6 +65,7 @@ public class PlayActivity extends Activity {
    		    			
    		    			// start the countdown NOW!
    		    			countdownStartTime = SystemClock.uptimeMillis();
+   		    			//if(countdownStartTime<0){
    		    			sendUpdateCountdownMessage();
     					break;
     				case FPS_MESSAGE:
@@ -69,6 +75,9 @@ public class PlayActivity extends Activity {
     					latestRemainingTimeSeconds = TOTAL_TIME_ALLOWED - (int) ((SystemClock.uptimeMillis() - countdownStartTime)
 								/ ONE_SECOND_IN_MILLISECONDS);
     					countdownView.setText(Integer.toString(latestRemainingTimeSeconds));
+    					if(  latestRemainingTimeSeconds<100  )if(latestRemainingTimeSeconds%2==1)countdownView.setBackgroundColor(Color.YELLOW);
+    					if(  latestRemainingTimeSeconds<100  )if(latestRemainingTimeSeconds%2==0) countdownView.setBackgroundColor(Color.MAGENTA);
+    					if(latestRemainingTimeSeconds==0){finish();}
     					sendUpdateCountdownMessage();
     					break;
     				case END_GAME_MESSAGE:
@@ -82,12 +91,16 @@ public class PlayActivity extends Activity {
 						TextView scoreTextView = (TextView) findViewById(R.id.Score);
 						scoreTextView.setText("" + latestScore);
 						break;
-    			}
-    		}
-    	}
-    };
-	
-	private void sendUpdateCountdownMessage() {
+    			
+    			
+    		}}
+    		
+    		};
+    	};
+    		
+    		
+    
+private void sendUpdateCountdownMessage() {
 		final Message countdownMessage = updateUiHandler.obtainMessage(COUNTDOWN_MESSAGE);
 		updateUiHandler.sendMessageDelayed(countdownMessage, ONE_SECOND_IN_MILLISECONDS);
 	}
@@ -144,4 +157,10 @@ public class PlayActivity extends Activity {
 		finish();
 	}
 
-}
+ 
+    }
+
+    
+
+
+
