@@ -69,7 +69,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private OpenGLGeometry[] allSpellsGeometry;
 	
-	private OpenGLGeometry[] allHazzardsGeometry;
+	private OpenGLGeometry[] allHazardsGeometry;
 
 	private OpenGLGeometry sphinxGeometry;
 
@@ -133,8 +133,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		final GeometryAwareCollisionObserver spellsCollisionHandler = new SpellCollisionHandler(collisionDetector, level, updateUiHandler, this);
 		allSpellsGeometry = addObjectsToGeometry(openGLGeometryBuilder, spellsCollisionHandler, level.getSpells());
-		final GeometryAwareCollisionObserver hazzardCollisionObserver = new HazzardCollisionHandler(updateUiHandler);
-		allHazzardsGeometry = addObjectsToGeometry(openGLGeometryBuilder, hazzardCollisionObserver, level.getHazzards());
+		final GeometryAwareCollisionObserver hazardCollisionObserver = new HazardCollisionHandler(updateUiHandler);
+		allHazardsGeometry = addObjectsToGeometry(openGLGeometryBuilder, hazardCollisionObserver, level.getHazards());
 		carpet.createGeometry(openGLGeometryBuilder);
 		openGLGeometryBuilder.enable(aGl);
 
@@ -368,7 +368,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	private void drawSword(final GL10 aGl) {
 		final int swordAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPINNING_ANIMATION_CYCLE)
 				/ (float) PERIOD_FOR_SPINNING_ANIMATION_CYCLE * (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES);
-		allHazzardsGeometry[swordAnimationIndex].draw(aGl);
+		allHazardsGeometry[swordAnimationIndex].draw(aGl);
 	}
 
 	public void setPlayerVelocity(int aNewVelocity) {
