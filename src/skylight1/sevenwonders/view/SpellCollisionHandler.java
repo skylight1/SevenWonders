@@ -15,7 +15,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-final class SpellCollisionHandler implements CollisionObserver {
+final class SpellCollisionHandler implements GeometryAwareCollisionObserver {
 	private CollisionDetector collisionDetector;
 
 	private GameLevel level;
@@ -36,6 +36,7 @@ final class SpellCollisionHandler implements CollisionObserver {
 		renderer = aRenderer;
 	}
 
+	@Override
 	public void addGeometry(OpenGLGeometry anOpenGLGeometry, int anAnimationIndex, int aGeometryIndex) {
 		if (spellGeometries[anAnimationIndex] == null) {
 			spellGeometries[anAnimationIndex] = new OpenGLGeometry[level.getNumberOfSpells()];
