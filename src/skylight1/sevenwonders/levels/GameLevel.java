@@ -11,7 +11,7 @@ import android.opengl.Matrix;
 public enum GameLevel {
 	FIRST(5, 3, 3, 1), SECOND(2, 6, 3, 2);
 
-	private static final float HEIGHT_OF_HAZZARDS_FROM_GROUND = 9f;
+	private static final float HEIGHT_OF_HAZARDS_FROM_GROUND = 9f;
 
 	private static final float HEIGHT_OF_SPELLS_FROM_GROUND = 11f;
 
@@ -19,7 +19,7 @@ public enum GameLevel {
 
 	private final int numberOfSpells;
 
-	private final int numberOfHazzards;
+	private final int numberOfHazards;
 
 	private final int numberOfSpellsRequired;
 
@@ -28,7 +28,7 @@ public enum GameLevel {
 	private GameLevel(final int aNumberOfSpells, final int aNumberOfHazzards, final int aNumberOfSpellsRequired,
 			final long aRandomSeed) {
 		numberOfSpells = aNumberOfSpells;
-		numberOfHazzards = aNumberOfHazzards;
+		numberOfHazards = aNumberOfHazzards;
 		numberOfSpellsRequired = aNumberOfSpellsRequired;
 		random = new Random(aRandomSeed);
 	}
@@ -63,8 +63,8 @@ public enum GameLevel {
 	/**
 	 * Things that will kill the player if the player flies into them: swords, whirlwinds, etc.
 	 */
-	public Collection<GameObjectDescriptor> getHazzards() {
-		return createObjectsAtRandomLocations(HEIGHT_OF_HAZZARDS_FROM_GROUND, numberOfHazzards, null, R.raw.textured_sword);
+	public Collection<GameObjectDescriptor> getHazards() {
+		return createObjectsAtRandomLocations(HEIGHT_OF_HAZARDS_FROM_GROUND, numberOfHazards, null, R.raw.textured_sword);
 	}
 
 	private Collection<GameObjectDescriptor> createObjectsAtRandomLocations(final float aHeightOfObjectFromGround,

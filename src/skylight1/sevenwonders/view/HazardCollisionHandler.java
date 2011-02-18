@@ -5,11 +5,11 @@ import skylight1.sevenwonders.PlayActivity;
 import android.os.Handler;
 import android.util.Log;
 
-public class HazzardCollisionHandler implements GeometryAwareCollisionObserver {
+public class HazardCollisionHandler implements GeometryAwareCollisionObserver {
 
 	private final Handler updateUiHandler;
 
-	public HazzardCollisionHandler(final Handler anUpdateUiHandler) {
+	public HazardCollisionHandler(final Handler anUpdateUiHandler) {
 		updateUiHandler = anUpdateUiHandler;
 	}
 
