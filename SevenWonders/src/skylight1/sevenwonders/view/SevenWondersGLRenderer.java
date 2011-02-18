@@ -43,8 +43,6 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public static final float MAXIMUM_VELOCITY = 300f * 1000f / 60f / 60f / 1000f;
 
-	private static final int WORLD_SWORDS_MARGIN = 200;
-
 	private static final int END_OF_WORLD_MARGIN = 100;
 
 	private static final String TAG = SevenWondersGLRenderer.class.getName();
@@ -70,8 +68,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	private OpenGLGeometry worldGeometry;
 
 	private OpenGLGeometry[] allSpellsGeometry;
-
-	private OpenGLGeometry[] swordGeometries = new OpenGLGeometry[NUMBER_OF_SPINNING_ANIMATION_FRAMES];
+	
+	private OpenGLGeometry[] allHazzardsGeometry;
 
 	private OpenGLGeometry sphinxGeometry;
 
@@ -133,9 +131,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		pyramidGeometries[2] = addPyramid(openGLGeometryBuilder, -320, -7, 100);
 		pyramidGeometry = openGLGeometryBuilder.endGeometry();
 
-		final SpellCollisionHandler spellsCollisionHandler = new SpellCollisionHandler(collisionDetector, level, updateUiHandler, this);
-		allSpellsGeometry = addSpellsToGeometry(openGLGeometryBuilder, spellsCollisionHandler, level.getSpells());
-		addSwordToGeometry(openGLGeometryBuilder);
+		final GeometryAwareCollisionObserver spellsCollisionHandler = new SpellCollisionHandler(collisionDetector, level, updateUiHandler, this);
+		allSpellsGeometry = addObjectsToGeometry(openGLGeometryBuilder, spellsCollisionHandler, level.getSpells());
+		final GeometryAwareCollisionObserver hazzardCollisionObserver = new HazzardCollisionHandler(updateUiHandler);
+		allHazzardsGeometry = addObjectsToGeometry(openGLGeometryBuilder, hazzardCollisionObserver, level.getHazzards());
 		carpet.createGeometry(openGLGeometryBuilder);
 		openGLGeometryBuilder.enable(aGl);
 
@@ -178,71 +177,8 @@ public class SevenWondersGLRenderer implements Renderer {
 		return openGLGeometryBuilder.endGeometry();
 	}
 
-	private static final float[] fillRandom(final float min, final float max, final float[] dest) {
-		if (null == dest) {
-			return null;
-		}
-
-		float range = max - min + 1;
-		for (int i = 0; i < dest.length; i++) {
-			dest[i] = (float) (min + Math.random() * range);
-		}
-		return dest;
-	}
-
-	private static final float getRandom(final float min, final float max) {
-		float range = max - min + 1;
-		return (float) (min + Math.random() * range);
-	}
-
-	private void addSwordToGeometry(
-			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder) {
-
-		final ObjFileLoader fileLoader;
-		try {
-			fileLoader = new ObjFileLoader(context, R.raw.textured_sword);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		// create random location for the sword
-		final float minX1 = (CubeBounds.TERRAIN.x1 + WORLD_SWORDS_MARGIN);
-		final float minX2 = (CubeBounds.TERRAIN.x2 - WORLD_SWORDS_MARGIN);
-		final float minZ1 = (CubeBounds.TERRAIN.z1 + WORLD_SWORDS_MARGIN);
-		final float minZ2 = (CubeBounds.TERRAIN.z2 - WORLD_SWORDS_MARGIN);
-		final float randomX = getRandom(minX1, minX2);
-		final float randomZ = getRandom(minZ1, minZ2);
-
-		// create a number of spells, in a number of orientations
-		for (int animationIndex = 0; animationIndex < NUMBER_OF_SPINNING_ANIMATION_FRAMES; animationIndex++) {
-			openGLGeometryBuilder.startGeometry();
-			float[] coordinateTransform = new float[16];
-
-			Matrix.setIdentityM(coordinateTransform, 0);
-			// Sword placed randomly - using CubeBounds for the width of the world
-
-			Matrix.translateM(coordinateTransform, 0, randomX, HEIGHT_OF_CARPET_FROM_GROUND - 1, randomZ);
-			Matrix.rotateM(coordinateTransform, 0, 360f * (float) animationIndex
-					/ (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES, 0, 1, 0);
-			Matrix.rotateM(coordinateTransform, 0, -90f, 1, 0, 0);
-			TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, null);
-			fileLoader.createGeometry(transformingGeometryBuilder);
-
-			swordGeometries[animationIndex] = openGLGeometryBuilder.endGeometry();
-		}
-
-		// add to collision detector
-		collisionDetector.addGeometry(swordGeometries[0], new CollisionObserver() {
-			@Override
-			public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
-				Log.i(SevenWondersGLRenderer.class.getName(), String.format("Player hit a sword!"));
-				updateUiHandler.sendEmptyMessage(PlayActivity.END_GAME_MESSAGE);
-			}
-		});
-	}
-
-	private OpenGLGeometry[] addSpellsToGeometry(
-			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder, final SpellCollisionHandler aCollisionObserver,
+	private OpenGLGeometry[] addObjectsToGeometry(
+			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder, final GeometryAwareCollisionObserver aCollisionObserver,
 			final Collection<GameObjectDescriptor> objectDescriptorCollection) {
 
 		final OpenGLGeometry[] objectGeometries = new OpenGLGeometry[NUMBER_OF_SPINNING_ANIMATION_FRAMES];
@@ -432,7 +368,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	private void drawSword(final GL10 aGl) {
 		final int swordAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPINNING_ANIMATION_CYCLE)
 				/ (float) PERIOD_FOR_SPINNING_ANIMATION_CYCLE * (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES);
-		swordGeometries[swordAnimationIndex].draw(aGl);
+		allHazzardsGeometry[swordAnimationIndex].draw(aGl);
 	}
 
 	public void setPlayerVelocity(int aNewVelocity) {
