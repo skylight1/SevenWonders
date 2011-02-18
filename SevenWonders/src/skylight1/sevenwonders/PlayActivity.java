@@ -11,13 +11,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class PlayActivity extends Activity {
 
@@ -50,8 +47,7 @@ public class PlayActivity extends Activity {
 	private int latestScore;
 
 	private int latestRemainingTimeSeconds=250;
-	
-	
+		
     //Handler to draw debug info (fps) and countdown and end the game
     private Handler updateUiHandler = new Handler() {
     	public void handleMessage(Message msg) {
@@ -65,7 +61,6 @@ public class PlayActivity extends Activity {
    		    			
    		    			// start the countdown NOW!
    		    			countdownStartTime = SystemClock.uptimeMillis();
-   		    			//if(countdownStartTime<0){
    		    			sendUpdateCountdownMessage();
     					break;
     				case FPS_MESSAGE:
@@ -74,11 +69,19 @@ public class PlayActivity extends Activity {
     				case COUNTDOWN_MESSAGE:
     					latestRemainingTimeSeconds = TOTAL_TIME_ALLOWED - (int) ((SystemClock.uptimeMillis() - countdownStartTime)
 								/ ONE_SECOND_IN_MILLISECONDS);
+    					// Finish game if out of time.
+    					if (latestRemainingTimeSeconds < 0) {
+    						finish();
+    						break;
+    					}
+    					// Change time background color if running out of time.
+    					if (latestRemainingTimeSeconds < 100) {
+    						int backgroundColor = latestRemainingTimeSeconds %2 == 1 ? Color.YELLOW : Color.MAGENTA;
+    						countdownView.setBackgroundColor(backgroundColor);
+    					}
+    					// Update time text view and send a delayed message to update again later.
     					countdownView.setText(Integer.toString(latestRemainingTimeSeconds));
-    					if(  latestRemainingTimeSeconds<100  )if(latestRemainingTimeSeconds%2==1)countdownView.setBackgroundColor(Color.YELLOW);
-    					if(  latestRemainingTimeSeconds<100  )if(latestRemainingTimeSeconds%2==0) countdownView.setBackgroundColor(Color.MAGENTA);
-    					if(latestRemainingTimeSeconds==0){finish();}
-    					sendUpdateCountdownMessage();
+    					sendUpdateCountdownMessage();    						
     					break;
     				case END_GAME_MESSAGE:
     					changeToScoreActivity();
