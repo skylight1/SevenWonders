@@ -1,5 +1,4 @@
 package skylight1.sevenwonders.levels;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
@@ -9,7 +8,7 @@ import skylight1.sevenwonders.view.CubeBounds;
 import android.opengl.Matrix;
 
 public enum GameLevel {
-	FIRST(5, 3, 3, 1), SECOND(2, 6, 3, 2);
+	FIRST(5, 1, 3, 1), SECOND(2, 6, 3, 2);
 
 	private static final float HEIGHT_OF_HAZARDS_FROM_GROUND = 9f;
 

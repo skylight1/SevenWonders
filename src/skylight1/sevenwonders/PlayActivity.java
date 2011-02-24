@@ -71,7 +71,8 @@ public class PlayActivity extends Activity {
 								/ ONE_SECOND_IN_MILLISECONDS);
     					// Finish game if out of time.
     					if (latestRemainingTimeSeconds < 0) {
-    						finish();
+    						 //finish();
+    						changeToScoreActivity();
     						break;
     					}
     					// Change time background color if running out of time.
