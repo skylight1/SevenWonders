@@ -100,6 +100,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private final GameLevel level;
 
+	private final float[] skyboxTransformationMatrix = new float[16];
+
 	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel) {
 		Log.i(TAG, "SevenWondersGLRenderer()");
 		context = aContext;
@@ -314,20 +316,27 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 	
 	private void drawSkybox(GL10 aGl) {	
+		// save the current matrix for later - is this necessary?
+		aGl.glPushMatrix();
+
+		// roate the skybox to match the player's facing
+		Matrix.setIdentityM(skyboxTransformationMatrix, 0);
+		Matrix.rotateM(skyboxTransformationMatrix, 0, playerFacing, 0, 1, 0);
+		aGl.glLoadMatrixf(skyboxTransformationMatrix, 0);
+
 		aGl.glDisable(GL10.GL_DEPTH_TEST);
 		aGl.glDisable(GL10.GL_LIGHTING);
 		aGl.glDisable(GL10.GL_LIGHT0);
 		
 		skyboxTexture.activateTexture();
-//		aGl.glPushMatrix();
-	//	aGl.glTranslatef(0, 0, 0);
 		skyboxGeometry.draw(aGl);
 		
 		aGl.glEnable(GL10.GL_DEPTH_TEST);
 		aGl.glEnable(GL10.GL_LIGHTING);
 		aGl.glEnable(GL10.GL_LIGHT0);
 		
-	//	aGl.glPopMatrix();
+		// restore the matrix
+		aGl.glPopMatrix();
 	}	
 
 	private void detectCollisions() {
