@@ -62,6 +62,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	private Texture atlasTexture;
 
 	private Texture sphinxTexture;
+	
+	private Texture skyboxTexture;
 
 	private FPSLogger fPSLogger = new FPSLogger(SevenWondersGLRenderer.class.getName(), FRAMES_BETWEEN_LOGGING_FPS);
 
@@ -72,6 +74,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	private OpenGLGeometry[] allHazardsGeometry;
 
 	private OpenGLGeometry sphinxGeometry;
+	
+	private OpenGLGeometry skyboxGeometry;
 
 	private OpenGLGeometry pyramidGeometry;
 
@@ -125,6 +129,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		loadRequiredObj(R.raw.sphinx_scaled, transformingGeometryBuilder);
 		sphinxGeometry = openGLGeometryBuilder.endGeometry();
 
+		openGLGeometryBuilder.startGeometry();		
+		loadRequiredObj(R.raw.skybox_model, openGLGeometryBuilder);
+		skyboxGeometry = openGLGeometryBuilder.endGeometry();
+		
 		openGLGeometryBuilder.startGeometry();
 		pyramidGeometries[0] = addPyramid(openGLGeometryBuilder, 90, 0, 5);
 		pyramidGeometries[1] = addPyramid(openGLGeometryBuilder, 255, 0, -2);
@@ -263,13 +271,20 @@ public class SevenWondersGLRenderer implements Renderer {
 		}
 		atlasTexture = new Texture(aGl, context, R.raw.textures);
 
-		atlasTexture.activateTexture();
+		if (skyboxTexture != null) {
+			skyboxTexture.freeTexture();
+			skyboxTexture = null;
+		}
+		skyboxTexture = new Texture(aGl, context, R.raw.skybox_texture);
+
+		skyboxTexture.activateTexture();
 
 		updateUiHandler.sendEmptyMessage(PlayActivity.START_RENDERING_MESSAGE);
 	}
 
 	public void onDrawFrame(final GL10 aGl) {
-		aGl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		drawSkybox(aGl);
+
 		// Carpet drawn with no transformations, always right in front of the screen.
 		aGl.glLoadIdentity();
 		// Drawn first for performance, might occlude other geometry, which OpenGL can then skip.
@@ -294,6 +309,24 @@ public class SevenWondersGLRenderer implements Renderer {
 		Message msg = updateUiHandler.obtainMessage(PlayActivity.FPS_MESSAGE, fPSLogger.frameRendered(), 0);
 		updateUiHandler.sendMessage(msg);
 	}
+	
+	private void drawSkybox(GL10 aGl) {	
+		aGl.glDisable(GL10.GL_DEPTH_TEST);
+		aGl.glDisable(GL10.GL_LIGHTING);
+		aGl.glDisable(GL10.GL_LIGHT0);
+		
+		skyboxTexture.activateTexture();
+//		aGl.glPushMatrix();
+	//	aGl.glTranslatef(0, 0, 0);
+		skyboxGeometry.draw(aGl);
+		
+		aGl.glEnable(GL10.GL_DEPTH_TEST);
+		aGl.glEnable(GL10.GL_LIGHTING);
+		aGl.glEnable(GL10.GL_LIGHT0);
+		
+	//	aGl.glPopMatrix();
+		atlasTexture.activateTexture();
+	}	
 
 	private void detectCollisions() {
 		float[] carpetBoundingBox = new float[16];
