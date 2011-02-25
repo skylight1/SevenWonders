@@ -283,6 +283,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	public void onDrawFrame(final GL10 aGl) {
+		aGl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+
 		drawSkybox(aGl);
 
 		// Carpet drawn with no transformations, always right in front of the screen.
@@ -292,6 +294,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		// carpet instead.
 		aGl.glFrontFace(GL_CW);
 
+		atlasTexture.activateTexture();
 		carpet.draw(aGl);
 
 		aGl.glFrontFace(GL_CCW);
@@ -325,7 +328,6 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glEnable(GL10.GL_LIGHT0);
 		
 	//	aGl.glPopMatrix();
-		atlasTexture.activateTexture();
 	}	
 
 	private void detectCollisions() {
