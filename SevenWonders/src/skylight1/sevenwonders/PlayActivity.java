@@ -51,6 +51,12 @@ public class PlayActivity extends Activity {
     //Handler to draw debug info (fps) and countdown and end the game
     private Handler updateUiHandler = new Handler() {
     	public void handleMessage(Message msg) {
+    		// Ignore messages while finishing. This prevents starting multiple
+    		// score activities, for example.
+    		if (isFinishing()) {
+    			return;
+    		}
+    		
     		if(mainLayout!=null) {
     			switch (msg.what) {
     				case START_RENDERING_MESSAGE:
@@ -159,10 +165,8 @@ private void sendUpdateCountdownMessage() {
 		intent.putExtra(ScoreActivity.KEY_REMAINING_TIME_SECONDS, latestRemainingTimeSeconds); 
 		startActivity(intent);
 		finish();
-	}
-
- 
-    }
+	} 
+}
 
     
 
