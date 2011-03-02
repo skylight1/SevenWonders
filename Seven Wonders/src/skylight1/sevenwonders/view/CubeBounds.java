@@ -12,23 +12,23 @@ public class CubeBounds {
 		-1000, 1000
 	);
 
-	final float x1;
+	public final float x1;
 	
-	final float x2;
+	public final float x2;
 	
-	final float y1;
+	public final float y1;
 	
-	final float y2;
+	public final float y2;
 	
-	final float z1;
+	public final float z1;
 	
-	final float z2;
+	public final float z2;
 	
-	final float xSize;
+	public final float xSize;
 	
-	final float ySize;
+	public final float ySize;
 	
-	final float zSize;
+	public final float zSize;
 	
 	/**
 	 * Create a cube bounds.
@@ -55,5 +55,4 @@ public class CubeBounds {
 		ySize = y2 - y1;
 		zSize = z2 - z1;
 	}
-
 }

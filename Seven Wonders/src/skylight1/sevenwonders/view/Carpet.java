@@ -102,6 +102,10 @@ public class Carpet {
 	public float getRollAngle() {
 			float angle = 0;			
 			synchronized (this) {
+				if ( turnEventsHistory.isEmpty() ) {
+					return 0;
+				}
+				
 				final long timeOfMostRecentEvent = turnEventsHistory.getLast().time;
 				final Iterator<TimestampedFloat> iterator = turnEventsHistory.iterator();
 				while (iterator.hasNext()) {

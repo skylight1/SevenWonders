@@ -11,10 +11,10 @@ public class GameTexture {
 	private static final float ATLAS_DIMENSION = 1024f;
 	
 	public static final GameTexture SAND = new GameTexture(
-		320f / ATLAS_DIMENSION,
-		(320f + 256f) / ATLAS_DIMENSION,
+		321f / ATLAS_DIMENSION,
+		(321f + 254f) / ATLAS_DIMENSION,
 		0,
-		256f / ATLAS_DIMENSION
+		254f / ATLAS_DIMENSION
 	);
 	
 	public static final GameTexture SPELL = new GameTexture(
