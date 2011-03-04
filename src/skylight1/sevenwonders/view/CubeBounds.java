@@ -6,10 +6,12 @@ package skylight1.sevenwonders.view;
  */
 public class CubeBounds {
 	
+	public static final float WORLD_EDGE_LENGTH = 1000;
+
 	public static final CubeBounds TERRAIN = new CubeBounds(
-		-1000, 1000,
+		-WORLD_EDGE_LENGTH, WORLD_EDGE_LENGTH,
 		-50f, 0f,
-		-1000, 1000
+		-WORLD_EDGE_LENGTH, WORLD_EDGE_LENGTH
 	);
 
 	public final float x1;
