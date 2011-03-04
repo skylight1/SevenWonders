@@ -65,7 +65,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	
 	private Texture skyboxTexture;
 
-	private FPSLogger fPSLogger = new FPSLogger(SevenWondersGLRenderer.class.getName(), FRAMES_BETWEEN_LOGGING_FPS);
+	private FPSLogger fPSLogger = new FPSLogger(TAG, FRAMES_BETWEEN_LOGGING_FPS);
 
 	private OpenGLGeometry worldGeometry;
 
@@ -100,7 +100,9 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private final GameLevel level;
 
-	private final float[] skyboxTransformationMatrix = new float[16];
+	private final float[] temporaryMatrix = new float[16];
+
+	private float playerFacingThisFrame;
 
 	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel) {
 		Log.i(TAG, "SevenWondersGLRenderer()");
@@ -113,7 +115,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
 		Log.i(TAG, "- onSurfaceCreated - ");
 
-		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable();
+		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(46674);
 
 		// Add ground and pyramid to a single drawable geometry for the world.
 		openGLGeometryBuilder.startGeometry();
@@ -286,9 +288,28 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public void onDrawFrame(final GL10 aGl) {
 		aGl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		
+		playerFacingThisFrame = playerFacing;
 
+		drawCarpet(aGl);
+
+		applyMovement(aGl);
+
+		detectCollisions();
+
+		drawGround(aGl);
+		drawSphinx(aGl);
+		drawPyramid(aGl);
+		drawSpell(aGl);
+		drawSword(aGl);
+		
 		drawSkybox(aGl);
 
+		Message msg = updateUiHandler.obtainMessage(PlayActivity.FPS_MESSAGE, fPSLogger.frameRendered(), 0);
+		updateUiHandler.sendMessage(msg);
+	}
+
+	private void drawCarpet(final GL10 aGl) {
 		// Carpet drawn with no transformations, always right in front of the screen.
 		aGl.glLoadIdentity();
 		// Drawn first for performance, might occlude other geometry, which OpenGL can then skip.
@@ -300,38 +321,49 @@ public class SevenWondersGLRenderer implements Renderer {
 		carpet.draw(aGl);
 
 		aGl.glFrontFace(GL_CCW);
+	}
 
-		applyMovement(aGl);
+	private void drawGround(final GL10 aGl) {
+		final float[] groundTilingTransformationMatrix = temporaryMatrix;
+		aGl.glPushMatrix();
+		for (int x = -1; x <= 1; x++) {
+			for (int z = -1; z <= 1; z++) {
+				final float xScale = Math.abs(x) % 2 == 0 ? 1 : -1;
+				final float zScale = Math.abs(z) % 2 == 0 ? 1 : -1;
 
-		detectCollisions();
+				// if the ground is flipped by one axis but not the other, then the winding is reversed
+				aGl.glFrontFace(xScale == zScale ? GL_CCW : GL_CW);
 
-		worldGeometry.draw(aGl);
-		drawSphinx(aGl);
-		drawPyramid(aGl);
-		drawSpell(aGl);
-		drawSword(aGl);
+				Matrix.setIdentityM(groundTilingTransformationMatrix, 0);
+				Matrix.rotateM(groundTilingTransformationMatrix, 0, playerFacingThisFrame, 0, 1, 0);
+				Matrix.translateM(groundTilingTransformationMatrix, 0, 2 * CubeBounds.WORLD_EDGE_LENGTH * x
+						- playerWorldPosition.x, -HEIGHT_OF_CARPET_FROM_GROUND, 2 * CubeBounds.WORLD_EDGE_LENGTH * z
+						- playerWorldPosition.z);
+				Matrix.scaleM(groundTilingTransformationMatrix, 0, xScale, 1, zScale);
 
-		Message msg = updateUiHandler.obtainMessage(PlayActivity.FPS_MESSAGE, fPSLogger.frameRendered(), 0);
-		updateUiHandler.sendMessage(msg);
+				aGl.glLoadMatrixf(groundTilingTransformationMatrix, 0);
+
+				worldGeometry.draw(aGl);
+			}
+		}
+		aGl.glPopMatrix();
 	}
 	
 	private void drawSkybox(GL10 aGl) {	
-		// save the current matrix for later - is this necessary?
+		// save the current matrix for later - later? what later?
 		aGl.glPushMatrix();
 
-		// roate the skybox to match the player's facing
-		Matrix.setIdentityM(skyboxTransformationMatrix, 0);
-		Matrix.rotateM(skyboxTransformationMatrix, 0, playerFacing, 0, 1, 0);
-		aGl.glLoadMatrixf(skyboxTransformationMatrix, 0);
+		// rotate the skybox to match the player's facing
+		Matrix.setIdentityM(temporaryMatrix, 0);
+		Matrix.rotateM(temporaryMatrix, 0, playerFacingThisFrame, 0, 1, 0);
+		aGl.glLoadMatrixf(temporaryMatrix, 0);
 
-		aGl.glDisable(GL10.GL_DEPTH_TEST);
 		aGl.glDisable(GL10.GL_LIGHTING);
 		aGl.glDisable(GL10.GL_LIGHT0);
 		
 		skyboxTexture.activateTexture();
 		skyboxGeometry.draw(aGl);
 		
-		aGl.glEnable(GL10.GL_DEPTH_TEST);
 		aGl.glEnable(GL10.GL_LIGHTING);
 		aGl.glEnable(GL10.GL_LIGHT0);
 		
@@ -340,12 +372,12 @@ public class SevenWondersGLRenderer implements Renderer {
 	}	
 
 	private void detectCollisions() {
-		float[] carpetBoundingBox = new float[16];
+		float[] carpetBoundingBox = temporaryMatrix;
 		// TODO should we use Matrix.orthoM()
 		Matrix.frustumM(carpetBoundingBox, 0, -0.5f, 0.5f, HEIGHT_OF_CARPET_FROM_GROUND, HEIGHT_OF_CARPET_FROM_GROUND + 2f, 0.1f, 1f);
 
 		// Rotate first, otherwise map rotates around center point we translated away from.
-		Matrix.rotateM(carpetBoundingBox, 0, playerFacing, 0, 1, 0);
+		Matrix.rotateM(carpetBoundingBox, 0, playerFacingThisFrame, 0, 1, 0);
 		Matrix.translateM(carpetBoundingBox, 0, -playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
 
 		collisionDetector.detectCollisions(carpetBoundingBox);
@@ -354,8 +386,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	private void applyMovement(final GL10 aGl) {
 		final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
 
-		final float facingX = (float) Math.sin(playerFacing / 180f * Math.PI);
-		final float facingZ = -(float) Math.cos(playerFacing / 180f * Math.PI);
+		final float facingX = (float) Math.sin(playerFacingThisFrame / 180f * Math.PI);
+		final float facingZ = -(float) Math.cos(playerFacingThisFrame / 180f * Math.PI);
 
 		final float newPositionX = playerWorldPosition.x + facingX * velocity * timeDeltaMS;
 		final float newPositionZ = playerWorldPosition.z + facingZ * velocity * timeDeltaMS;
@@ -363,13 +395,11 @@ public class SevenWondersGLRenderer implements Renderer {
 		// TODO: CHECK FOR END OF WORLD
 		if (newPositionX > (CubeBounds.TERRAIN.x1 + END_OF_WORLD_MARGIN)
 				&& newPositionX < (CubeBounds.TERRAIN.x2 - END_OF_WORLD_MARGIN)) {
-			// playerWorldPosition.x += facingX * velocity * timeDeltaMS;
 			playerWorldPosition.x = newPositionX;
 		}
 
 		if (newPositionZ > (CubeBounds.TERRAIN.z1 + END_OF_WORLD_MARGIN)
 				&& newPositionZ < (CubeBounds.TERRAIN.z2 - END_OF_WORLD_MARGIN)) {
-			// playerWorldPosition.z += facingZ * velocity * timeDeltaMS;
 			playerWorldPosition.z = newPositionZ;
 		}
 
