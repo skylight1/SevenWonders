@@ -64,10 +64,12 @@ public class SevenWondersGLRenderer implements Renderer {
 	private Texture sphinxTexture;
 	
 	private Texture skyboxTexture;
+	
+	private Texture groundTexture;
 
 	private FPSLogger fPSLogger = new FPSLogger(TAG, FRAMES_BETWEEN_LOGGING_FPS);
 
-	private OpenGLGeometry worldGeometry;
+	private OpenGLGeometry waterGeometry;
 
 	private OpenGLGeometry[] allSpellsGeometry;
 	
@@ -78,6 +80,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	private OpenGLGeometry skyboxGeometry;
 
 	private OpenGLGeometry pyramidGeometry;
+	
+	private OpenGLGeometry groundGeometry;
 
 	// Start a little back so that we aren't inside the pyramid.
 	private Position playerWorldPosition = new Position(0, 0, 200);
@@ -116,11 +120,16 @@ public class SevenWondersGLRenderer implements Renderer {
 		Log.i(TAG, "- onSurfaceCreated - ");
 
 		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(46674);
-
-		// Add ground and pyramid to a single drawable geometry for the world.
-		openGLGeometryBuilder.startGeometry();
-		loadRequiredObj(R.raw.ground, openGLGeometryBuilder);
-		worldGeometry = openGLGeometryBuilder.endGeometry();
+		
+		openGLGeometryBuilder.startGeometry();		
+		loadRequiredObj(R.raw.ground, openGLGeometryBuilder);		
+		groundGeometry = openGLGeometryBuilder.endGeometry();
+		
+		openGLGeometryBuilder.startGeometry();		
+		loadRequiredObj(R.raw.water, openGLGeometryBuilder);
+		waterGeometry = openGLGeometryBuilder.endGeometry();
+		
+		
 
 		float[] coordinateTransform = new float[16];
 		Matrix.setIdentityM(coordinateTransform, 0);
@@ -138,9 +147,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		skyboxGeometry = openGLGeometryBuilder.endGeometry();
 		
 		openGLGeometryBuilder.startGeometry();
-		pyramidGeometries[0] = addPyramid(openGLGeometryBuilder, 90, 0, 5);
-		pyramidGeometries[1] = addPyramid(openGLGeometryBuilder, 255, 0, -2);
-		pyramidGeometries[2] = addPyramid(openGLGeometryBuilder, -320, -7, 100);
+		pyramidGeometries[0] = addPyramid(openGLGeometryBuilder, 90, 0, 100);
+		pyramidGeometries[1] = addPyramid(openGLGeometryBuilder, 455, 0, 110);
+		pyramidGeometries[2] = addPyramid(openGLGeometryBuilder, -420, -7, 100);
 		pyramidGeometry = openGLGeometryBuilder.endGeometry();
 
 		final GeometryAwareCollisionObserver spellsCollisionHandler = new SpellCollisionHandler(collisionDetector, level, updateUiHandler, this);
@@ -198,7 +207,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		final Map<Integer, ObjFileLoader> resourceIdToObjFileLoaderMap = new HashMap<Integer, ObjFileLoader>();
 
 		// create a number of objects, in a number of orientations
-		final int numberOfObjects = objectDescriptorCollection.size();
+		// final int numberOfObjects = objectDescriptorCollection.size();
 		float[] coordinateTransform = new float[16];
 		for (int animationIndex = 0; animationIndex < NUMBER_OF_SPINNING_ANIMATION_FRAMES; animationIndex++) {
 			openGLGeometryBuilder.startGeometry();
@@ -262,28 +271,28 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		aGl.glMatrixMode(GL10.GL_MODELVIEW);
 
-		// if the surface changed from a prior surface, such as a change of orientation, then free the prior texture
-		if (sphinxTexture != null) {
-			sphinxTexture.freeTexture();
-			sphinxTexture = null;
-		}
-		sphinxTexture = new Texture(aGl, context, R.raw.sphinx, true);
-
-		if (atlasTexture != null) {
-			atlasTexture.freeTexture();
-			atlasTexture = null;
-		}
-		atlasTexture = new Texture(aGl, context, R.raw.textures);
-
-		if (skyboxTexture != null) {
-			skyboxTexture.freeTexture();
-			skyboxTexture = null;
-		}
-		skyboxTexture = new Texture(aGl, context, R.raw.skybox_texture);
-
+		sphinxTexture = createNewTexture(aGl, sphinxTexture, R.raw.sphinx);
+		groundTexture = createNewTexture(aGl, groundTexture, R.raw.dunes);
+		atlasTexture = createNewTexture(aGl, atlasTexture, R.raw.textures);
+		skyboxTexture = createNewTexture(aGl, skyboxTexture, R.raw.skybox_texture);		
 		skyboxTexture.activateTexture();
+		
+		
 
 		updateUiHandler.sendEmptyMessage(PlayActivity.START_RENDERING_MESSAGE);
+	}
+	
+	/**
+	 * Creates a new texture, freeing the old one if there was one. 
+	 *
+	 */	
+	private Texture createNewTexture(final GL10 aGl, Texture aTexture, int resourceId) {
+		// if the surface changed from a prior surface, such as a change of orientation, then free the prior texture
+		if (aTexture != null) {
+			aTexture.freeTexture();
+			aTexture = null;
+		}
+		return new Texture(aGl, context, resourceId, true);
 	}
 
 	public void onDrawFrame(final GL10 aGl) {
@@ -295,18 +304,23 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		applyMovement(aGl);
 
-		detectCollisions();
-
-		drawGround(aGl);
+		detectCollisions();		
 		drawSphinx(aGl);
 		drawPyramid(aGl);
 		drawSpell(aGl);
 		drawSword(aGl);
+		drawWater(aGl);
 		
+		drawGround(aGl);
 		drawSkybox(aGl);
 
 		Message msg = updateUiHandler.obtainMessage(PlayActivity.FPS_MESSAGE, fPSLogger.frameRendered(), 0);
 		updateUiHandler.sendMessage(msg);
+	}
+
+	private void drawWater(GL10 aGl) {
+		waterGeometry.draw(aGl);
+		
 	}
 
 	private void drawCarpet(final GL10 aGl) {
@@ -324,29 +338,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	private void drawGround(final GL10 aGl) {
-		final float[] groundTilingTransformationMatrix = temporaryMatrix;
-		aGl.glPushMatrix();
-		for (int x = -1; x <= 1; x++) {
-			for (int z = -1; z <= 1; z++) {
-				final float xScale = Math.abs(x) % 2 == 0 ? 1 : -1;
-				final float zScale = Math.abs(z) % 2 == 0 ? 1 : -1;
-
-				// if the ground is flipped by one axis but not the other, then the winding is reversed
-				aGl.glFrontFace(xScale == zScale ? GL_CCW : GL_CW);
-
-				Matrix.setIdentityM(groundTilingTransformationMatrix, 0);
-				Matrix.rotateM(groundTilingTransformationMatrix, 0, playerFacingThisFrame, 0, 1, 0);
-				Matrix.translateM(groundTilingTransformationMatrix, 0, 2 * CubeBounds.WORLD_EDGE_LENGTH * x
-						- playerWorldPosition.x, -HEIGHT_OF_CARPET_FROM_GROUND, 2 * CubeBounds.WORLD_EDGE_LENGTH * z
-						- playerWorldPosition.z);
-				Matrix.scaleM(groundTilingTransformationMatrix, 0, xScale, 1, zScale);
-
-				aGl.glLoadMatrixf(groundTilingTransformationMatrix, 0);
-
-				worldGeometry.draw(aGl);
-			}
-		}
-		aGl.glPopMatrix();
+		groundTexture.activateTexture();
+		groundGeometry.draw(aGl);
 	}
 	
 	private void drawSkybox(GL10 aGl) {	
