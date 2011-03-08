@@ -27,8 +27,8 @@ public class MenuActivity extends Activity {
 			}
 		});
 		
-		final View button = findViewById(R.id.EnterEgypt);
-		button.setOnClickListener(new OnClickListener() {
+		final View view = findViewById(R.id.EnterEgypt);
+		view.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View aV) {
 				final Intent gameActivity = new Intent(MenuActivity.this, PlayActivity.class);
