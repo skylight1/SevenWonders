@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout a:id="@+id/RelativeLayout01"
+	a:layout_width="fill_parent" a:layout_height="fill_parent"
+	xmlns:a="http://schemas.android.com/apk/res/android">
+
+	<skylight1.sevenwonders.view.SevenWondersGLSurfaceView a:id="@+id/surfaceView" 
+		a:layout_height="fill_parent"
+		a:layout_width="fill_parent" 
+		/>
+
+	<TextView a:id="@+id/Countdown" 
+		a:text="300" 
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_alignParentLeft="true"
+		a:textStyle="bold" 
+		a:textSize="32sp" 
+		a:textColor="#D00"
+		a:layout_marginLeft="6dp" />
+
+	<TextView a:id="@+id/FPS" 
+		a:text="fps goes here" 
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_alignParentLeft="true"
+		a:layout_alignParentBottom="true" 
+		a:textStyle="bold" 
+		a:textSize="32sp"
+		a:textColor="#0F0" 
+		a:layout_marginLeft="6dp" />
+
+	<TextView a:id="@+id/Score" 
+		a:text="0" 
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_alignParentRight="true"
+		a:textStyle="bold" 
+		a:textSize="32sp" 
+		a:textColor="#FF0"
+		a:layout_marginRight="6dp" />
+		
+	<ImageView a:id="@+id/splashView" 
+		a:src="@drawable/bg"
+		a:scaleType="fitXY"
+		a:layout_height="fill_parent"
+		a:layout_width="fill_parent" 
+		/>
+</RelativeLayout>
