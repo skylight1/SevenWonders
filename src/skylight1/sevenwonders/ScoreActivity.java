@@ -79,8 +79,8 @@ public class ScoreActivity extends Activity {
 			playAgain.setVisibility(View.GONE);
 		// Otherwise show the play again button.
 		} else {
-			playNextLevel.setVisibility(View.VISIBLE);
-			playAgain.setVisibility(View.GONE);
+			playNextLevel.setVisibility(View.GONE);
+			playAgain.setVisibility(View.VISIBLE);
 		}
 		
 		// Tell the user they won the game if they won the last level 
