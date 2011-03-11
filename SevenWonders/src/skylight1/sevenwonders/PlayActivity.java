@@ -42,7 +42,7 @@ public class PlayActivity extends Activity {
 	
 	private TextView debugView;
 	
-	private GameLevel currentLevel = GameLevel.FIRST;
+	private GameLevel currentLevel;
 	
 	private int latestScore;
 
@@ -78,7 +78,7 @@ public class PlayActivity extends Activity {
     					// Finish game if out of time.
     					if (latestRemainingTimeSeconds < 0) {
     						 //finish();
-    						changeToScoreActivity();
+    						changeToScoreActivity(false);
     						break;
     					}
     					// Change time background color if running out of time.
@@ -91,12 +91,12 @@ public class PlayActivity extends Activity {
     					sendUpdateCountdownMessage();    						
     					break;
     				case END_GAME_MESSAGE:
-    					changeToScoreActivity();
+    					changeToScoreActivity(false);
     					break;
     				case NEW_SCORE_MESSAGE:
     					latestScore = msg.arg1;
 						if (latestScore >= currentLevel.getNumberOfSpellsRequired()) {
-							changeToScoreActivity();
+							changeToScoreActivity(true);
 						}
 						TextView scoreTextView = (TextView) findViewById(R.id.Score);
 						scoreTextView.setText("" + latestScore);
@@ -107,10 +107,8 @@ public class PlayActivity extends Activity {
     		
     		};
     	};
-    		
-    		
-    
-private void sendUpdateCountdownMessage() {
+    		    
+    private void sendUpdateCountdownMessage() {
 		final Message countdownMessage = updateUiHandler.obtainMessage(COUNTDOWN_MESSAGE);
 		updateUiHandler.sendMessageDelayed(countdownMessage, ONE_SECOND_IN_MILLISECONDS);
 	}
@@ -120,6 +118,9 @@ private void sendUpdateCountdownMessage() {
 		super.onCreate(savedInstanceState);
 
 		Log.i(TAG,"onCreate()");
+		
+		int levelOrdinal = getIntent().getIntExtra(ScoreActivity.KEY_LEVEL_ORDINAL, 0);
+		currentLevel = GameLevel.values()[levelOrdinal];
 
 		SoundTracks.setEnabled(getIntent().getBooleanExtra("ENABLESOUND", true));
 		SoundTracks soundTrack = SoundTracks.getInstance();
@@ -159,10 +160,12 @@ private void sendUpdateCountdownMessage() {
 		}
 	}
 
-	private void changeToScoreActivity() {
+	private void changeToScoreActivity(boolean wonLevel) {
 		Intent intent = new Intent().setClass(PlayActivity.this, ScoreActivity.class);
 		intent.putExtra(ScoreActivity.KEY_COLLECTED_SPELL_COUNT, latestScore); 
 		intent.putExtra(ScoreActivity.KEY_REMAINING_TIME_SECONDS, latestRemainingTimeSeconds); 
+		intent.putExtra(ScoreActivity.KEY_LEVEL_ORDINAL, currentLevel.ordinal()); 
+		intent.putExtra(ScoreActivity.KEY_WON_LEVEL, wonLevel); 
 		startActivity(intent);
 		finish();
 	} 

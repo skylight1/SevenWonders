@@ -122,7 +122,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(46674);
 		
 		openGLGeometryBuilder.startGeometry();		
-		loadRequiredObj(R.raw.ground, openGLGeometryBuilder);		
+		loadRequiredObj(level.getGroundObj(), openGLGeometryBuilder);		
 		groundGeometry = openGLGeometryBuilder.endGeometry();
 		
 		openGLGeometryBuilder.startGeometry();		

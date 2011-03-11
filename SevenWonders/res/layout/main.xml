@@ -9,7 +9,7 @@
 		/>
 
 	<TextView a:id="@+id/Countdown" 
-		a:text="300" 
+		a:text="" 
 		a:layout_height="wrap_content"
 		a:layout_width="wrap_content" 
 		a:layout_alignParentLeft="true"
@@ -19,7 +19,7 @@
 		a:layout_marginLeft="6dp" />
 
 	<TextView a:id="@+id/FPS" 
-		a:text="fps goes here" 
+		a:text="" 
 		a:layout_height="wrap_content"
 		a:layout_width="wrap_content" 
 		a:layout_alignParentLeft="true"
@@ -30,7 +30,7 @@
 		a:layout_marginLeft="6dp" />
 
 	<TextView a:id="@+id/Score" 
-		a:text="0" 
+		a:text="" 
 		a:layout_height="wrap_content"
 		a:layout_width="wrap_content" 
 		a:layout_alignParentRight="true"
