@@ -35,6 +35,16 @@
     		  android:layout_width="fill_parent"
     		  android:layout_height="wrap_content"
     		  />
+    
+    <TextView android:id="@+id/wonGame"
+    		  android:layout_width="fill_parent"
+    		  android:layout_height="wrap_content"
+   			android:text="@string/wonGame"/>
+    		  
+   	<Button android:id="@+id/playNextLevel"
+   			android:layout_width="fill_parent"
+   			android:layout_height="wrap_content" 
+   			android:text="@string/playNextLevel"/>
     		  
    	<Button android:id="@+id/playAgain"
    			android:layout_width="fill_parent"
