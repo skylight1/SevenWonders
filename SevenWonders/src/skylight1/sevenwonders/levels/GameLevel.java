@@ -8,7 +8,15 @@ import skylight1.sevenwonders.view.CubeBounds;
 import android.opengl.Matrix;
 
 public enum GameLevel {
-	FIRST(5, 1, 3, 1), SECOND(2, 6, 3, 2);
+	// TODO make sure seeds leave enough spells outside hazards
+	// and that we don't run out of memory on the highest level
+	FIRST  (6, 0, 1, 1, R.raw.ground), 
+	SECOND (6, 2, 2, 2, R.raw.ground), 
+	THIRD  (5, 4, 3, 3, R.raw.ground),
+	FOURTH (5, 6, 3, 4, R.raw.ground),
+	FIFTH  (4, 8, 3, 5, R.raw.ground),
+	SIXTH  (4, 10, 3, 6, R.raw.ground),
+	SEVENTH(3, 12, 3, 7, R.raw.ground);
 
 	private static final float HEIGHT_OF_HAZARDS_FROM_GROUND = 9f;
 
@@ -24,11 +32,14 @@ public enum GameLevel {
 
 	private final Random random;
 
+	private int groupObjFileId;
+
 	private GameLevel(final int aNumberOfSpells, final int aNumberOfHazzards, final int aNumberOfSpellsRequired,
-			final long aRandomSeed) {
+			final long aRandomSeed, final int aGroupObjFileId) {
 		numberOfSpells = aNumberOfSpells;
 		numberOfHazards = aNumberOfHazzards;
 		numberOfSpellsRequired = aNumberOfSpellsRequired;
+		groupObjFileId = aGroupObjFileId;
 		random = new Random(aRandomSeed);
 	}
 
@@ -37,6 +48,13 @@ public enum GameLevel {
 	 */
 	public int getNumberOfSpells() {
 		return numberOfSpells;
+	}
+
+	/**
+	 * @return ground obj file ID
+	 */
+	public int getGroundObj() {
+		return groupObjFileId;
 	}
 
 	/**
