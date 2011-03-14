@@ -5,6 +5,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.view.Display;
+import android.view.Surface;
+import android.view.WindowManager;
 
 /**
  * Controls the carpet by measuring the tilt of the phone.
@@ -42,6 +45,8 @@ public class TiltControl {
 	private static final int PHONE_PITCH_TO_CARPET_PITCH_DIVISOR = -10;
 	
 	private final SensorManager sensorManager;
+
+	private Display display;
 	
 	private final SevenWondersGLRenderer renderer;
 	
@@ -58,8 +63,15 @@ public class TiltControl {
 		@Override
 		public void onSensorChanged(final SensorEvent aEvent) {
 
+			//adjust for rotation if landscape is the natural orientation
+			//ROTATION_90 from natural orientation would be portrait based devices (only value I see w/phones) 
+			if(display.getOrientation() == Surface.ROTATION_0) {
+				float temp = aEvent.values[1];
+				aEvent.values[1] = aEvent.values[2];
+				aEvent.values[2] = temp + 180;
+			}
+	
 			// not using event.values[0], it's the azimuth, rotation around the z-aixs
-
 			// Point the carpet left or right depending on phone being tilted left or right.
 			final int phonePitch = (int) aEvent.values[1]; // rotation around x-axis
 			final int carpetPitch = phonePitch / PHONE_PITCH_TO_CARPET_PITCH_DIVISOR;
@@ -76,6 +88,8 @@ public class TiltControl {
 	
 	public TiltControl(final Context aContext, final SevenWondersGLRenderer aRenderer) {
 		this.renderer = aRenderer;
+		WindowManager windowManager = (WindowManager) aContext.getSystemService(Context.WINDOW_SERVICE);
+		display = windowManager.getDefaultDisplay();
 		sensorManager = (SensorManager) aContext.getSystemService(android.content.Context.SENSOR_SERVICE);
 		orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 	}
