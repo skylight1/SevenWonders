@@ -11,32 +11,35 @@ import android.widget.CheckBox;
 
 public class MenuActivity extends Activity {
 
-    public static final String PREFS_NAME = "SevenWondersPrefs";
+    private static final String SOUND_ENABLED = "SOUNDENABLED";
+
+	public static final String PREFS_NAME = "SevenWondersPrefs";
 
 	private static final String TAG = MenuActivity.class.getName();
-	private boolean SOUNDENABLED; 
+	private boolean soundEndabled; 
 	
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
+		Log.i(TAG, "started");
+
 		super.onCreate(savedInstanceState);
 
         // Restore preferences
-       SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-       SOUNDENABLED = settings.getBoolean("SOUNDENABLED", false);
+        final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        soundEndabled = settings.getBoolean(SOUND_ENABLED, false);
 
-		Log.i(TAG, "started");
 		setContentView(R.layout.menu);
 		final CheckBox soundCB = (CheckBox)findViewById(R.id.soundCheckBox);
-        soundCB.setChecked(SOUNDENABLED);
+        soundCB.setChecked(soundEndabled);
 		soundCB.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View aV) {
-				SOUNDENABLED = soundCB.isChecked();
+				soundEndabled = soundCB.isChecked();
 
                 //save preference
-                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
                 SharedPreferences.Editor editor = settings.edit();
-                editor.putBoolean("SOUNDENABLED", SOUNDENABLED);
+                editor.putBoolean(SOUND_ENABLED, soundEndabled);
                 editor.commit();
 			}
 		});
@@ -46,7 +49,7 @@ public class MenuActivity extends Activity {
 			@Override
 			public void onClick(View aV) {
 				final Intent gameActivity = new Intent(MenuActivity.this, PlayActivity.class);
-				gameActivity.putExtra("ENABLESOUND", SOUNDENABLED);
+				gameActivity.putExtra("ENABLESOUND", soundEndabled);
 				startActivity(gameActivity);
 			}
 		});

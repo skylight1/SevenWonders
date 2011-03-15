@@ -15,11 +15,21 @@ public class GameObjectDescriptor {
 
 	public final float[] textureTransformationMatrix;
 
-	public final int objectFileResourceId; // the resource id of the OBJ file, e.g., spell.obj
+	/**
+	 * The resource for the OBJ file, e.g., R.raw.spell for "spell.obj".
+	 */
+	public final int objectFileResourceId;
 
-	public GameObjectDescriptor(final float[] aCoordinateTransformationMatrix, float[] aTextureTransformationMatrix, final int anObjectFileResourceId) {
+	/**
+	 * The resource for the texture file, e.g., R.raw.dunes for "dunes.png".
+	 */
+	public final int textureResource;
+
+	public GameObjectDescriptor(final float[] aCoordinateTransformationMatrix, float[] aTextureTransformationMatrix,
+			final int anObjectFileResourceId, final int aTextureFileResourceId) {
 		coordinateTransformationMatrix = aCoordinateTransformationMatrix;
 		textureTransformationMatrix = aTextureTransformationMatrix;
 		objectFileResourceId = anObjectFileResourceId;
+		textureResource = aTextureFileResourceId;
 	}
 }
