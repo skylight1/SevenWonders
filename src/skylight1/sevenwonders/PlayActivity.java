@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class PlayActivity extends Activity {
-
 	public static final int FPS_MESSAGE = 0;
 	public static final int COUNTDOWN_MESSAGE = 1;
 	public static final int END_GAME_MESSAGE = 2;
@@ -95,19 +94,17 @@ public class PlayActivity extends Activity {
     					break;
     				case NEW_SCORE_MESSAGE:
     					latestScore = msg.arg1;
-						if (latestScore >= currentLevel.getNumberOfSpellsRequired()) {
+						if (latestScore >= currentLevel.getNumberOfSpells()) {
 							changeToScoreActivity(true);
 						}
-						TextView scoreTextView = (TextView) findViewById(R.id.Score);
+						TextView scoreTextView = (TextView) findViewById(R.id.score);
 						scoreTextView.setText("" + latestScore);
 						break;
-    			
-    			
-    		}}
+    			}
+    		}
+   		};
+   	};
     		
-    		};
-    	};
-    		    
     private void sendUpdateCountdownMessage() {
 		final Message countdownMessage = updateUiHandler.obtainMessage(COUNTDOWN_MESSAGE);
 		updateUiHandler.sendMessageDelayed(countdownMessage, ONE_SECOND_IN_MILLISECONDS);
@@ -119,7 +116,7 @@ public class PlayActivity extends Activity {
 
 		Log.i(TAG,"onCreate()");
 		
-		int levelOrdinal = getIntent().getIntExtra(ScoreActivity.KEY_LEVEL_ORDINAL, 0);
+		final int levelOrdinal = getIntent().getIntExtra(ScoreActivity.KEY_LEVEL_ORDINAL, 0);
 		currentLevel = GameLevel.values()[levelOrdinal];
 
 		SoundTracks.setEnabled(getIntent().getBooleanExtra("ENABLESOUND", true));
@@ -133,6 +130,11 @@ public class PlayActivity extends Activity {
 		splashView = (ImageView) findViewById(R.id.splashView);;
 		gLSurfaceView = (SevenWondersGLSurfaceView) findViewById(R.id.surfaceView);;
 		gLSurfaceView.initialize(updateUiHandler, currentLevel);
+
+		final TextView scoreTextView = (TextView) findViewById(R.id.score);
+		scoreTextView.setText("0");
+		final TextView targetScoreTextView = (TextView) findViewById(R.id.targetScore);
+		targetScoreTextView.setText("" + currentLevel.getNumberOfSpells());
 	}
 	
     @Override
@@ -170,8 +172,3 @@ public class PlayActivity extends Activity {
 		finish();
 	} 
 }
-
-    
-
-
-

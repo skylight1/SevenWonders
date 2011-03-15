@@ -4,8 +4,10 @@ import static javax.microedition.khronos.opengles.GL10.GL_CCW;
 import static javax.microedition.khronos.opengles.GL10.GL_CW;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -18,7 +20,6 @@ import skylight1.opengl.OpenGLGeometryBuilder;
 import skylight1.opengl.OpenGLGeometryBuilderFactory;
 import skylight1.opengl.Texture;
 import skylight1.opengl.TransformingGeometryBuilder;
-import skylight1.opengl.CollisionDetector.CollisionObserver;
 import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
 import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
 import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
@@ -59,29 +60,13 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private final Context context;
 
-	private Texture atlasTexture;
-
-	private Texture sphinxTexture;
-	
-	private Texture skyboxTexture;
-	
-	private Texture groundTexture;
-
 	private FPSLogger fPSLogger = new FPSLogger(TAG, FRAMES_BETWEEN_LOGGING_FPS);
-
-	private OpenGLGeometry waterGeometry;
 
 	private OpenGLGeometry[] allSpellsGeometry;
 	
 	private OpenGLGeometry[] allHazardsGeometry;
 
-	private OpenGLGeometry sphinxGeometry;
-	
 	private OpenGLGeometry skyboxGeometry;
-
-	private OpenGLGeometry pyramidGeometry;
-	
-	private OpenGLGeometry groundGeometry;
 
 	// Start a little back so that we aren't inside the pyramid.
 	private Position playerWorldPosition = new Position(0, 0, 200);
@@ -98,7 +83,9 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private Carpet carpet;
 
-	private OpenGLGeometry[] pyramidGeometries = new OpenGLGeometry[3];
+	private List<OpenGLGeometry> decorationGeometries = new ArrayList<OpenGLGeometry>();
+	
+	private final Map<Integer, Texture> textureResourceIdToTextureMap = new HashMap<Integer, Texture>();
 
 	private final Handler updateUiHandler;
 
@@ -120,42 +107,45 @@ public class SevenWondersGLRenderer implements Renderer {
 		Log.i(TAG, "- onSurfaceCreated - ");
 
 		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(46674);
-		
-		openGLGeometryBuilder.startGeometry();		
-		loadRequiredObj(level.getGroundObj(), openGLGeometryBuilder);		
-		groundGeometry = openGLGeometryBuilder.endGeometry();
-		
-		openGLGeometryBuilder.startGeometry();		
-		loadRequiredObj(R.raw.water, openGLGeometryBuilder);
-		waterGeometry = openGLGeometryBuilder.endGeometry();
-		
-		
 
-		float[] coordinateTransform = new float[16];
-		Matrix.setIdentityM(coordinateTransform, 0);
-		Matrix.rotateM(coordinateTransform, 0, 90, 0, 1, 0);
-		float[] textureTransform = new float[16];
-		Matrix.setIdentityM(textureTransform, 0);
+		// load all of the decorations (land, water, sphinx, pyramids, etc.)
+		int currentTextureResource = 0;
+		for (GameObjectDescriptor objectDescriptor : level.getDecorations()) {
+			// if the texture has changed (including the first time through), then ...
+			if (objectDescriptor.textureResource != currentTextureResource) {
+				// wrap up the existing geometry (if any, since first time through there won't be an existing geometry)
+				if (openGLGeometryBuilder.isBuildingGeometry()) {
+					final OpenGLGeometry previousGeometry = openGLGeometryBuilder.endGeometry();
+					decorationGeometries.add(previousGeometry);
+				}
+				
+				currentTextureResource = objectDescriptor.textureResource;
+				
+				// create a new texture object, store it in the texture id to texture map,
+				// and start a new geometry using the new texture
+				final Texture texture = new Texture(context, objectDescriptor.textureResource);
+				textureResourceIdToTextureMap.put(objectDescriptor.textureResource, texture);
+				openGLGeometryBuilder.startGeometry(texture);
+			}
 
-		openGLGeometryBuilder.startGeometry();
-		TransformingGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, textureTransform);
-		loadRequiredObj(R.raw.sphinx_scaled, transformingGeometryBuilder);
-		sphinxGeometry = openGLGeometryBuilder.endGeometry();
-
-		openGLGeometryBuilder.startGeometry();		
+			// load the object
+			TransformingGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, objectDescriptor.coordinateTransformationMatrix, objectDescriptor.textureTransformationMatrix);
+			loadRequiredObj(objectDescriptor.objectFileResourceId, transformingGeometryBuilder);
+		}
+		// wrap up the existing geometry (if any, since first time through there won't be an existing geometry)
+		if (openGLGeometryBuilder.isBuildingGeometry()) {
+			final OpenGLGeometry lastGeometry = openGLGeometryBuilder.endGeometry();
+			decorationGeometries.add(lastGeometry);
+		}
+		
+		openGLGeometryBuilder.startGeometry(getTexture(R.raw.skybox_texture, false));		
 		loadRequiredObj(R.raw.skybox_model, openGLGeometryBuilder);
 		skyboxGeometry = openGLGeometryBuilder.endGeometry();
 		
-		openGLGeometryBuilder.startGeometry();
-		pyramidGeometries[0] = addPyramid(openGLGeometryBuilder, 90, 0, 100);
-		pyramidGeometries[1] = addPyramid(openGLGeometryBuilder, 455, 0, 110);
-		pyramidGeometries[2] = addPyramid(openGLGeometryBuilder, -420, -7, 100);
-		pyramidGeometry = openGLGeometryBuilder.endGeometry();
-
 		final GeometryAwareCollisionObserver spellsCollisionHandler = new SpellCollisionHandler(collisionDetector, level, updateUiHandler, this);
-		allSpellsGeometry = addObjectsToGeometry(openGLGeometryBuilder, spellsCollisionHandler, level.getSpells());
+		allSpellsGeometry = addObjectsToGeometry(openGLGeometryBuilder, spellsCollisionHandler, level.getSpells(), R.raw.textures);
 		final GeometryAwareCollisionObserver hazardCollisionObserver = new HazardCollisionHandler(updateUiHandler);
-		allHazardsGeometry = addObjectsToGeometry(openGLGeometryBuilder, hazardCollisionObserver, level.getHazards());
+		allHazardsGeometry = addObjectsToGeometry(openGLGeometryBuilder, hazardCollisionObserver, level.getHazards(), R.raw.textures);
 		carpet.createGeometry(openGLGeometryBuilder);
 		openGLGeometryBuilder.enable(aGl);
 
@@ -183,24 +173,11 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, new float[] { 50.0f }, 0);
 	}
 
-	private OpenGLGeometry addPyramid(
-			final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder,
-			final float x, final float y, final float z) {
-		float[] pyramidCoordinateTransform = new float[16];
-		Matrix.setIdentityM(pyramidCoordinateTransform, 0);
-		Matrix.translateM(pyramidCoordinateTransform, 0, x, y, z);
-		float[] pyramidTextureTransform = new float[16];
-		Matrix.setIdentityM(pyramidTextureTransform, 0);
-
-		openGLGeometryBuilder.startGeometry();
-		TransformingGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> pyramidTransformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, pyramidCoordinateTransform, pyramidTextureTransform);
-		loadRequiredObj(R.raw.pyramid, pyramidTransformingGeometryBuilder);
-		return openGLGeometryBuilder.endGeometry();
-	}
-
 	private OpenGLGeometry[] addObjectsToGeometry(
-			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> openGLGeometryBuilder, final GeometryAwareCollisionObserver aCollisionObserver,
-			final Collection<GameObjectDescriptor> objectDescriptorCollection) {
+			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> anOpenGLGeometryBuilder, final GeometryAwareCollisionObserver aCollisionObserver,
+			final Collection<GameObjectDescriptor> anObjectDescriptorCollection, int aTextureResource) {
+
+		final Texture texture = getTexture(aTextureResource, true);
 
 		final OpenGLGeometry[] objectGeometries = new OpenGLGeometry[NUMBER_OF_SPINNING_ANIMATION_FRAMES];
 
@@ -210,10 +187,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		// final int numberOfObjects = objectDescriptorCollection.size();
 		float[] coordinateTransform = new float[16];
 		for (int animationIndex = 0; animationIndex < NUMBER_OF_SPINNING_ANIMATION_FRAMES; animationIndex++) {
-			openGLGeometryBuilder.startGeometry();
+			anOpenGLGeometryBuilder.startGeometry(texture);
 
 			int objectIndex = 0;
-			for (final GameObjectDescriptor objectDescriptor : objectDescriptorCollection) {
+			for (final GameObjectDescriptor objectDescriptor : anObjectDescriptorCollection) {
 				final int objectFileResourceId = objectDescriptor.objectFileResourceId;
 				ObjFileLoader objFileLoader = resourceIdToObjFileLoaderMap.get(objectFileResourceId);
 				if (objFileLoader == null) {
@@ -224,7 +201,7 @@ public class SevenWondersGLRenderer implements Renderer {
 					}
 					resourceIdToObjFileLoaderMap.put(objectFileResourceId, objFileLoader);
 				}
-				openGLGeometryBuilder.startGeometry();
+				anOpenGLGeometryBuilder.startGeometry(texture);
 				
 				System.arraycopy(objectDescriptor.coordinateTransformationMatrix, 0, coordinateTransform, 0, coordinateTransform.length);
 
@@ -234,9 +211,9 @@ public class SevenWondersGLRenderer implements Renderer {
 				Matrix.rotateM(coordinateTransform, 0, -90f, 1, 0, 0);
 
 				// load the object into the geometry
-				TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, coordinateTransform, objectDescriptor.textureTransformationMatrix);
+				TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(anOpenGLGeometryBuilder, coordinateTransform, objectDescriptor.textureTransformationMatrix);
 				objFileLoader.createGeometry(transformingGeometryBuilder);
-				final OpenGLGeometry objectGeometry = openGLGeometryBuilder.endGeometry();
+				final OpenGLGeometry objectGeometry = anOpenGLGeometryBuilder.endGeometry();
 
 				// add it to the collision observer (it may care!)
 				aCollisionObserver.addGeometry(objectGeometry, animationIndex, objectIndex++);
@@ -246,7 +223,7 @@ public class SevenWondersGLRenderer implements Renderer {
 					collisionDetector.addGeometry(objectGeometry, aCollisionObserver);
 				}
 			}
-			objectGeometries[animationIndex] = openGLGeometryBuilder.endGeometry();
+			objectGeometries[animationIndex] = anOpenGLGeometryBuilder.endGeometry();
 		}
 		
 		return objectGeometries;
@@ -270,31 +247,26 @@ public class SevenWondersGLRenderer implements Renderer {
 		GLU.gluPerspective(aGl, 45, (float) aW / (float) aH, 0.1f, 5000f);
 
 		aGl.glMatrixMode(GL10.GL_MODELVIEW);
-
-		sphinxTexture = createNewTexture(aGl, sphinxTexture, R.raw.sphinx);
-		groundTexture = createNewTexture(aGl, groundTexture, R.raw.dunes);
-		atlasTexture = createNewTexture(aGl, atlasTexture, R.raw.textures);
-		skyboxTexture = createNewTexture(aGl, skyboxTexture, R.raw.skybox_texture);		
-		skyboxTexture.activateTexture();
 		
-		
+		// load all of the used textures
+		for (Texture texture : textureResourceIdToTextureMap.values()) {
+			texture.load(aGl);
+		}
 
 		updateUiHandler.sendEmptyMessage(PlayActivity.START_RENDERING_MESSAGE);
 	}
 	
-	/**
-	 * Creates a new texture, freeing the old one if there was one. 
-	 *
-	 */	
-	private Texture createNewTexture(final GL10 aGl, Texture aTexture, int resourceId) {
-		// if the surface changed from a prior surface, such as a change of orientation, then free the prior texture
-		if (aTexture != null) {
-			aTexture.freeTexture();
-			aTexture = null;
+	Texture getTexture(final int aResource, final boolean aUsesMipMaps) {
+		final Texture texture;
+		if (textureResourceIdToTextureMap.containsKey(aResource)) {
+			texture = textureResourceIdToTextureMap.get(aResource);
+		} else {
+			texture = new Texture(context, aResource, aUsesMipMaps);
+			textureResourceIdToTextureMap.put(aResource, texture);
 		}
-		return new Texture(aGl, context, resourceId, true);
+		return texture;
 	}
-
+	
 	public void onDrawFrame(final GL10 aGl) {
 		aGl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		
@@ -304,23 +276,19 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		applyMovement(aGl);
 
-		detectCollisions();		
-		drawSphinx(aGl);
-		drawPyramid(aGl);
-		drawSpell(aGl);
-		drawSword(aGl);
-		drawWater(aGl);
+		detectCollisions();
 		
-		drawGround(aGl);
-		drawSkybox(aGl);
+		for (int geometryIndex = 0; geometryIndex < decorationGeometries.size(); geometryIndex++) {
+			final OpenGLGeometry geometry = decorationGeometries.get(geometryIndex);
+			geometry.draw(aGl);
+		}
 
+		drawSpells(aGl);
+		drawSwords(aGl);
+		drawSkybox(aGl);
+		
 		Message msg = updateUiHandler.obtainMessage(PlayActivity.FPS_MESSAGE, fPSLogger.frameRendered(), 0);
 		updateUiHandler.sendMessage(msg);
-	}
-
-	private void drawWater(GL10 aGl) {
-		waterGeometry.draw(aGl);
-		
 	}
 
 	private void drawCarpet(final GL10 aGl) {
@@ -331,17 +299,11 @@ public class SevenWondersGLRenderer implements Renderer {
 		// carpet instead.
 		aGl.glFrontFace(GL_CW);
 
-		atlasTexture.activateTexture();
 		carpet.draw(aGl);
 
 		aGl.glFrontFace(GL_CCW);
 	}
 
-	private void drawGround(final GL10 aGl) {
-		groundTexture.activateTexture();
-		groundGeometry.draw(aGl);
-	}
-	
 	private void drawSkybox(GL10 aGl) {	
 		// save the current matrix for later - later? what later?
 		aGl.glPushMatrix();
@@ -354,7 +316,6 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glDisable(GL10.GL_LIGHTING);
 		aGl.glDisable(GL10.GL_LIGHT0);
 		
-		skyboxTexture.activateTexture();
 		skyboxGeometry.draw(aGl);
 		
 		aGl.glEnable(GL10.GL_LIGHTING);
@@ -411,28 +372,13 @@ public class SevenWondersGLRenderer implements Renderer {
 		return timeDeltaMS;
 	}
 
-	private void drawSphinx(final GL10 aGl) {
-		sphinxTexture.activateTexture();
-		// Translate a bit so sphinx isn't inside the pyramid.
-		// XXX Since this is permanent, we could actually alter the geometry instead.
-		aGl.glPushMatrix();
-		aGl.glTranslatef(-100, -25, 0);
-		sphinxGeometry.draw(aGl);
-		aGl.glPopMatrix();
-		atlasTexture.activateTexture();
-	}
-
-	private void drawPyramid(final GL10 aGl) {
-		pyramidGeometry.draw(aGl);
-	}
-
-	private void drawSpell(final GL10 aGl) {
+	private void drawSpells(final GL10 aGl) {
 		final int spellAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPINNING_ANIMATION_CYCLE)
 				/ (float) PERIOD_FOR_SPINNING_ANIMATION_CYCLE * (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES);
 		allSpellsGeometry[spellAnimationIndex].draw(aGl);
 	}
 
-	private void drawSword(final GL10 aGl) {
+	private void drawSwords(final GL10 aGl) {
 		final int swordAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPINNING_ANIMATION_CYCLE)
 				/ (float) PERIOD_FOR_SPINNING_ANIMATION_CYCLE * (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES);
 		allHazardsGeometry[swordAnimationIndex].draw(aGl);

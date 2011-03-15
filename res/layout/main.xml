@@ -29,11 +29,30 @@
 		a:textColor="#0F0" 
 		a:layout_marginLeft="6dp" />
 
-	<TextView a:id="@+id/Score" 
-		a:text="" 
+	<TextView a:id="@+id/targetScore" 
 		a:layout_height="wrap_content"
 		a:layout_width="wrap_content" 
 		a:layout_alignParentRight="true"
+		a:textStyle="bold" 
+		a:textSize="32sp" 
+		a:textColor="#FF0"
+		a:layout_marginRight="6dp" />
+
+	<TextView a:id="@+id/scoreDivider"
+		a:text="/" 
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_toLeftOf="@+id/targetScore"
+		a:textStyle="bold" 
+		a:textSize="32sp" 
+		a:textColor="#FF0"
+		a:layout_marginRight="6dp" />
+
+	<TextView a:id="@+id/score" 
+		a:text="" 
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_toLeftOf="@+id/scoreDivider"
 		a:textStyle="bold" 
 		a:textSize="32sp" 
 		a:textColor="#FF0"

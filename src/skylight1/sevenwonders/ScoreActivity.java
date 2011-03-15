@@ -53,19 +53,19 @@ public class ScoreActivity extends Activity {
 		final Button playNextLevel = (Button) findViewById(R.id.playNextLevel);
 		playNextLevel.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent().setClass(ScoreActivity.this, PlayActivity.class);
+			public void onClick(final View v) {
+				final Intent intent = new Intent().setClass(ScoreActivity.this, PlayActivity.class);
 				intent.putExtra(KEY_LEVEL_ORDINAL, level + 1);
 				startActivity(intent);
 				finish();
 			}
 		});
 
-		final Button playAgain = (Button) findViewById(R.id.playAgain);
+		final Button playAgain = (Button) findViewById(R.id.continueButton);
 		playAgain.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent().setClass(ScoreActivity.this, PlayActivity.class);
+			public void onClick(final View v) {
+				final Intent intent = new Intent().setClass(ScoreActivity.this, MenuActivity.class);
 				startActivity(intent);
 				finish();
 			}
@@ -73,7 +73,7 @@ public class ScoreActivity extends Activity {
 		
 		// If the user won the level and there is a next level, show the 
 		// play next level button.
-		boolean nextLevelExists = level < GameLevel.values().length - 1;
+		final boolean nextLevelExists = level < GameLevel.values().length - 1;
 		if (wonLevel && nextLevelExists) {
 			playNextLevel.setVisibility(View.VISIBLE);
 			playAgain.setVisibility(View.GONE);
@@ -85,7 +85,7 @@ public class ScoreActivity extends Activity {
 		
 		// Tell the user they won the game if they won the last level 
 		// and there are no more levels.
-		TextView wonGame = (TextView) findViewById(R.id.wonGame);
+		final TextView wonGame = (TextView) findViewById(R.id.wonGame);
 		wonGame.setVisibility(wonLevel && !nextLevelExists ? View.VISIBLE : View.GONE);
 	}
 }

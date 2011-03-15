@@ -46,9 +46,9 @@
    			android:layout_height="wrap_content" 
    			android:text="@string/playNextLevel"/>
     		  
-   	<Button android:id="@+id/playAgain"
+   	<Button android:id="@+id/continueButton"
    			android:layout_width="fill_parent"
    			android:layout_height="wrap_content" 
-   			android:text="@string/playAgain"/>
+   			android:text="@string/continueAfterLosing"/>
     
 </LinearLayout>
