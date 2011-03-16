@@ -12,6 +12,6 @@
     <string name="story_button_left">&lt;&lt;</string>     
     <string name="story_button_right">&gt;&gt;</string>
      
-    <string name="story_button_cancel">Cancel</string>     
+    <string name="story_button_cancel">&lt;&lt; Back</string>     
     <string name="story_button_start">Start!</string>
 </resources>

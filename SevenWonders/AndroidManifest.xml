@@ -28,6 +28,20 @@
 			android:label="@string/app_name">
 		</activity>
 		
+			<activity android:name=".RealMenuActivity" 
+		android:screenOrientation="landscape"
+			android:label="@string/app_name">
+		</activity>
+		
+		
+			<activity android:name=".SettingsActivity" 
+		android:screenOrientation="landscape"
+			android:label="@string/app_name">
+		</activity>
+		
+		
+		
+		
 		<activity android:name=".StoryActivity" 
 			android:label="@string/app_name"
 			android:launchMode="singleInstance"

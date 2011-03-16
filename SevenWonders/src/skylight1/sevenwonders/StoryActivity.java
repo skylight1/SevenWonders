@@ -28,13 +28,16 @@ public class StoryActivity extends Activity implements OnOutOfPageSequenceBounds
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.story_page);
-        new StoryPagesController(this, this, PAGE_TEXTS);
+        
+        boolean isFirstTimeUse = !(new Settings(this).wasGameStartedAtLeastOnce());
+        
+        new StoryPagesController(this, this, PAGE_TEXTS, isFirstTimeUse);
     }
 
 
 	@Override
 	public void onLeftPageSequenceOnTheLeft() {			
-		startActivity(new Intent(this, MenuActivity.class));
+		startActivity(new Intent(this, RealMenuActivity.class));
 		finish();
 	}
 

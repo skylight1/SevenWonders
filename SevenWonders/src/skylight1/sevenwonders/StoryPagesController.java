@@ -30,6 +30,8 @@ public class StoryPagesController implements OnClickListener, Runnable {
 	private final OnOutOfPageSequenceBoundsListener onOutOfPageBoundsListener;
 
 	private Handler handler;
+
+	private final boolean isFirstTimeUse;
     
 	/**
 	 * Listener to be notified when one of the ends of the sequence of pages was reached.
@@ -40,9 +42,11 @@ public class StoryPagesController implements OnClickListener, Runnable {
     	public void onLeftPageSequenceOnTheRight();
     }
     
-    public StoryPagesController(Activity activity, OnOutOfPageSequenceBoundsListener listener, List<Integer> pageTexts) {
+    public StoryPagesController(Activity activity, OnOutOfPageSequenceBoundsListener listener,
+    		List<Integer> pageTexts, boolean isFirstTimeUse) {
 		onOutOfPageBoundsListener = listener;
 		pageTextResourceIds = pageTexts;
+		this.isFirstTimeUse = isFirstTimeUse;
         contentTextView = (TextView) activity.findViewById(R.id.story_content_textview);        
         leftButton = (Button) activity.findViewById(R.id.story_left_button);
         rightButton = (Button) activity.findViewById(R.id.story_right_button);             
@@ -101,8 +105,14 @@ public class StoryPagesController implements OnClickListener, Runnable {
         } else {
             updatePageContents();
         }        
-        rightButton.setEnabled(false);
-        enableAfterDelay();
+        
+        if (isFirstTimeUse) {
+        	//Prevent user from skipping through without reading..        
+        	rightButton.setEnabled(false);
+        	enableAfterDelay();
+        } else {
+        	rightButton.setEnabled(true);
+        }
     }
 
 
@@ -134,6 +144,6 @@ public class StoryPagesController implements OnClickListener, Runnable {
 	
 
     private void enableAfterDelay() {
-    	handler.postDelayed(this, 3000);
+    	handler.postDelayed(this, 2000);
 	}
 }

@@ -4,6 +4,7 @@ import skylight1.sevenwonders.levels.GameLevel;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -66,7 +67,7 @@ public class ScoreActivity extends Activity {
 			if (collectedSpellsCount == 1) {
 				spellsText = "1 Spell";
 			} else {
-				spellsText = String.format("%02d spells", collectedSpellsCount);
+				spellsText = String.format("%2d spells", collectedSpellsCount);
 			}
 			
 			final int  sum = collectedSpellsCount * SCORE_PER_COLLECTED_SPELL;
@@ -78,8 +79,10 @@ public class ScoreActivity extends Activity {
 		setupButtons(level, wonLevel, nextLevelExists);
 		
 		// Build the message.		
-		final StringBuilder messageBuilder = new StringBuilder();
-		messageBuilder.append(getLevelEndTitle(wonLevel, level) + "\n");
+		final StyledSpannableStringBuilder messageBuilder = new StyledSpannableStringBuilder();
+		messageBuilder.appendScaled(getLevelEndTitle(wonLevel, level) + "\n", 1.66f);
+		
+		
 		messageBuilder.append(collectedSpellCountText + "\n");		
 		messageBuilder.append(getRemainingTimeText(remainingSeconds) + "\n");
 		messageBuilder.append(getScoreString(collectedSpellsCount, remainingSeconds) + "\n");
@@ -88,9 +91,7 @@ public class ScoreActivity extends Activity {
 		// Make the message uppercase and set it on to a TextView
 		TextView messageTextView = (TextView) findViewById(R.id.end__content_textview);		
 		textStyles.applyBodyTextStyle(messageTextView);		
-		messageTextView.setText(messageBuilder.toString().toUpperCase());
-		
-		
+		messageTextView.setText(messageBuilder);	
 	}
 
 	

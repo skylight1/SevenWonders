@@ -31,6 +31,7 @@ public class PlayActivity extends Activity {
 
 	private static final String TAG = PlayActivity.class.getName();
 
+
 	private SevenWondersGLSurfaceView gLSurfaceView;
 	
 	private RelativeLayout mainLayout;
@@ -117,13 +118,16 @@ public class PlayActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Settings settings =  new Settings(this);
+		settings.setGameWasStartedAtLeastOnceFlag();
 
 		Log.i(TAG,"onCreate()");
 		
 		int levelOrdinal = getIntent().getIntExtra(ScoreActivity.KEY_LEVEL_ORDINAL, 0);
 		currentLevel = GameLevel.values()[levelOrdinal];
-
-		SoundTracks.setEnabled(isSoundEnabled());
+		
+		SoundTracks.setEnabled(settings.isSoundEnabled());
 		SoundTracks soundTrack = SoundTracks.getInstance();
 		soundTrack.init(getApplicationContext());		
 
@@ -140,15 +144,6 @@ public class PlayActivity extends Activity {
 		
 		gLSurfaceView = (SevenWondersGLSurfaceView) findViewById(R.id.surfaceView);;
 		gLSurfaceView.initialize(updateUiHandler, currentLevel);
-	}
-	
-	/**
-	 * Loads the settings flag that determines if the sound is enabled and returns its value. 
-	 * @return true if settings tells us that sound should be enabled.
-	 */
-    private boolean isSoundEnabled() {
-        SharedPreferences settings = getSharedPreferences(MenuActivity.PREFS_NAME, 0);
-        return settings.getBoolean(MenuActivity.KEY_IS_SOUND_ENABLED, false);
 	}
 
 	@Override
