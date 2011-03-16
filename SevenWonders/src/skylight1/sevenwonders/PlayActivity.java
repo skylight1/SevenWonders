@@ -5,6 +5,7 @@ import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,7 +39,7 @@ public class PlayActivity extends Activity {
 
 	private long countdownStartTime;
     
-	private ImageView splashView;
+	private View splashView;
 	
 	private TextView debugView;
 	
@@ -122,7 +123,7 @@ public class PlayActivity extends Activity {
 		int levelOrdinal = getIntent().getIntExtra(ScoreActivity.KEY_LEVEL_ORDINAL, 0);
 		currentLevel = GameLevel.values()[levelOrdinal];
 
-		SoundTracks.setEnabled(getIntent().getBooleanExtra("ENABLESOUND", true));
+		SoundTracks.setEnabled(isSoundEnabled());
 		SoundTracks soundTrack = SoundTracks.getInstance();
 		soundTrack.init(getApplicationContext());		
 
@@ -130,12 +131,27 @@ public class PlayActivity extends Activity {
 		countdownView = (TextView) findViewById(R.id.Countdown);
 		debugView = (TextView) findViewById(R.id.FPS);
 		mainLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
-		splashView = (ImageView) findViewById(R.id.splashView);;
+		splashView = findViewById(R.id.splashView);
+		
+		TextStyles textStyles = new TextStyles(this);
+		
+		TextView loadingTextView = ((TextView) findViewById(R.id.loading_textview));
+		textStyles.applyHeaderTextStyle(loadingTextView);
+		
 		gLSurfaceView = (SevenWondersGLSurfaceView) findViewById(R.id.surfaceView);;
 		gLSurfaceView.initialize(updateUiHandler, currentLevel);
 	}
 	
-    @Override
+	/**
+	 * Loads the settings flag that determines if the sound is enabled and returns its value. 
+	 * @return true if settings tells us that sound should be enabled.
+	 */
+    private boolean isSoundEnabled() {
+        SharedPreferences settings = getSharedPreferences(MenuActivity.PREFS_NAME, 0);
+        return settings.getBoolean(MenuActivity.KEY_IS_SOUND_ENABLED, false);
+	}
+
+	@Override
     protected void onPause() {
         super.onPause();
 		Log.i(TAG,"onPause()");

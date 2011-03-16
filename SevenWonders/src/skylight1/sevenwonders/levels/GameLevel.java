@@ -10,7 +10,7 @@ import android.opengl.Matrix;
 public enum GameLevel {
 	// TODO make sure seeds leave enough spells outside hazards
 	// and that we don't run out of memory on the highest level
-	FIRST  (6, 0, 1, 1, R.raw.ground), 
+	FIRST  (6, 1, 1, 1, R.raw.ground), 
 	SECOND (6, 2, 2, 2, R.raw.ground), 
 	THIRD  (5, 4, 3, 3, R.raw.ground),
 	FOURTH (5, 6, 3, 4, R.raw.ground),

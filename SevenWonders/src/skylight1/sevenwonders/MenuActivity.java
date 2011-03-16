@@ -11,10 +11,13 @@ import android.widget.CheckBox;
 
 public class MenuActivity extends Activity {
 
-    public static final String PREFS_NAME = "SevenWondersPrefs";
+	public static final String KEY_IS_SOUND_ENABLED = "KEY_IS_SOUND_ENABLED";
+
+	public static final String PREFS_NAME = "SevenWondersPrefs";
 
 	private static final String TAG = MenuActivity.class.getName();
-	private boolean SOUNDENABLED; 
+	
+	private boolean isSoundEnabled; 
 	
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -22,21 +25,21 @@ public class MenuActivity extends Activity {
 
         // Restore preferences
        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-       SOUNDENABLED = settings.getBoolean("SOUNDENABLED", false);
+       isSoundEnabled = settings.getBoolean(KEY_IS_SOUND_ENABLED, false);
 
 		Log.i(TAG, "started");
 		setContentView(R.layout.menu);
 		final CheckBox soundCB = (CheckBox)findViewById(R.id.soundCheckBox);
-        soundCB.setChecked(SOUNDENABLED);
+        soundCB.setChecked(isSoundEnabled);
 		soundCB.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View aV) {
-				SOUNDENABLED = soundCB.isChecked();
+				isSoundEnabled = soundCB.isChecked();
 
                 //save preference
                 SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
                 SharedPreferences.Editor editor = settings.edit();
-                editor.putBoolean("SOUNDENABLED", SOUNDENABLED);
+                editor.putBoolean(KEY_IS_SOUND_ENABLED, isSoundEnabled);
                 editor.commit();
 			}
 		});
@@ -44,10 +47,8 @@ public class MenuActivity extends Activity {
 		final View view = findViewById(R.id.EnterEgypt);
 		view.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View aV) {
-				final Intent gameActivity = new Intent(MenuActivity.this, PlayActivity.class);
-				gameActivity.putExtra("ENABLESOUND", SOUNDENABLED);
-				startActivity(gameActivity);
+			public void onClick(View aV) {			
+				startActivity(new Intent(MenuActivity.this, StoryActivity.class));
 			}
 		});
 	}
