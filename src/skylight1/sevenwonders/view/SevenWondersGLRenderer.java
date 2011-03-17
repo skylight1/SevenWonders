@@ -106,7 +106,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
 		Log.i(TAG, "- onSurfaceCreated - ");
 
-		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(46674);
+		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(60453);
 
 		// load all of the decorations (land, water, sphinx, pyramids, etc.)
 		int currentTextureResource = 0;
