@@ -40,5 +40,11 @@
    			android:layout_width="fill_parent"
    			android:layout_height="wrap_content" 
    			android:text="@string/playAgain"/>
+   			
+   	<Button android:id="@+id/postToFacebook"
+   			android:layout_width="fill_parent"
+   			android:layout_height="wrap_content" 
+   			android:text="@string/postToFacebook"
+   			/>
     
 </LinearLayout>

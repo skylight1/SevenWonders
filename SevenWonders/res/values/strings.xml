@@ -6,4 +6,5 @@
 	<string name="yourCollectedSpellCount">Number of spells collected:</string>
 	<string name="yourRemainingTimeSeconds">Remaining Time:</string>
 	<string name="yourScore">Your Score</string>
+	<string name="postToFacebook">Post to Facebook</string>
 </resources>
