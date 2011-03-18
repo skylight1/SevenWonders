@@ -7,7 +7,6 @@ import skylight1.opengl.CollisionDetector;
 import skylight1.opengl.FastGeometryBuilder;
 import skylight1.opengl.FastGeometryBuilderFactory;
 import skylight1.opengl.OpenGLGeometry;
-import skylight1.opengl.CollisionDetector.CollisionObserver;
 import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.services.SoundTracks;

@@ -9,6 +9,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+/**
+ * Displays the score at the end of the game.
+ */
 public class ScoreActivity extends Activity {
 
 	private static final int SCORE_PER_REMAINING_SECOND = 100;
@@ -23,48 +26,131 @@ public class ScoreActivity extends Activity {
 
 	static final String KEY_WON_LEVEL = "KEY_WON_LEVEL";
 
+	private TextStyles textStyles;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.score_activity);
-
-		final boolean wonLevel = getIntent().getBooleanExtra(KEY_WON_LEVEL, false);
-		final int level = getIntent().getIntExtra(KEY_LEVEL_ORDINAL, 0);
-		final int collectedSpellCount = getIntent().getIntExtra(
+		
+		final Intent callingIntent = getIntent();
+		final boolean wonLevel = callingIntent.getBooleanExtra(KEY_WON_LEVEL, false);
+		final int level = callingIntent.getIntExtra(KEY_LEVEL_ORDINAL, 0);
+		final int collectedSpellsCount = callingIntent.getIntExtra(
 			ScoreActivity.KEY_COLLECTED_SPELL_COUNT, 0);
-		final int yourcollectedspellcount2 = R.id.yourCollectedSpellCount;
-		final TextView yourCollectedSpellCount = (TextView) findViewById(yourcollectedspellcount2);
-		final String collectedSpellCountText = collectedSpellCount + " spells X "
-				+ SCORE_PER_COLLECTED_SPELL;
-		yourCollectedSpellCount.setText(collectedSpellCountText);
 		
-		final TextView yourRemainingTimeSeconds = (TextView) findViewById(R.id.yourRemainingTimeSeconds);
-		final int remainingTimeSeconds = getIntent().getIntExtra(
-				ScoreActivity.KEY_REMAINING_TIME_SECONDS, 0);
-		final String yourRemainingTimeSecondsText = String.format("%d s X %d", 
-			remainingTimeSeconds, SCORE_PER_REMAINING_SECOND);
-		yourRemainingTimeSeconds.setText(yourRemainingTimeSecondsText);
+		final int remainingSeconds = callingIntent.getIntExtra(
+			ScoreActivity.KEY_REMAINING_TIME_SECONDS, 0);
+		
+		textStyles = new TextStyles(this);
+		
+		displayEndOfLevelMessage(wonLevel, level, collectedSpellsCount, remainingSeconds);		
+	}
 
-		final TextView yourScore = (TextView) findViewById(R.id.yourScore);
-		final int score = collectedSpellCount * SCORE_PER_COLLECTED_SPELL 
-			+ remainingTimeSeconds * SCORE_PER_REMAINING_SECOND;
-		yourScore.setText(Integer.toString(score));
+	/**
+	 * Format and display a END OF LEVEL message.
+	 * @param wonLevel
+	 * @param level
+	 * @param collectedSpellsCount
+	 * @param remainingSeconds
+	 */
+	private void displayEndOfLevelMessage(boolean wonLevel, int level, int collectedSpellsCount,
+											int remainingSeconds) {
 		
-		final Button playNextLevel = (Button) findViewById(R.id.playNextLevel);
+		
+		final String collectedSpellCountText;
+		if (collectedSpellsCount == 0) {
+			collectedSpellCountText = "No spells collected :-(";
+		} else {
+			final String spellsText; 
+			if (collectedSpellsCount == 1) {
+				spellsText = "1 Spell";
+			} else {
+				spellsText = String.format("%2d spells", collectedSpellsCount);
+			}
+			
+			final int sum = collectedSpellsCount * SCORE_PER_COLLECTED_SPELL;
+			collectedSpellCountText = String.format("%s: %2d X %d = +%d",
+				spellsText, collectedSpellsCount, SCORE_PER_COLLECTED_SPELL, sum );
+		}
+		
+		boolean nextLevelExists = level < GameLevel.values().length - 1;
+		setupButtons(level, wonLevel, nextLevelExists);
+		
+		// Build the message.		
+		final StyledSpannableStringBuilder messageBuilder = new StyledSpannableStringBuilder();
+		messageBuilder.appendScaled(getLevelEndTitle(wonLevel, level) + "\n", 1.66f);
+		
+		
+		messageBuilder.append(collectedSpellCountText + "\n");		
+		messageBuilder.append(getRemainingTimeText(remainingSeconds) + "\n");
+		messageBuilder.append(getScoreString(collectedSpellsCount, remainingSeconds) + "\n");
+		messageBuilder.append(getWinOrLoseString(wonLevel, nextLevelExists));
+
+		// Make the message uppercase and set it on to a TextView
+		TextView messageTextView = (TextView) findViewById(R.id.end__content_textview);		
+		textStyles.applyBodyTextStyle(messageTextView);		
+		messageTextView.setText(messageBuilder);	
+	}
+
+	private String getLevelEndTitle(boolean wonLevel, int level) {
+		final int levelForDisplay = level + 1;
+		final String result;
+		if (wonLevel) {
+			result = String.format("Level %d completed!", levelForDisplay); 
+		} else {
+			result = String.format("Level %d failed.", levelForDisplay);
+		}
+		return result;
+	}
+
+	private String getWinOrLoseString(boolean wonLevel, boolean nextLevelExists) {
+		if (wonLevel && !nextLevelExists) {
+			return "You won!";
+		} else {
+			return "";
+		}		 		
+	}
+
+	private String getScoreString(final int collectedSpellCount, final int remainingTimeSeconds) {
+		final int score = collectedSpellCount * SCORE_PER_COLLECTED_SPELL 
+		+ remainingTimeSeconds * SCORE_PER_REMAINING_SECOND;
+		String scoreText = String.format("Level score: %02d", score);
+		return scoreText;
+	}
+
+	private String getRemainingTimeText(int remainingTimeSeconds) {
+		final String result;
+		
+		if (remainingTimeSeconds > 0) {
+			final int sum = remainingTimeSeconds * SCORE_PER_REMAINING_SECOND;
+			result = String.format("%d secs left: %d X %d = + %d", 
+				remainingTimeSeconds, remainingTimeSeconds, SCORE_PER_REMAINING_SECOND, sum);	
+		} else {
+			result = "Out of time!";
+		}
+		
+		return result;
+	}
+
+	private void setupButtons(final int level, boolean wasLevelWon, boolean nextLevelExists) {
+		final Button playNextLevel = (Button) findViewById(R.id.end__playNextLevel);
+		textStyles.applyHeaderTextStyle(playNextLevel);
 		playNextLevel.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(final View v) {
-				final Intent intent = new Intent().setClass(ScoreActivity.this, PlayActivity.class);
+			public void onClick(View v) {
+				Intent intent = new Intent().setClass(ScoreActivity.this, PlayActivity.class);
 				intent.putExtra(KEY_LEVEL_ORDINAL, level + 1);
 				startActivity(intent);
 				finish();
 			}
 		});
 
-		final Button playAgain = (Button) findViewById(R.id.continueButton);
+		final Button playAgain = (Button) findViewById(R.id.end__playAgain);
+		textStyles.applyHeaderTextStyle(playAgain);
 		playAgain.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(final View v) {
+			public void onClick(View v) {
 				final Intent intent = new Intent().setClass(ScoreActivity.this, MenuActivity.class);
 				startActivity(intent);
 				finish();
@@ -73,8 +159,7 @@ public class ScoreActivity extends Activity {
 		
 		// If the user won the level and there is a next level, show the 
 		// play next level button.
-		final boolean nextLevelExists = level < GameLevel.values().length - 1;
-		if (wonLevel && nextLevelExists) {
+		if (wasLevelWon && nextLevelExists) {
 			playNextLevel.setVisibility(View.VISIBLE);
 			playAgain.setVisibility(View.GONE);
 		// Otherwise show the play again button.
@@ -82,10 +167,5 @@ public class ScoreActivity extends Activity {
 			playNextLevel.setVisibility(View.GONE);
 			playAgain.setVisibility(View.VISIBLE);
 		}
-		
-		// Tell the user they won the game if they won the last level 
-		// and there are no more levels.
-		final TextView wonGame = (TextView) findViewById(R.id.wonGame);
-		wonGame.setVisibility(wonLevel && !nextLevelExists ? View.VISIBLE : View.GONE);
 	}
 }
