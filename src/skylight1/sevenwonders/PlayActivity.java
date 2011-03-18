@@ -12,7 +12,6 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -29,6 +28,7 @@ public class PlayActivity extends Activity {
 
 	private static final String TAG = PlayActivity.class.getName();
 
+
 	private SevenWondersGLSurfaceView gLSurfaceView;
 	
 	private RelativeLayout mainLayout;
@@ -37,7 +37,7 @@ public class PlayActivity extends Activity {
 
 	private long countdownStartTime;
     
-	private ImageView splashView;
+	private View splashView;
 	
 	private TextView debugView;
 	
@@ -113,13 +113,16 @@ public class PlayActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Settings settings =  new Settings(this);
+		settings.setGameWasStartedAtLeastOnceFlag();
 
 		Log.i(TAG,"onCreate()");
 		
 		final int levelOrdinal = getIntent().getIntExtra(ScoreActivity.KEY_LEVEL_ORDINAL, 0);
 		currentLevel = GameLevel.values()[levelOrdinal];
-
-		SoundTracks.setEnabled(getIntent().getBooleanExtra("ENABLESOUND", true));
+		
+		SoundTracks.setEnabled(settings.isSoundEnabled());
 		SoundTracks soundTrack = SoundTracks.getInstance();
 		soundTrack.init(getApplicationContext());		
 
@@ -127,8 +130,14 @@ public class PlayActivity extends Activity {
 		countdownView = (TextView) findViewById(R.id.Countdown);
 		debugView = (TextView) findViewById(R.id.FPS);
 		mainLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
-		splashView = (ImageView) findViewById(R.id.splashView);;
-		gLSurfaceView = (SevenWondersGLSurfaceView) findViewById(R.id.surfaceView);;
+		splashView = findViewById(R.id.splashView);
+		
+		TextStyles textStyles = new TextStyles(this);
+		
+		TextView loadingTextView = (TextView) findViewById(R.id.loading_textview);
+		textStyles.applyHeaderTextStyle(loadingTextView);
+		
+		gLSurfaceView = (SevenWondersGLSurfaceView) findViewById(R.id.surfaceView);
 		gLSurfaceView.initialize(updateUiHandler, currentLevel);
 
 		final TextView scoreTextView = (TextView) findViewById(R.id.score);
@@ -136,8 +145,8 @@ public class PlayActivity extends Activity {
 		final TextView targetScoreTextView = (TextView) findViewById(R.id.targetScore);
 		targetScoreTextView.setText("" + currentLevel.getNumberOfSpells());
 	}
-	
-    @Override
+
+	@Override
     protected void onPause() {
         super.onPause();
 		Log.i(TAG,"onPause()");

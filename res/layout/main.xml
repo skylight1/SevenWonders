@@ -5,8 +5,7 @@
 
 	<skylight1.sevenwonders.view.SevenWondersGLSurfaceView a:id="@+id/surfaceView" 
 		a:layout_height="fill_parent"
-		a:layout_width="fill_parent" 
-		/>
+		a:layout_width="fill_parent"/>
 
 	<TextView a:id="@+id/Countdown" 
 		a:text="" 
@@ -58,10 +57,31 @@
 		a:textColor="#FF0"
 		a:layout_marginRight="6dp" />
 		
-	<ImageView a:id="@+id/splashView" 
-		a:src="@drawable/bg"
-		a:scaleType="fitXY"
+	<FrameLayout
+		a:id="@+id/splashView"
 		a:layout_height="fill_parent"
-		a:layout_width="fill_parent" 
-		/>
+		a:layout_width="fill_parent">
+			
+		<ImageView
+		  a:id="@+id/splashView"
+		  a:layout_height="fill_parent"
+		  a:layout_width="fill_parent" 
+		  a:src="@drawable/bg"
+		  a:scaleType="fitXY"/>
+		  
+		  <TextView
+			a:id="@+id/loading_textview" 
+			a:layout_height="wrap_content"
+			a:layout_width="wrap_content"			
+			a:layout_gravity="center"
+			a:textStyle="bold"
+			a:textSize="32sp" 
+			a:textColor="#fff"
+			a:shadowRadius="1.3"
+			a:shadowColor="#211"
+			a:shadowDx="1.0"
+			a:shadowDy="1.0"
+			a:text="Loading..."/>	
+			
+	</FrameLayout>
 </RelativeLayout>

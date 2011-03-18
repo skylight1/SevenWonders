@@ -2,56 +2,81 @@ package skylight1.sevenwonders;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.CheckBox;
+import android.widget.Button;
+import android.widget.TextView;
 
-public class MenuActivity extends Activity {
-
-    private static final String SOUND_ENABLED = "SOUNDENABLED";
-
-	public static final String PREFS_NAME = "SevenWondersPrefs";
-
-	private static final String TAG = MenuActivity.class.getName();
-	private boolean soundEndabled; 
+public class MenuActivity extends Activity implements OnClickListener {
 	
+	private TextView contentTextView;
+	private Button leftButton;
+	private Button middleButton;
+	private Button rightButton;
+	private TextStyles wonderFonts;
+	private Settings settings;
+
+
 	@Override
-	public void onCreate(final Bundle savedInstanceState) {
-		Log.i(TAG, "started");
-
+	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
-
-        // Restore preferences
-        final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        soundEndabled = settings.getBoolean(SOUND_ENABLED, false);
-
-		setContentView(R.layout.menu);
-		final CheckBox soundCB = (CheckBox)findViewById(R.id.soundCheckBox);
-        soundCB.setChecked(soundEndabled);
-		soundCB.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View aV) {
-				soundEndabled = soundCB.isChecked();
-
-                //save preference
-                final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putBoolean(SOUND_ENABLED, soundEndabled);
-                editor.commit();
-			}
-		});
+		setContentView(R.layout.realmenu);
 		
-		final View view = findViewById(R.id.EnterEgypt);
-		view.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View aV) {
-				final Intent gameActivity = new Intent(MenuActivity.this, PlayActivity.class);
-				gameActivity.putExtra("ENABLESOUND", soundEndabled);
-				startActivity(gameActivity);
-			}
-		});
+        contentTextView = (TextView) findViewById(R.id.menu_content_textview);        
+        leftButton = (Button) findViewById(R.id.menu_left_button);
+        middleButton = (Button) findViewById(R.id.menu_middle_button);
+        rightButton = (Button) findViewById(R.id.menu_right_button);             
+   		
+        wonderFonts = new TextStyles(this);
+   	         
+        wonderFonts.applyBodyTextStyle(contentTextView);        
+        wonderFonts.applyHeaderTextStyle(leftButton);
+        wonderFonts.applyHeaderTextStyle(middleButton);
+        wonderFonts.applyHeaderTextStyle(rightButton);
+        
+        settings = new Settings(this);
+        
+
+        leftButton.setOnClickListener(this);
+        middleButton.setOnClickListener(this);
+        rightButton.setOnClickListener(this);   
 	}
+
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()) {
+			case R.id.menu_left_button:
+				showStory();
+				break;
+			case R.id.menu_middle_button:
+				showSettings();
+				break;
+			case R.id.menu_right_button:
+				startGameOrShowStory();
+				break;
+		}		
+		
+	}
+
+	private void showSettings() {
+		startActivity(new Intent(this, SettingsActivity.class));		
+	}
+
+	private void showStory() {
+		startActivity(new Intent(this, StoryActivity.class));		
+	}
+
+	private void startGameOrShowStory() {
+		if (settings.wasGameStartedAtLeastOnce()) {
+			startGame();		
+		} else {
+			showStory();
+		}
+	}
+
+	private void startGame() {
+		startActivity(new Intent(this, PlayActivity.class));		
+	}
+		
 }

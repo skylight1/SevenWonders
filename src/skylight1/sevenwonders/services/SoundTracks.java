@@ -1,11 +1,10 @@
 package skylight1.sevenwonders.services;
 
+import skylight1.sevenwonders.R;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.Log;
-
-import skylight1.sevenwonders.R;
 
 public class SoundTracks
 {
