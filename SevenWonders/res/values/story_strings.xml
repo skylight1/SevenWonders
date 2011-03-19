@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Text for the backstory pages. -->
+<resources>    
+    <string name="story01">Ready to explore the Seven Wonders?</string>
+    <string name="story02">Fly your magic carpet through a mysterious landscape!</string>
+    <string name="story03">Turn the device to move left or right.</string>
+    <string name="story04">Bend it forward to speed up and backward to slow down.</string>
+    <string name="story05">To advance to the next level, collect all flying spells.</string>
+    <string name="story06">Steer clear of the deadly spinning swords.</string>         
+    <string name="story07">And make sure you don\'t run out of time!</string>
+     
+    <string name="story_button_left">&lt;&lt;</string>     
+    <string name="story_button_right">&gt;&gt;</string>
+     
+    <string name="story_button_cancel">&lt;&lt; Back</string>     
+    <string name="story_button_start">Start!</string>
+</resources>

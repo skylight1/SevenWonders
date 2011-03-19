@@ -12,12 +12,10 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class PlayActivity extends Activity {
-
 	public static final int FPS_MESSAGE = 0;
 	public static final int COUNTDOWN_MESSAGE = 1;
 	public static final int END_GAME_MESSAGE = 2;
@@ -30,6 +28,7 @@ public class PlayActivity extends Activity {
 
 	private static final String TAG = PlayActivity.class.getName();
 
+
 	private SevenWondersGLSurfaceView gLSurfaceView;
 	
 	private RelativeLayout mainLayout;
@@ -38,11 +37,11 @@ public class PlayActivity extends Activity {
 
 	private long countdownStartTime;
     
-	private ImageView splashView;
+	private View splashView;
 	
 	private TextView debugView;
 	
-	private GameLevel currentLevel = GameLevel.FIRST;
+	private GameLevel currentLevel;
 	
 	private int latestScore;
 
@@ -78,7 +77,7 @@ public class PlayActivity extends Activity {
     					// Finish game if out of time.
     					if (latestRemainingTimeSeconds < 0) {
     						 //finish();
-    						changeToScoreActivity();
+    						changeToScoreActivity(false);
     						break;
     					}
     					// Change time background color if running out of time.
@@ -91,26 +90,22 @@ public class PlayActivity extends Activity {
     					sendUpdateCountdownMessage();    						
     					break;
     				case END_GAME_MESSAGE:
-    					changeToScoreActivity();
+    					changeToScoreActivity(false);
     					break;
     				case NEW_SCORE_MESSAGE:
     					latestScore = msg.arg1;
-						if (latestScore >= currentLevel.getNumberOfSpellsRequired()) {
-							changeToScoreActivity();
+						if (latestScore >= currentLevel.getNumberOfSpells()) {
+							changeToScoreActivity(true);
 						}
-						TextView scoreTextView = (TextView) findViewById(R.id.Score);
+						TextView scoreTextView = (TextView) findViewById(R.id.score);
 						scoreTextView.setText("" + latestScore);
 						break;
-    			
-    			
-    		}}
+    			}
+    		}
+   		};
+   	};
     		
-    		};
-    	};
-    		
-    		
-    
-private void sendUpdateCountdownMessage() {
+    private void sendUpdateCountdownMessage() {
 		final Message countdownMessage = updateUiHandler.obtainMessage(COUNTDOWN_MESSAGE);
 		updateUiHandler.sendMessageDelayed(countdownMessage, ONE_SECOND_IN_MILLISECONDS);
 	}
@@ -118,10 +113,16 @@ private void sendUpdateCountdownMessage() {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Settings settings =  new Settings(this);
+		settings.setGameWasStartedAtLeastOnceFlag();
 
 		Log.i(TAG,"onCreate()");
-
-		SoundTracks.setEnabled(getIntent().getBooleanExtra("ENABLESOUND", true));
+		
+		final int levelOrdinal = getIntent().getIntExtra(ScoreActivity.KEY_LEVEL_ORDINAL, 0);
+		currentLevel = GameLevel.values()[levelOrdinal];
+		
+		SoundTracks.setEnabled(settings.isSoundEnabled());
 		SoundTracks soundTrack = SoundTracks.getInstance();
 		soundTrack.init(getApplicationContext());		
 
@@ -129,12 +130,23 @@ private void sendUpdateCountdownMessage() {
 		countdownView = (TextView) findViewById(R.id.Countdown);
 		debugView = (TextView) findViewById(R.id.FPS);
 		mainLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
-		splashView = (ImageView) findViewById(R.id.splashView);;
-		gLSurfaceView = (SevenWondersGLSurfaceView) findViewById(R.id.surfaceView);;
+		splashView = findViewById(R.id.splashView);
+		
+		TextStyles textStyles = new TextStyles(this);
+		
+		TextView loadingTextView = (TextView) findViewById(R.id.loading_textview);
+		textStyles.applyHeaderTextStyle(loadingTextView);
+		
+		gLSurfaceView = (SevenWondersGLSurfaceView) findViewById(R.id.surfaceView);
 		gLSurfaceView.initialize(updateUiHandler, currentLevel);
+
+		final TextView scoreTextView = (TextView) findViewById(R.id.score);
+		scoreTextView.setText("0");
+		final TextView targetScoreTextView = (TextView) findViewById(R.id.targetScore);
+		targetScoreTextView.setText("" + currentLevel.getNumberOfSpells());
 	}
-	
-    @Override
+
+	@Override
     protected void onPause() {
         super.onPause();
 		Log.i(TAG,"onPause()");
@@ -159,16 +171,13 @@ private void sendUpdateCountdownMessage() {
 		}
 	}
 
-	private void changeToScoreActivity() {
+	private void changeToScoreActivity(boolean wonLevel) {
 		Intent intent = new Intent().setClass(PlayActivity.this, ScoreActivity.class);
 		intent.putExtra(ScoreActivity.KEY_COLLECTED_SPELL_COUNT, latestScore); 
 		intent.putExtra(ScoreActivity.KEY_REMAINING_TIME_SECONDS, latestRemainingTimeSeconds); 
+		intent.putExtra(ScoreActivity.KEY_LEVEL_ORDINAL, currentLevel.ordinal()); 
+		intent.putExtra(ScoreActivity.KEY_WON_LEVEL, wonLevel); 
 		startActivity(intent);
 		finish();
 	} 
 }
-
-    
-
-
-

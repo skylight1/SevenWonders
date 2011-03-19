@@ -72,7 +72,7 @@ public class Carpet {
 
 		carpetGeometry = new OpenGLGeometry[CARPET_OBJ_IDS.length];
 		for (int i = 0; i < CARPET_OBJ_IDS.length; i++) {
-			anOpenGLGeometryBuilder.startGeometry();
+			anOpenGLGeometryBuilder.startGeometry(renderer.getTexture(R.raw.textures, true));
 			renderer.loadRequiredObj(CARPET_OBJ_IDS[i], anOpenGLGeometryBuilder);
 			carpetGeometry[i] = anOpenGLGeometryBuilder.endGeometry();
 		}
