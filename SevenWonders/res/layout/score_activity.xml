@@ -53,6 +53,14 @@
          a:background="@drawable/button"/>         
 
    	   <Button 
+   	   	 a:id="@+id/postToTwitter"
+   		 a:text="@string/postToTwitter"
+         a:layout_width="0dip"
+         a:layout_height="fill_parent"
+         a:layout_weight="0.35"        
+         a:background="@drawable/button"/>
+   		
+   	   <Button 
    	   	 a:id="@+id/postToFacebook"
    		 a:text="@string/postToFacebook"
          a:layout_width="0dip"

@@ -19,15 +19,13 @@ package skylight1.sevenwonders.social.facebook;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import android.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
-import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
-import com.facebook.android.Facebook.DialogListener;
-import com.facebook.android.FacebookError;
-
 
 public class FacebookScoreActivity extends Activity {
 
@@ -68,7 +66,7 @@ public class FacebookScoreActivity extends Activity {
 		
 		if ( RESULT_OK == resultCode ) {
 			postScore();
-			return;
+			//return;
 		}
 		if ( RESULT_CANCELED != resultCode ) {
 			//ALog.w("Non-OK result code " + resultCode + ". Finishing.");
@@ -83,10 +81,11 @@ public class FacebookScoreActivity extends Activity {
 		SessionStore.restore(facebook, this);
 
 		Bundle parameters = new Bundle();
-		parameters.putString("message","I got a score of " + myScore + " in Seven Wonders!");
+		parameters.putString("message",myScore);
 		try {
-			String resp = facebook.request("me/feed",parameters,"POST");
-			resp.compareTo("hello");
+			facebook.request("me/feed",parameters,"POST");
+			Toast toast = Toast.makeText(this, skylight1.sevenwonders.R.string.postSuccess, Toast.LENGTH_LONG);
+			toast.show();		
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,12 +95,6 @@ public class FacebookScoreActivity extends Activity {
 		}
 	}
 
-	private void showErrorAndFinish() {
-		//ALog.m();
-		FacebookUtil.showFacebookErrorToast(this);
-		finish();
-	}
-	
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 		//ALog.m(hasFocus);
@@ -113,38 +106,6 @@ public class FacebookScoreActivity extends Activity {
 			finish();
 		}
 		*/
-	}
-
-	private class WallPostDialogListener implements DialogListener {
-	    public void onFacebookError(FacebookError e) {
-			//ALog.m();
-	    	showErrorAndFinish();
-	    }
-
-	    public void onError(DialogError e) {
-			//ALog.m();
-	    	showErrorAndFinish();        
-	    }
-
-	    public void onCancel() {
-			//ALog.m();
-	    	finish();
-	    }
-	    
-		public void onComplete(Bundle values) {
-			//ALog.m();
-			
-			/*This happens if the user chooses skip instead of publish, so we don't actually want to  show an error for that case, I guess.
-			final String postId = values.getString("post_id");
-			if ( null == postId ) {
-				showErrorAndFinish();
-				return;
-			}
-			*/
-
-			//Success.
-			finish();
-		}
 	}
 	
 }
