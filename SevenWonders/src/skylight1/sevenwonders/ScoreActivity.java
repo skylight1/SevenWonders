@@ -168,7 +168,7 @@ public class ScoreActivity extends Activity {
 		postToTwitter.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = TwitterUpdater.getIntent(ScoreActivity.this, "gUYapcxHUGYKJt5R9HgTWg", "3DIQSKlwHP2n2NMM8jpCO9kFDITJPk6j2gEin9itjwc", "http://www.nycjava.net", message);
+				Intent intent = TwitterUpdater.getIntent(ScoreActivity.this, "gUYapcxHUGYKJt5R9HgTWg", "3DIQSKlwHP2n2NMM8jpCO9kFDITJPk6j2gEin9itjwc", "skylight1.sevenwonders://oauth.callback", message);
 				startActivity(intent);
 				//finish();
 			}

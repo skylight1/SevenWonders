@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -30,6 +31,8 @@ import android.webkit.WebViewClient;
 public class TwitterUpdater extends Activity {
 
 	public static final int RESULT_ERROR = Activity.RESULT_FIRST_USER;
+	
+	private static final String LOG_TAG = TwitterUpdater.class.getSimpleName();
 	
 	private static String CONSUMER_KEY_EXTRA_KEY = TwitterUpdater.class.getName() + ".CONSUMER_KEY_EXTRA_KEY";
 	
@@ -194,13 +197,13 @@ public class TwitterUpdater extends Activity {
 	 * Processes the callback URL encountered when the user authorizes the app.
 	 */
 	private boolean completeIfCallback(String url) {
-		//ALog.m(url);
+		Log.d(LOG_TAG, "completeIfCallback(" + url + ")");
 		
 		if ( null == url || !url.startsWith(mCallbackUrl)  ) {
 			return false;
 		}
 
-		//ALog.i("Callback URL detected, extracting authorization...");
+		Log.d(LOG_TAG, "Callback URL detected, extracting authorization...");
 
 		try {
 			AccessToken a = mAuthSetup.getAccessToken(url);
@@ -254,7 +257,7 @@ public class TwitterUpdater extends Activity {
 		mWebView.setWebViewClient(new WebViewClient() {
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				//ALog.m(view, url);
+				Log.d(LOG_TAG, "shouldOverrideUrlLoading(" + url + ")");
 				
 				if ( !completeIfCallback(url) ) {
 					view.loadUrl(url);
