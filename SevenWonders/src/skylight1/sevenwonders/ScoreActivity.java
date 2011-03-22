@@ -141,7 +141,7 @@ public class ScoreActivity extends Activity {
 		final String message = getString(R.string.postScoreMessage) + "\n" + scoreMessage;
 		
 		final Button playNextLevel = (Button) findViewById(R.id.end__playNextLevel);
-		textStyles.applyHeaderTextStyle(playNextLevel);
+		textStyles.applyBodyTextStyle(playNextLevel);
 		playNextLevel.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -153,7 +153,7 @@ public class ScoreActivity extends Activity {
 		});
 
 		final Button playAgain = (Button) findViewById(R.id.end__playAgain);
-		textStyles.applyHeaderTextStyle(playAgain);
+		textStyles.applyBodyTextStyle(playAgain);
 		playAgain.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -164,7 +164,7 @@ public class ScoreActivity extends Activity {
 		});
 		
 		final Button postToTwitter = (Button) findViewById(R.id.postToTwitter);
-		textStyles.applyHeaderTextStyle(postToTwitter);
+		textStyles.applyBodyTextStyle(postToTwitter);
 		postToTwitter.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -175,7 +175,7 @@ public class ScoreActivity extends Activity {
 		});
 		
 		final Button postToFacebook = (Button) findViewById(R.id.postToFacebook);
-		textStyles.applyHeaderTextStyle(postToFacebook);
+		textStyles.applyBodyTextStyle(postToFacebook);
 		postToFacebook.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
