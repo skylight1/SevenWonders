@@ -168,7 +168,7 @@ public class ScoreActivity extends Activity {
 		postToTwitter.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = TwitterUpdater.getIntent(ScoreActivity.this, "gUYapcxHUGYKJt5R9HgTWg", "3DIQSKlwHP2n2NMM8jpCO9kFDITJPk6j2gEin9itjwc", "skylight1.sevenwonders://oauth.callback", message);
+				Intent intent = TwitterUpdater.getIntent(ScoreActivity.this, "KStKbvCfiPgSh2ScfomkfA", "geqI6BmQh5oKwXRIeTZ5RCSGmfapPxSJglzvtN6xf4", "skylight1.sevenwonders://oauth.callback", message);
 				startActivity(intent);
 				//finish();
 			}
@@ -179,14 +179,11 @@ public class ScoreActivity extends Activity {
 		postToFacebook.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// The app id used here in initFacebook is my own Facebook app. Seven Wonders will 
-				// need its own. Instead of embedding your application secret into the application (which would be hackable)
+				// Instead of embedding your application secret into the application (which would be hackable)
 				// Facebook uses a hash generated from your Android keystore, which you then add to your application at
-				// the Facebook site. Instructions here: https://developers.facebook.com/docs/guides/mobile/
-				// While using the hash is safer, it means that everyone who wants to debug this will have to use
-				// the same key store.
+				// the Facebook site.
 				Intent intent = new Intent(ScoreActivity.this, FacebookScoreActivity.class);
-				FacebookConfig.initFacebook("148539428520612",R.drawable.icon);
+				FacebookConfig.initFacebook("120351194706785",R.drawable.icon);
 				intent.putExtra(FacebookScoreActivity.WALL_POST_PARAMS_EXTRA_KEY, new Bundle());
 				intent.putExtra(FacebookScoreActivity.MY_SCORE, message);
 				startActivity(intent);
