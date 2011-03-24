@@ -7,5 +7,9 @@
 	<string name="yourCollectedSpellCount">Number of spells collected:</string>
 	<string name="yourRemainingTimeSeconds">Remaining Time:</string>
 	<string name="yourScore">Your Score</string>
+	<string name="postToFacebook">Face book</string>
 	<string name="wonGame">Won Game</string>
+	<string name="postToTwitter">Tweet Score</string>
+	<string name="postSuccess">Score successfully sent.</string>
+	<string name="postScoreMessage">My score in Seven Wonders:</string>
 </resources>

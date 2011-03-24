@@ -1,6 +1,9 @@
 package skylight1.sevenwonders;
 
 import skylight1.sevenwonders.levels.GameLevel;
+import skylight1.sevenwonders.social.facebook.FacebookScoreActivity;
+import skylight1.sevenwonders.social.facebook.FacebookConfig;
+import skylight1.sevenwonders.social.twitter.TwitterUpdater;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,7 +24,7 @@ public class ScoreActivity extends Activity {
 	static final String KEY_REMAINING_TIME_SECONDS = "KEY_REMAINING_TIME_SECONDS";
 
 	static final String KEY_COLLECTED_SPELL_COUNT = "KEY_COLLECTED_SPELL_COUNT";
-
+	
 	static final String KEY_LEVEL_ORDINAL = "KEY_LEVEL_ORDINAL";
 
 	static final String KEY_WON_LEVEL = "KEY_WON_LEVEL";
@@ -75,7 +78,6 @@ public class ScoreActivity extends Activity {
 		}
 		
 		boolean nextLevelExists = level < GameLevel.values().length - 1;
-		setupButtons(level, wonLevel, nextLevelExists);
 		
 		// Build the message.		
 		final StyledSpannableStringBuilder messageBuilder = new StyledSpannableStringBuilder();
@@ -86,6 +88,8 @@ public class ScoreActivity extends Activity {
 		messageBuilder.append(getRemainingTimeText(remainingSeconds) + "\n");
 		messageBuilder.append(getScoreString(collectedSpellsCount, remainingSeconds) + "\n");
 		messageBuilder.append(getWinOrLoseString(wonLevel, nextLevelExists));
+		
+		setupButtons(level, wonLevel, nextLevelExists,messageBuilder.toString());
 
 		// Make the message uppercase and set it on to a TextView
 		TextView messageTextView = (TextView) findViewById(R.id.end__content_textview);		
@@ -133,9 +137,11 @@ public class ScoreActivity extends Activity {
 		return result;
 	}
 
-	private void setupButtons(final int level, boolean wasLevelWon, boolean nextLevelExists) {
+	private void setupButtons(final int level, boolean wasLevelWon, boolean nextLevelExists, String scoreMessage) {
+		final String message = getString(R.string.postScoreMessage) + "\n" + scoreMessage;
+		
 		final Button playNextLevel = (Button) findViewById(R.id.end__playNextLevel);
-		textStyles.applyHeaderTextStyle(playNextLevel);
+		textStyles.applyBodyTextStyle(playNextLevel);
 		playNextLevel.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -147,13 +153,41 @@ public class ScoreActivity extends Activity {
 		});
 
 		final Button playAgain = (Button) findViewById(R.id.end__playAgain);
-		textStyles.applyHeaderTextStyle(playAgain);
+		textStyles.applyBodyTextStyle(playAgain);
 		playAgain.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				final Intent intent = new Intent().setClass(ScoreActivity.this, MenuActivity.class);
 				startActivity(intent);
 				finish();
+			}
+		});
+		
+		final Button postToTwitter = (Button) findViewById(R.id.postToTwitter);
+		textStyles.applyBodyTextStyle(postToTwitter);
+		postToTwitter.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = TwitterUpdater.getIntent(ScoreActivity.this, "KStKbvCfiPgSh2ScfomkfA", "geqI6BmQh5oKwXRIeTZ5RCSGmfapPxSJglzvtN6xf4", "skylight1.sevenwonders://oauth.callback", message);
+				startActivity(intent);
+				//finish();
+			}
+		});
+		
+		final Button postToFacebook = (Button) findViewById(R.id.postToFacebook);
+		textStyles.applyBodyTextStyle(postToFacebook);
+		postToFacebook.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// Instead of embedding your application secret into the application (which would be hackable)
+				// Facebook uses a hash generated from your Android keystore, which you then add to your application at
+				// the Facebook site.
+				Intent intent = new Intent(ScoreActivity.this, FacebookScoreActivity.class);
+				FacebookConfig.initFacebook("120351194706785",R.drawable.icon);
+				intent.putExtra(FacebookScoreActivity.WALL_POST_PARAMS_EXTRA_KEY, new Bundle());
+				intent.putExtra(FacebookScoreActivity.MY_SCORE, message);
+				startActivity(intent);
+				//finish();
 			}
 		});
 		
