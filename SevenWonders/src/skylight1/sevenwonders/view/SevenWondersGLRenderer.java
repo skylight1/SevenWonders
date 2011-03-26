@@ -328,7 +328,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	private void detectCollisions() {
 		float[] carpetBoundingBox = temporaryMatrix;
 		// TODO should we use Matrix.orthoM()
-		Matrix.frustumM(carpetBoundingBox, 0, -0.5f, 0.5f, HEIGHT_OF_CARPET_FROM_GROUND, HEIGHT_OF_CARPET_FROM_GROUND + 2f, 0.1f, 1f);
+		Matrix.frustumM(carpetBoundingBox, 0, -0.3f, 0.3f, HEIGHT_OF_CARPET_FROM_GROUND, HEIGHT_OF_CARPET_FROM_GROUND + 2f, 0.1f, 1f);
 
 		// Rotate first, otherwise map rotates around center point we translated away from.
 		Matrix.rotateM(carpetBoundingBox, 0, playerFacingThisFrame, 0, 1, 0);
