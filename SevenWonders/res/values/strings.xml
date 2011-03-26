@@ -12,4 +12,5 @@
 	<string name="postToTwitter">Tweet Score</string>
 	<string name="postSuccess">Score successfully sent.</string>
 	<string name="postScoreMessage">My score in Seven Wonders:</string>
+	<string name="about">About Seven Wonders</string>
 </resources>

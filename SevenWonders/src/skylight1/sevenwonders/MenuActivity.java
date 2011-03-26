@@ -8,7 +8,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MenuActivity extends Activity implements OnClickListener {
+public class MenuActivity extends BaseActivityWithMenu implements OnClickListener {
 	
 	private TextView contentTextView;
 	private Button leftButton;
