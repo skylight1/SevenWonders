@@ -6,6 +6,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+/**
+ * Derive your activity from this instead of Activity to get the about box.
+ * 
+ * @author Rob
+ */
 public class BaseActivityWithMenu extends Activity {
 
 	@Override

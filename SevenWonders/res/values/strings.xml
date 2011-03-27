@@ -13,4 +13,7 @@
 	<string name="postSuccess">Score successfully sent.</string>
 	<string name="postScoreMessage">My score in Seven Wonders:</string>
 	<string name="about">About Seven Wonders</string>
+	<string name="aboutText1">Seven Wonders\nVersion </string>
+	<string name="visitWebsite">Vist the Seven Wonders Website</string>
+	<string name="aboutText2">\n(c) 2011 Skylight1</string>
 </resources>

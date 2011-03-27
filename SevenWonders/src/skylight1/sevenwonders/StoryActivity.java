@@ -4,11 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import skylight1.sevenwonders.StoryPagesController.OnOutOfPageSequenceBoundsListener;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class StoryActivity extends Activity implements OnOutOfPageSequenceBoundsListener {
+public class StoryActivity extends BaseActivityWithMenu implements OnOutOfPageSequenceBoundsListener {
 		
 	/**
 	 * List of strings to be shown on separate pages.

@@ -4,7 +4,6 @@ import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.social.facebook.FacebookScoreActivity;
 import skylight1.sevenwonders.social.facebook.FacebookConfig;
 import skylight1.sevenwonders.social.twitter.TwitterUpdater;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +14,7 @@ import android.widget.TextView;
 /**
  * Displays the score at the end of the game.
  */
-public class ScoreActivity extends Activity {
+public class ScoreActivity extends BaseActivityWithMenu {
 
 	private static final int SCORE_PER_REMAINING_SECOND = 100;
 
