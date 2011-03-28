@@ -6,6 +6,7 @@ import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -155,7 +156,9 @@ public class PlayActivity extends Activity {
     protected void onPause() {
         super.onPause();
 		Log.i(TAG,"onPause()");
-		SoundTracks.getInstance().pause();
+		if(SoundTracks.getInstance()!=null) {
+			SoundTracks.getInstance().pause();
+		}
 		gLSurfaceView.onPause();
 	}
     
@@ -163,7 +166,11 @@ public class PlayActivity extends Activity {
 	public void onResume() {
 		super.onResume();
 		Log.i(TAG,"onResume()");
-		SoundTracks.getInstance().resume();
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		if(SoundTracks.getInstance()!=null) {
+			SoundTracks.getInstance().resume();
+		}
+		splashView.setVisibility(View.VISIBLE);
 		gLSurfaceView.onResume();
 	}
     

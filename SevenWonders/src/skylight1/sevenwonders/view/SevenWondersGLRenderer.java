@@ -28,6 +28,7 @@ import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.R;
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.levels.GameObjectDescriptor;
+import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLU;
@@ -357,11 +358,15 @@ public class SevenWondersGLRenderer implements Renderer {
 			if (newPositionX > (CubeBounds.TERRAIN.x1 + END_OF_WORLD_MARGIN)
 					&& newPositionX < (CubeBounds.TERRAIN.x2 - END_OF_WORLD_MARGIN)) {
 				playerWorldPosition.x = newPositionX;
+			} else {
+			    SoundTracks.getInstance().play(SoundTracks.BUMP);
 			}
 	
 			if (newPositionZ > (CubeBounds.TERRAIN.z1 + END_OF_WORLD_MARGIN)
 					&& newPositionZ < (CubeBounds.TERRAIN.z2 - END_OF_WORLD_MARGIN)) {
 				playerWorldPosition.z = newPositionZ;
+			} else {
+			    SoundTracks.getInstance().play(SoundTracks.BUMP);
 			}
 		}
 		GLU.gluLookAt(aGl, playerWorldPosition.x, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z, playerWorldPosition.x

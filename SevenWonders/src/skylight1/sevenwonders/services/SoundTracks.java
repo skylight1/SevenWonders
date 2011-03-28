@@ -3,6 +3,7 @@ package skylight1.sevenwonders.services;
 import skylight1.sevenwonders.R;
 import android.content.Context;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.util.Log;
 
@@ -11,21 +12,21 @@ public class SoundTracks
 	private static final String TAG = "SoundTracks";
 
 	public static final int SOUNDTRACK = 0;
-	public static final int WIND = 1;
-	public static final int SPELL = 2;
+//	public static final int WIND = 1;
+	public static final int SPELL = 1;
+	public static final int DEATH = 2;
 	public static final int BUMP = 3;
-	public static final int DEATH = 4;
 
 	private final int soundResources[] = {
 			R.raw.soundtrack, //loops
-			R.raw.wind, //loops
+//			R.raw.wind, //loops   - disabled for now
 			R.raw.spell,
-			R.raw.bump,
+//			R.raw.bump, // using mediaplayer instead
 			R.raw.death
 			};
 
 	private final int SOUNDPOOL_STREAMS = soundResources.length;
-	private final int SOUNDPOOL_LOOPS = 2;
+	private final int SOUNDPOOL_LOOPS = 1;
 
 	private int soundIds[]  = new int[SOUNDPOOL_STREAMS];
 	private int streamIds[] = new int[SOUNDPOOL_STREAMS];
@@ -38,6 +39,7 @@ public class SoundTracks
     private boolean running;
     private boolean paused;
     private boolean initCompleted = true;
+    private MediaPlayer mp;
 
     private static SoundTracks soundTrack = new SoundTracks();
 
@@ -100,6 +102,8 @@ public class SoundTracks
     				Log.d(TAG, "paused stream "+i);
 	    		}
 */
+    			mp = MediaPlayer.create(context, R.raw.bump);
+    			
 	    		initCompleted=true;
             	Log.i(TAG, "all sounds loaded");
         	}
@@ -110,9 +114,14 @@ public class SoundTracks
         if (soundPool != null) {
             soundPool.release();
             soundPool = null;
-            System.gc();
     		initCompleted=true;
         }
+        if(mp!=null) {
+			mp.stop();
+			mp.release();
+			mp = null;
+        }
+		System.gc();
     }
     public void stop() {
     	if(soundPool != null && initCompleted) {
@@ -123,7 +132,7 @@ public class SoundTracks
 			}
 			
 			//fade out last loop
-			fadeout();
+//			fadeout();
 			
 			// stop all sounds
 			for(int i = 0; i < soundIds.length; i++) {
@@ -164,7 +173,7 @@ public class SoundTracks
     		Log.d(TAG, "starting wind");
     		//soundPool.setVolume(streamIds[WIND], 1.0f*streamVolume, 1.0f*streamVolume);
     		//resume(WIND,-1);
-    		play(WIND,-1);
+    		//play(WIND,-1);
     	}
     	fadeThread.start();
     }
@@ -198,6 +207,10 @@ public class SoundTracks
     	}
     }
     public boolean resume() {
+		//obtain current media volume again - in case it changed elsewhere, e.g. another app
+    	if(context!=null) {
+		    setStreamVolume(context);
+    	}
     	if(soundPool!=null && initCompleted && paused) {
 			for (int i = 0; i < SOUNDPOOL_STREAMS; i++) {
 				soundPool.resume(streamIds[i]);
@@ -221,8 +234,14 @@ public class SoundTracks
     	play(track, 0);
     }
     public void play(int track, int repeats) {
-        if (soundPool!=null && initCompleted) {
-			streamIds[track] =  soundPool.play(soundIds[track], 1.0f*streamVolume, 1.0f*streamVolume, 1, repeats, 1f);
+    	if(track==BUMP) {
+			if(mp!=null && !mp.isPlaying()) {
+				mp.setVolume(streamVolume, streamVolume);
+				mp.start();
+			}
+    	}
+    	else if (soundPool!=null && initCompleted) {
+			streamIds[track] = soundPool.play(soundIds[track], 1.0f*streamVolume, 1.0f*streamVolume, 1, repeats, 1f);
         }
     }
     public void stop(int track) {
@@ -233,12 +252,16 @@ public class SoundTracks
     public static void setEnabled(boolean enable) {
     	enabled = enable;
     }
-    //sets volume to all sounds (need to call from vol button handler)
-    public void setVolume(int streamVolume) {
-    	if(soundPool!=null && initCompleted) {
-			for (int i = 0; i < SOUNDPOOL_STREAMS; i++) {
-				soundPool.setVolume(streamIds[i],1.0f*streamVolume,1.0f*streamVolume);
-			}
+
+    public static void setVolume(Context context) {
+    	SoundTracks tracks = SoundTracks.getInstance();
+    	if(tracks!=null) {
+    		tracks.setStreamVolume(context);
     	}
     }
+
+	public void setStreamVolume(Context context) {
+        AudioManager mgr = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        streamVolume = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
+	}
 }
