@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -46,6 +47,8 @@ public class PlayActivity extends Activity {
 	private int latestScore;
 
 	private int latestRemainingTimeSeconds=250;
+	
+	private boolean paused;
 		
     //Handler to draw debug info (fps) and countdown and end the game
     private Handler updateUiHandler = new Handler() {
@@ -72,11 +75,13 @@ public class PlayActivity extends Activity {
     					debugView.setText(Integer.toString(msg.arg1));
     					break;
     				case COUNTDOWN_MESSAGE:
-    					latestRemainingTimeSeconds = TOTAL_TIME_ALLOWED - (int) ((SystemClock.uptimeMillis() - countdownStartTime)
-								/ ONE_SECOND_IN_MILLISECONDS);
+    					if ( !paused ) {
+    						latestRemainingTimeSeconds = TOTAL_TIME_ALLOWED - (int) ((SystemClock.uptimeMillis() - countdownStartTime)
+    								/ ONE_SECOND_IN_MILLISECONDS);
+    					}
+
     					// Finish game if out of time.
     					if (latestRemainingTimeSeconds < 0) {
-    						 //finish();
     						changeToScoreActivity(false);
     						break;
     					}
@@ -180,4 +185,15 @@ public class PlayActivity extends Activity {
 		startActivity(intent);
 		finish();
 	} 
+
+	@Override
+	public boolean onKeyDown(final int aKeyCode, final KeyEvent aEvent) {
+		switch (aKeyCode) {		
+			case KeyEvent.KEYCODE_MENU:
+				paused = !paused;
+				gLSurfaceView.togglePaused();
+				return true;
+		}
+		return super.onKeyDown(aKeyCode, aEvent);
+	}
 }

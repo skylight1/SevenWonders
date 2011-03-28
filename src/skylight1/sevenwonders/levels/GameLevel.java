@@ -13,12 +13,12 @@ public enum GameLevel {
 	FIRST(5, 3, 1) {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
-			decorations.add(createSphynx(90, -100, -25, 0));
+			decorations.add(createSphynx(90, -140, -25, 0));
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.ground, R.raw.dunes));
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.water, R.raw.textures));
-			decorations.add(createPyramid(0, 90, 0, 100));
-			decorations.add(createPyramid(0, 455, 0, 110));
-			decorations.add(createPyramid(0, -420, -7, 100));
+			decorations.add(createPyramid(0, -220, 0, 100));
+			decorations.add(createPyramid(0, 655, 0, 110));
+			decorations.add(createPyramid(0, -620, -7, 100));
 			return decorations;
 		}
 
