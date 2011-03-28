@@ -1,7 +1,9 @@
 package skylight1.sevenwonders;
 
+import skylight1.sevenwonders.services.SoundTracks;
 import android.app.Activity;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -43,5 +45,12 @@ public class SplashActivity extends Activity {
 		if (!isFinishing()) {
 			startActivity(new Intent(this, MenuActivity.class));
 		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		SoundTracks.setVolume(this);
 	}
 }

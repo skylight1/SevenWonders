@@ -1,6 +1,8 @@
 package skylight1.sevenwonders;
 
+import skylight1.sevenwonders.services.SoundTracks;
 import android.app.Activity;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -43,10 +45,16 @@ public class SettingsActivity extends Activity {
 				finish();
 			}
 		});
-		
-		
+
 		TextStyles wonderFonts = new TextStyles(this);
 		wonderFonts.applyBodyTextStyle(soundCB);
 		wonderFonts.applyHeaderTextStyle(backButton);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		SoundTracks.setVolume(this);
 	}
 }
