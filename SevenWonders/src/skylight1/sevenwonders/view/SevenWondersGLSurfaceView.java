@@ -64,26 +64,38 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 
 	@Override
 	public boolean onKeyDown(final int aKeyCode, final KeyEvent aEvent) {
-		if (aKeyCode == KeyEvent.KEYCODE_DPAD_CENTER || aKeyCode == KeyEvent.KEYCODE_SPACE) {
-			renderer.setPlayerVelocity(0);
-			return true;
+		switch (aKeyCode) {
+			case KeyEvent.KEYCODE_DPAD_CENTER:
+			case KeyEvent.KEYCODE_SPACE:
+				renderer.setPlayerVelocity(0);
+				return true;
+				
 			// left/q -> left
-		} else if (aKeyCode == KeyEvent.KEYCODE_DPAD_LEFT || aKeyCode == KeyEvent.KEYCODE_Q) {
-			renderer.turn(-5f);
-			return true;
+			case KeyEvent.KEYCODE_DPAD_LEFT:
+			case KeyEvent.KEYCODE_Q:
+				renderer.turn(-5f);
+				return true;
+				
 			// right/w -> right
-		} else if (aKeyCode == KeyEvent.KEYCODE_DPAD_RIGHT || aKeyCode == KeyEvent.KEYCODE_W) {
-			renderer.turn(+5f);
-			return true;
-			// up -> pause
-		} else if (aKeyCode == KeyEvent.KEYCODE_DPAD_UP) {
-			renderer.changeVelocity(SevenWondersGLRenderer.MAXIMUM_VELOCITY / 10f);
-			return true;
-		} else if (aKeyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-			renderer.changeVelocity(-SevenWondersGLRenderer.MAXIMUM_VELOCITY / 10f);
-			return true;
+			case KeyEvent.KEYCODE_DPAD_RIGHT:
+			case KeyEvent.KEYCODE_W:
+				renderer.turn(+5f);
+				return true;
+				
+			case KeyEvent.KEYCODE_DPAD_UP:
+				renderer.changeVelocity(SevenWondersGLRenderer.MAXIMUM_VELOCITY / 10f);
+				return true;
+				
+			case KeyEvent.KEYCODE_DPAD_DOWN:
+				renderer.changeVelocity(-SevenWondersGLRenderer.MAXIMUM_VELOCITY / 10f);
+				return true;
 		}
+
 		return false;
+	}
+
+	public void togglePaused() {
+		renderer.togglePaused();
 	}
 	
 }
