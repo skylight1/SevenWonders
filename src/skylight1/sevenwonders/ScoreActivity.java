@@ -2,8 +2,8 @@ package skylight1.sevenwonders;
 
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.services.SoundTracks;
-import skylight1.sevenwonders.social.facebook.FacebookScoreActivity;
 import skylight1.sevenwonders.social.facebook.FacebookConfig;
+import skylight1.sevenwonders.social.facebook.FacebookScoreActivity;
 import skylight1.sevenwonders.social.twitter.TwitterUpdater;
 import android.app.Activity;
 import android.content.Intent;

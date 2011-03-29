@@ -45,7 +45,7 @@
          a:layout_height="fill_parent"
          a:layout_weight="0.3"        
          a:text="&lt;&lt; Back"
-         a:background="@drawable/button"/>         
-      
+         a:background="@drawable/button"/>
+       <Button a:background="@drawable/button" a:id="@+id/settings_about_button" a:layout_width="0dip" a:text="About" a:layout_height="fill_parent" a:layout_weight="0.3"></Button>
     </LinearLayout>    
 </LinearLayout>
