@@ -43,7 +43,7 @@ public class AboutActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				final WebView wv = new WebView(AboutActivity.this);
-				wv.loadUrl("https://sites.google.com/site/sevenwondersgame/");
+				wv.loadUrl("http://sevenwondersgame.com");
 				AboutActivity.this.setContentView(wv);
 			}
 		});

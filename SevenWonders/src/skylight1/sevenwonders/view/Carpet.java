@@ -19,15 +19,12 @@ import android.os.SystemClock;
  *
  */
 public class Carpet {
-	
-	private static final int HISTORY_SIZE = 6;
-
 	/**
 	 * A helper class used to store a float value together with a related time tick count.
 	 * @author Johannes
 	 *
 	 */
-	private class TimestampedFloat {
+	private static class TimestampedFloat {
 		long time;
 		float value;
 		
@@ -46,19 +43,27 @@ public class Carpet {
 		}
 	}
 	
-	private OpenGLGeometry[] carpetGeometry;
+	private static final int HISTORY_SIZE = 6;
 	
 	private static final int PERIOD_FOR_CARPET_ANIMATION_CYCLE = 800;
+	
 	private static final long TIMESPAN_IN_MILLIS_TO_CONSIDER_FOR_CARPET_ROLLING = 3000;
-	private LinkedList<TimestampedFloat> turnEventsHistory;
-	private float lastAngle;
-	private float priorTolastAngle;
-
-	private SevenWondersGLRenderer renderer;	
 	
 	private static final int[] CARPET_OBJ_IDS = new int[] { R.raw.carpet_wave_0, R.raw.carpet_wave_1,
 		R.raw.carpet_wave_2, R.raw.carpet_wave_3, R.raw.carpet_wave_4, R.raw.carpet_wave_5, R.raw.carpet_wave_6,
 		R.raw.carpet_wave_7, R.raw.carpet_wave_8, R.raw.carpet_wave_9 };
+	
+	private LinkedList<TimestampedFloat> turnEventsHistory;
+	
+	private OpenGLGeometry[] carpetGeometry;
+	
+	private float lastAngle;
+	
+	private float priorTolastAngle;
+
+	private SevenWondersGLRenderer renderer;	
+
+	private Integer carpetIndex;
 	
 	public Carpet(SevenWondersGLRenderer renderer) {
 		priorTolastAngle = 0f;
@@ -125,8 +130,10 @@ public class Carpet {
 	}
 
 
-	public void draw(GL10 aGl) {
-		final int carpetIndex = (int) ((SystemClock.uptimeMillis() % PERIOD_FOR_CARPET_ANIMATION_CYCLE) / (PERIOD_FOR_CARPET_ANIMATION_CYCLE / carpetGeometry.length));
+	public void draw(GL10 aGl, boolean aPaused) {
+		if ( !aPaused || null == carpetIndex ) {
+			carpetIndex = (int) ((SystemClock.uptimeMillis() % PERIOD_FOR_CARPET_ANIMATION_CYCLE) / (PERIOD_FOR_CARPET_ANIMATION_CYCLE / carpetGeometry.length));
+		}
 		
 		float rollAngle = getRollAngle();		
 		if (Math.abs(rollAngle) > 0.001) {
@@ -134,8 +141,7 @@ public class Carpet {
 			aGl.glRotatef(rollAngle, 0f, 0f, 1f);
 			carpetGeometry[carpetIndex].draw(aGl);		
 			aGl.glPopMatrix();
-		} else
-		{
+		} else {
 			carpetGeometry[carpetIndex].draw(aGl);
 		}
 	}

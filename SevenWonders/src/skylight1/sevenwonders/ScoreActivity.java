@@ -1,10 +1,12 @@
 package skylight1.sevenwonders;
 
 import skylight1.sevenwonders.levels.GameLevel;
+import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.social.facebook.FacebookScoreActivity;
 import skylight1.sevenwonders.social.facebook.FacebookConfig;
 import skylight1.sevenwonders.social.twitter.TwitterUpdater;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -201,4 +203,11 @@ public class ScoreActivity extends BaseActivityWithMenu {
 			playAgain.setVisibility(View.VISIBLE);
 		}
 	}
+	@Override
+	public void onResume() {
+		super.onResume();
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		SoundTracks.setVolume(this);
+	}
+
 }

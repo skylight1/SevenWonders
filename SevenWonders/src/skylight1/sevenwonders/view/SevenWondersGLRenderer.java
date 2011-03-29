@@ -28,6 +28,7 @@ import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.R;
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.levels.GameObjectDescriptor;
+import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLU;
@@ -94,6 +95,12 @@ public class SevenWondersGLRenderer implements Renderer {
 	private final float[] temporaryMatrix = new float[16];
 
 	private float playerFacingThisFrame;
+
+	private boolean paused;
+
+	private Integer spellAnimationIndex;
+
+	private Integer swordAnimationIndex;
 
 	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel) {
 		Log.i(TAG, "SevenWondersGLRenderer()");
@@ -299,7 +306,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		// carpet instead.
 		aGl.glFrontFace(GL_CW);
 
-		carpet.draw(aGl);
+		carpet.draw(aGl, paused);
 
 		aGl.glFrontFace(GL_CCW);
 	}
@@ -337,26 +344,31 @@ public class SevenWondersGLRenderer implements Renderer {
 		collisionDetector.detectCollisions(carpetBoundingBox);
 	}
 
-	private void applyMovement(final GL10 aGl) {
+	private void applyMovement(final GL10 aGl) {	
 		final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
 
 		final float facingX = (float) Math.sin(playerFacingThisFrame / 180f * Math.PI);
 		final float facingZ = -(float) Math.cos(playerFacingThisFrame / 180f * Math.PI);
 
-		final float newPositionX = playerWorldPosition.x + facingX * velocity * timeDeltaMS;
-		final float newPositionZ = playerWorldPosition.z + facingZ * velocity * timeDeltaMS;
-
-		// TODO: CHECK FOR END OF WORLD
-		if (newPositionX > (CubeBounds.TERRAIN.x1 + END_OF_WORLD_MARGIN)
-				&& newPositionX < (CubeBounds.TERRAIN.x2 - END_OF_WORLD_MARGIN)) {
-			playerWorldPosition.x = newPositionX;
+		if ( !paused ) {
+			final float newPositionX = playerWorldPosition.x + facingX * velocity * timeDeltaMS;
+			final float newPositionZ = playerWorldPosition.z + facingZ * velocity * timeDeltaMS;
+	
+			// Only update the position if it isn't too far from the end of the world.
+			if (newPositionX > (CubeBounds.TERRAIN.x1 + END_OF_WORLD_MARGIN)
+					&& newPositionX < (CubeBounds.TERRAIN.x2 - END_OF_WORLD_MARGIN)) {
+				playerWorldPosition.x = newPositionX;
+			} else {
+			    SoundTracks.getInstance().play(SoundTracks.BUMP);
+			}
+	
+			if (newPositionZ > (CubeBounds.TERRAIN.z1 + END_OF_WORLD_MARGIN)
+					&& newPositionZ < (CubeBounds.TERRAIN.z2 - END_OF_WORLD_MARGIN)) {
+				playerWorldPosition.z = newPositionZ;
+			} else {
+			    SoundTracks.getInstance().play(SoundTracks.BUMP);
+			}
 		}
-
-		if (newPositionZ > (CubeBounds.TERRAIN.z1 + END_OF_WORLD_MARGIN)
-				&& newPositionZ < (CubeBounds.TERRAIN.z2 - END_OF_WORLD_MARGIN)) {
-			playerWorldPosition.z = newPositionZ;
-		}
-
 		GLU.gluLookAt(aGl, playerWorldPosition.x, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z, playerWorldPosition.x
 				+ facingX, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z + facingZ, 0f, 1f, 0f);
 	}
@@ -373,36 +385,59 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	private void drawSpells(final GL10 aGl) {
-		final int spellAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPINNING_ANIMATION_CYCLE)
-				/ (float) PERIOD_FOR_SPINNING_ANIMATION_CYCLE * (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES);
+		if ( !paused || null == spellAnimationIndex ) {
+			spellAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPINNING_ANIMATION_CYCLE)
+					/ (float) PERIOD_FOR_SPINNING_ANIMATION_CYCLE * (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES);
+		}
 		allSpellsGeometry[spellAnimationIndex].draw(aGl);
 	}
 
 	private void drawSwords(final GL10 aGl) {
-		final int swordAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPINNING_ANIMATION_CYCLE)
-				/ (float) PERIOD_FOR_SPINNING_ANIMATION_CYCLE * (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES);
+		if ( !paused || null == swordAnimationIndex ) {
+			swordAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPINNING_ANIMATION_CYCLE)
+					/ (float) PERIOD_FOR_SPINNING_ANIMATION_CYCLE * (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES);
+		}
 		allHazardsGeometry[swordAnimationIndex].draw(aGl);
 	}
 
-	public void setPlayerVelocity(int aNewVelocity) {
+	public synchronized void setPlayerVelocity(int aNewVelocity) {
+		if ( paused ) {
+			return;
+		}
 		velocity = aNewVelocity;
 	}
 
-	public void turn(float anAngleOfTurn) {
+	public synchronized void turn(float anAngleOfTurn) {
+		if ( paused ) {
+			return;
+		}
 		playerFacing += anAngleOfTurn;
 		carpet.recordTurnAngle(anAngleOfTurn);
 	}
 
-	public void setPlayerFacing(float anAngleAbosulte) {
+	public synchronized void setPlayerFacing(float anAngleAbosulte) {
+		if ( paused ) {
+			return;
+		}
 		playerFacing = anAngleAbosulte;
 	}
 
-	public void changeVelocity(float aVelocityIncrement) {
+	public synchronized void changeVelocity(float aVelocityIncrement) {
+		if ( paused ) {
+			return;
+		}
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, velocity + aVelocityIncrement));
 	}
 
-	public void setVelocity(float aVelocity) {
+	public synchronized void setVelocity(float aVelocity) {
+		if ( paused ) {
+			return;
+		}
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, aVelocity));
+	}
+
+	public synchronized void togglePaused() {
+		paused = !paused;
 	}
 
 	/**
@@ -414,6 +449,9 @@ public class SevenWondersGLRenderer implements Renderer {
 	 *            float percent from -1 to 1
 	 */
 	public void setVelocityPercent(final float aPercent) {
+		if ( paused ) {
+			return;
+		}
 		final float newVelocity = aPercent < 0 ? MINIMUM_VELOCITY * aPercent : MAXIMUM_VELOCITY * aPercent;
 		velocity = constrainVelocity(newVelocity);
 	}

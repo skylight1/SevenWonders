@@ -1,13 +1,16 @@
 package skylight1.sevenwonders;
 
+import skylight1.sevenwonders.services.SoundTracks;
+import android.app.Activity;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MenuActivity extends BaseActivityWithMenu implements OnClickListener {
+public class MenuActivity extends Activity implements OnClickListener {
 	
 	private TextView contentTextView;
 	private Button leftButton;
@@ -76,6 +79,13 @@ public class MenuActivity extends BaseActivityWithMenu implements OnClickListene
 
 	private void startGame() {
 		startActivity(new Intent(this, PlayActivity.class));		
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		SoundTracks.setVolume(this);
 	}
 		
 }
