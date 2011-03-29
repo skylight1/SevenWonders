@@ -55,6 +55,7 @@ final class SpellCollisionHandler implements GeometryAwareCollisionObserver {
 
 	@Override
 	public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
+		SoundTracks.getInstance().play(SoundTracks.SPELL);
 		Log.i(SevenWondersGLRenderer.class.getName(), String.format("collided with " + anOpenGLGeometry));
 
 		collisionDetector.removeGeometry(anOpenGLGeometry);
@@ -77,7 +78,5 @@ final class SpellCollisionHandler implements GeometryAwareCollisionObserver {
 		// notify the observer
 		Message message = uiHandler.obtainMessage(PlayActivity.NEW_SCORE_MESSAGE, newScore, 0);
 		uiHandler.sendMessage(message);
-
-		SoundTracks.getInstance().play(SoundTracks.SPELL);
 	}
 }

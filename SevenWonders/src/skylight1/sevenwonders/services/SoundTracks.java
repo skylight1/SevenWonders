@@ -76,15 +76,15 @@ public class SoundTracks
         		}
     			Log.d(TAG,"sound init: loading all sounds");
 
-				// "load" tracks (play actually loads into memory) then play at no volume and pause streams
+				// "load" tracks (play actually loads into memory) and clear streamids
 	    		for (int i = 0; i < SOUNDPOOL_STREAMS; i++) {
-	    			soundIds[i]  =  soundPool.load(context, soundResources[i], 1);
+	    			soundIds[i]  =  soundPool.load(context, soundResources[i], i);
 	    			streamIds[i] = 0;
 	    		}
 
 	    		// except do play the first soundtrack with volume (looped)
     			while(streamIds[SOUNDTRACK]==0 && running) {
-    				try { Thread.sleep(200); } catch(InterruptedException e) { } //TODO optimize this wait
+    				try { Thread.sleep(200); } catch(InterruptedException e) { } //TODO: wait to load
 					streamIds[SOUNDTRACK] =  soundPool.play(soundIds[SOUNDTRACK], 1.0f*streamVolume, 1.0f*streamVolume, 0, -1, 1f);
     			}
 
@@ -105,7 +105,7 @@ public class SoundTracks
     			mp = MediaPlayer.create(context, R.raw.bump);
     			
 	    		initCompleted=true;
-            	Log.i(TAG, "all sounds loaded");
+            	Log.i(TAG, "first soundtrack loaded");
         	}
     	}).start();
     }
@@ -160,9 +160,17 @@ public class SoundTracks
 					}
 				}
 				if(soundPool!=null) {
-					Log.d(TAG,"soundPool stopping and unloading soundtrack");					
+					Log.d(TAG,"soundPool stopping and unloading 1st soundtrack");					
 					soundPool.stop(streamIds[track]);
 		    		soundPool.unload(streamIds[track]);
+		    
+	    			while(streamIds[DEATH]==0 && running) {
+	    				try { Thread.sleep(200); } catch(InterruptedException e) { }
+						streamIds[DEATH] =  soundPool.play(soundIds[DEATH], 0.0f*streamVolume, 0.0f*streamVolume, 0, -1, 1f);
+	    			}
+	    			soundPool.pause(streamIds[DEATH]);
+					Log.i(TAG,"death sound is loaded and paused - ready to play");
+
 				} else {
 					Log.i(TAG,"soundPool is null while stopping "+track);
 					return;
@@ -170,14 +178,14 @@ public class SoundTracks
 			}
     	});
     	if(track==SOUNDTRACK) {
-    		Log.d(TAG, "starting wind");
+    		Log.d(TAG, "not starting wind sound...");
     		//soundPool.setVolume(streamIds[WIND], 1.0f*streamVolume, 1.0f*streamVolume);
     		//resume(WIND,-1);
     		//play(WIND,-1);
     	}
     	fadeThread.start();
     }
-    public void fadeout() {
+    public void fadeout() { //fades out all sounds
     	if(soundPool==null || !initCompleted || paused) {
     		return;
     	}

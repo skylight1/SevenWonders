@@ -341,7 +341,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		Matrix.rotateM(carpetBoundingBox, 0, playerFacingThisFrame, 0, 1, 0);
 		Matrix.translateM(carpetBoundingBox, 0, -playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
 
-		collisionDetector.detectCollisions(carpetBoundingBox);
+		if(!paused) {
+			collisionDetector.detectCollisions(carpetBoundingBox);
+		}
 	}
 
 	private void applyMovement(final GL10 aGl) {	
