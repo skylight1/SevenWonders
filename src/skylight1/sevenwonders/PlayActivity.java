@@ -20,9 +20,10 @@ import android.widget.TextView;
 public class PlayActivity extends Activity {
 	public static final int FPS_MESSAGE = 0;
 	public static final int COUNTDOWN_MESSAGE = 1;
-	public static final int END_GAME_MESSAGE = 2;
+	public static final int START_END_GAME_MESSAGE = 2;
 	public static final int NEW_SCORE_MESSAGE = 3;
 	public static final int START_RENDERING_MESSAGE = 4;
+	protected static final int END_GAME_MESSAGE = 5;
 
 	protected static final int TOTAL_TIME_ALLOWED = 180;
 
@@ -94,6 +95,12 @@ public class PlayActivity extends Activity {
     					// Update time text view and send a delayed message to update again later.
     					countdownView.setText(Integer.toString(latestRemainingTimeSeconds));
     					sendUpdateCountdownMessage();    						
+    					break;
+    				case START_END_GAME_MESSAGE:
+    					gLSurfaceView.togglePaused();
+    					//TODO: add red tint or something
+    					final Message endGameMessage = updateUiHandler.obtainMessage(END_GAME_MESSAGE);
+    					updateUiHandler.sendMessageDelayed(endGameMessage, 2*ONE_SECOND_IN_MILLISECONDS);
     					break;
     				case END_GAME_MESSAGE:
     					changeToScoreActivity(false);

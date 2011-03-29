@@ -17,8 +17,7 @@ public class HazardCollisionHandler implements GeometryAwareCollisionObserver {
 	@Override
 	public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
 		SoundTracks.getInstance().play(SoundTracks.DEATH);
-		Log.i(SevenWondersGLRenderer.class.getName(), String.format("Player hit a sword!"));
-		updateUiHandler.sendEmptyMessage(PlayActivity.END_GAME_MESSAGE);
+		updateUiHandler.sendEmptyMessage(PlayActivity.START_END_GAME_MESSAGE);
 	}
 
 	@Override
