@@ -89,7 +89,7 @@ public class PlayActivity extends Activity {
     					}
     					// Change time background color if running out of time.
     					if (latestRemainingTimeSeconds < 100) {
-    						int backgroundColor = latestRemainingTimeSeconds %2 == 1 ? Color.YELLOW : Color.MAGENTA;
+    						int backgroundColor = latestRemainingTimeSeconds %2 == 1 ? Color.YELLOW : Color.RED;
     						countdownView.setBackgroundColor(backgroundColor);
     					}
     					// Update time text view and send a delayed message to update again later.
