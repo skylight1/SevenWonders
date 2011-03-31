@@ -55,6 +55,7 @@ public class SettingsActivity extends Activity {
 		TextStyles wonderFonts = new TextStyles(this);
 		wonderFonts.applyBodyTextStyle(soundCB);
 		wonderFonts.applyHeaderTextStyle(backButton);
+		wonderFonts.applyHeaderTextStyle(aboutButton);
 	}
 
 	@Override
