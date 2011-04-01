@@ -5,6 +5,8 @@ import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.social.facebook.FacebookConfig;
 import skylight1.sevenwonders.social.facebook.FacebookScoreActivity;
 import skylight1.sevenwonders.social.twitter.TwitterUpdater;
+import skylight1.sevenwonders.view.StyledSpannableStringBuilder;
+import skylight1.sevenwonders.view.TextStyles;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.AudioManager;
