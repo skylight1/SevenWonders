@@ -17,6 +17,10 @@
 			</intent-filter>
 		</activity>
 
+		<activity android:name="LevelChooserActivity" 
+			android:label="@string/app_name"
+			android:screenOrientation="landscape" />
+
 		<activity android:name="PlayActivity" 
 			android:label="@string/app_name"
 			android:launchMode="singleInstance" 

@@ -1,5 +1,6 @@
 package skylight1.sevenwonders;
 
+import skylight1.sevenwonders.view.TextStyles;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.pm.PackageInfo;
