@@ -1,5 +1,6 @@
 package skylight1.sevenwonders;
 
+import skylight1.sevenwonders.view.TextStyles;
 import skylight1.sevenwonders.services.SoundTracks;
 import android.app.Activity;
 import android.content.Intent;

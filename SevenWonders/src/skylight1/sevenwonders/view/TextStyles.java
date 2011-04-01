@@ -1,4 +1,4 @@
-package skylight1.sevenwonders;
+package skylight1.sevenwonders.view;
 
 import android.content.Context;
 import android.graphics.Color;

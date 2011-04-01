@@ -3,6 +3,7 @@ package skylight1.sevenwonders;
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
+import skylight1.sevenwonders.view.TextStyles;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
