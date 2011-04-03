@@ -2,9 +2,12 @@ package skylight1.sevenwonders;
 
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.services.SoundTracks;
-import skylight1.sevenwonders.social.facebook.FacebookScoreActivity;
 import skylight1.sevenwonders.social.facebook.FacebookConfig;
+import skylight1.sevenwonders.social.facebook.FacebookScoreActivity;
 import skylight1.sevenwonders.social.twitter.TwitterUpdater;
+import skylight1.sevenwonders.view.StyledSpannableStringBuilder;
+import skylight1.sevenwonders.view.TextStyles;
+import android.app.Activity;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -16,7 +19,7 @@ import android.widget.TextView;
 /**
  * Displays the score at the end of the game.
  */
-public class ScoreActivity extends BaseActivityWithMenu {
+public class ScoreActivity extends Activity {
 
 	private static final int SCORE_PER_REMAINING_SECOND = 100;
 

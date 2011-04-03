@@ -3,7 +3,9 @@ package skylight1.sevenwonders;
 import java.util.Arrays;
 import java.util.List;
 
-import skylight1.sevenwonders.StoryPagesController.OnOutOfPageSequenceBoundsListener;
+import skylight1.sevenwonders.view.StoryPagesController;
+import skylight1.sevenwonders.view.StoryPagesController.OnOutOfPageSequenceBoundsListener;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -42,7 +44,9 @@ public class StoryActivity extends BaseActivityWithMenu implements OnOutOfPageSe
 
 	@Override
 	public void onLeftPageSequenceOnTheRight() {
-		startActivity(new Intent(this, PlayActivity.class));
+		boolean isFirstTimeUse = !(new Settings(this).wasGameStartedAtLeastOnce());
+		final Class<? extends Activity> nextActivityClass = isFirstTimeUse ? PlayActivity.class : LevelChooserActivity.class;
+		startActivity(new Intent(this, nextActivityClass));
 		finish();
 	}
 	

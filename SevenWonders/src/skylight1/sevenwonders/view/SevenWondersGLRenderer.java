@@ -15,14 +15,14 @@ import javax.microedition.khronos.opengles.GL10;
 
 import skylight1.opengl.CollisionDetector;
 import skylight1.opengl.GeometryBuilder;
+import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
+import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
+import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
 import skylight1.opengl.OpenGLGeometry;
 import skylight1.opengl.OpenGLGeometryBuilder;
 import skylight1.opengl.OpenGLGeometryBuilderFactory;
 import skylight1.opengl.Texture;
 import skylight1.opengl.TransformingGeometryBuilder;
-import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
-import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
-import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
 import skylight1.opengl.files.ObjFileLoader;
 import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.R;
@@ -31,9 +31,9 @@ import skylight1.sevenwonders.levels.GameObjectDescriptor;
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.util.FPSLogger;
 import android.content.Context;
+import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 import android.opengl.Matrix;
-import android.opengl.GLSurfaceView.Renderer;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -341,7 +341,9 @@ public class SevenWondersGLRenderer implements Renderer {
 		Matrix.rotateM(carpetBoundingBox, 0, playerFacingThisFrame, 0, 1, 0);
 		Matrix.translateM(carpetBoundingBox, 0, -playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
 
-		collisionDetector.detectCollisions(carpetBoundingBox);
+		if(!paused) {
+			collisionDetector.detectCollisions(carpetBoundingBox);
+		}
 	}
 
 	private void applyMovement(final GL10 aGl) {	

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:a="http://schemas.android.com/apk/res/android"
+	a:layout_width="fill_parent" a:layout_height="fill_parent"
+	a:background="@drawable/bg" a:paddingTop="7dip" a:paddingBottom="7dip"
+	a:paddingLeft="4dip" a:paddingRight="4dip">
+	<LinearLayout a:orientation="vertical" a:layout_width="fill_parent"
+		a:layout_height="fill_parent" a:background="@drawable/story_background">
+		<TextView a:id="@+id/heading" a:layout_width="fill_parent"
+			a:layout_height="wrap_content" a:layout_gravity="center" a:gravity="center"
+			a:text="@string/choose_a_level" a:textSize="20dip" a:textColor="#ffff"
+			a:textStyle="bold" a:shadowRadius="1.3" a:shadowColor="#211"
+			a:shadowDx="1.0" a:shadowDy="1.0" />
+
+		<ListView a:id="@android:id/list" a:layout_width="fill_parent"
+			a:layout_height="wrap_content" a:layout_gravity="center" a:gravity="center"
+			a:textSize="20dip" a:paddingTop="7dip" a:paddingBottom="7dip"
+			a:paddingLeft="4dip" a:paddingRight="4dip" />
+
+	</LinearLayout>
+</FrameLayout>

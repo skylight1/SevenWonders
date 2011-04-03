@@ -19,7 +19,7 @@ package skylight1.sevenwonders.social.facebook;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import android.R;
+import skylight1.sevenwonders.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -84,7 +84,7 @@ public class FacebookScoreActivity extends Activity {
 		parameters.putString("message",myScore);
 		try {
 			facebook.request("me/feed",parameters,"POST");
-			Toast toast = Toast.makeText(this, skylight1.sevenwonders.R.string.postSuccess, Toast.LENGTH_LONG);
+			Toast toast = Toast.makeText(this, R.string.postSuccess, Toast.LENGTH_LONG);
 			toast.show();		
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
