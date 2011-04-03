@@ -18,7 +18,7 @@ public class SplashActivity extends Activity {
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.splashscreen);
-
+		SWExceptionHandler.start();
 		final View view = findViewById(R.id.EnterEgypt);
 		view.setOnClickListener(new OnClickListener() {
 			@Override
