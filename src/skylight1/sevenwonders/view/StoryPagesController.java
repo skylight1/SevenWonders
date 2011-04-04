@@ -3,9 +3,6 @@ package skylight1.sevenwonders.view;
 import java.util.List;
 
 import skylight1.sevenwonders.R;
-import skylight1.sevenwonders.R.id;
-import skylight1.sevenwonders.R.string;
-
 import android.app.Activity;
 import android.os.Handler;
 import android.view.View;

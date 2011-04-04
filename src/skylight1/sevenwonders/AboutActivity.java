@@ -37,9 +37,9 @@ public class AboutActivity extends Activity {
 		final TextStyles textStyles = new TextStyles(this);
 		final TextView aboutText = (TextView) findViewById(R.id.aboutText);
 		aboutText.setText(buildAboutText());
-		textStyles.applyHeaderTextStyle(aboutText);
+		textStyles.applyBodyTextStyle(aboutText);
 		final Button website = (Button) findViewById(R.id.visitWebsite);
-		textStyles.applyBodyTextStyle(website);
+		textStyles.applyHeaderTextStyle(website);
 		website.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
