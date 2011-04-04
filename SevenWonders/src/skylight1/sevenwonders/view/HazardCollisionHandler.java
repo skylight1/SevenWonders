@@ -4,7 +4,6 @@ import skylight1.opengl.OpenGLGeometry;
 import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.services.SoundTracks;
 import android.os.Handler;
-import android.util.Log;
 
 public class HazardCollisionHandler implements GeometryAwareCollisionObserver {
 

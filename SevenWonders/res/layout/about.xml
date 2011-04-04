@@ -1,8 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent" android:orientation="vertical" android:background="@drawable/bg">
-    <TextView android:id="@+id/aboutText" android:layout_height="wrap_content" android:text="" android:layout_marginTop="20dip" android:layout_width="fill_parent" android:gravity="center_horizontal"></TextView>
-    <Button android:text="@string/visitWebsite" android:id="@+id/visitWebsite" android:layout_height="wrap_content" android:gravity="center_horizontal" android:layout_marginTop="40dip" android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:background="@drawable/button"></Button>
+  xmlns:a="http://schemas.android.com/apk/res/android"
+  a:layout_width="fill_parent"
+  a:layout_height="fill_parent"
+  a:orientation="vertical"
+  a:background="@drawable/bg">  
+   <FrameLayout
+      a:layout_width="fill_parent"
+      a:layout_height="0dip"      
+      a:layout_weight="0.70"
+      a:layout_margin="30dip"
+      a:background="@drawable/story_background">    
+  
+	    <TextView
+	     a:id="@+id/aboutText"
+	     a:layout_width="fill_parent" 
+	     a:layout_height="fill_parent"
+	     a:gravity="center"/>
+	          
+     </FrameLayout> 
+            
+     <LinearLayout
+        a:id="@+id/menu_footer_layout"
+        a:layout_width="fill_parent"
+        a:layout_height="0dip"
+        a:layout_weight="0.30"
+        a:weightSum="1">        
+        <Button 
+          a:text="@string/visitWebsite" 
+          a:id="@+id/visitWebsite"
+          a:layout_width="fill_parent"
+		  a:layout_height="fill_parent"
+		  a:background="@drawable/button"/>       
+    </LinearLayout>
 </LinearLayout>
