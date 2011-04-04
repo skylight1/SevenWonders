@@ -48,4 +48,15 @@ public class TextStyles {
 		aTextView.setTextSize(32f);
 		aTextView.setText(aTextView.getText().toString().toUpperCase());
 	}
+	
+	/**
+	 * Apply the header text {@link Typeface} to a {@link TextView}.
+	 * Set a medium text size.
+	 * @param aTextView {@link TextView} to which to apply the body text {@link Typeface}.
+	 */
+	public void applySmallTextForButtonStyle(TextView aTextView) {
+		aTextView.setTypeface(headerTextTypeface);
+		aTextView.setTextColor(Color.WHITE);
+		aTextView.setTextSize(29f);
+	}
 }

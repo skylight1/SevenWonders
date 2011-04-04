@@ -145,7 +145,7 @@ public class ScoreActivity extends Activity {
 		final String message = getString(R.string.postScoreMessage) + "\n" + scoreMessage;
 		
 		final Button playNextLevel = (Button) findViewById(R.id.end__playNextLevel);
-		textStyles.applyBodyTextStyle(playNextLevel);
+		textStyles.applySmallTextForButtonStyle(playNextLevel);
 		playNextLevel.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -157,7 +157,7 @@ public class ScoreActivity extends Activity {
 		});
 
 		final Button playAgain = (Button) findViewById(R.id.end__playAgain);
-		textStyles.applyBodyTextStyle(playAgain);
+		textStyles.applySmallTextForButtonStyle(playAgain);
 		playAgain.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -168,7 +168,7 @@ public class ScoreActivity extends Activity {
 		});
 		
 		final Button postToTwitter = (Button) findViewById(R.id.postToTwitter);
-		textStyles.applyBodyTextStyle(postToTwitter);
+		textStyles.applySmallTextForButtonStyle(postToTwitter);
 		postToTwitter.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -179,7 +179,7 @@ public class ScoreActivity extends Activity {
 		});
 		
 		final Button postToFacebook = (Button) findViewById(R.id.postToFacebook);
-		textStyles.applyBodyTextStyle(postToFacebook);
+		textStyles.applySmallTextForButtonStyle(postToFacebook);
 		postToFacebook.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -199,10 +199,10 @@ public class ScoreActivity extends Activity {
 		// play next level button.
 		if (wasLevelWon && nextLevelExists) {
 			playNextLevel.setVisibility(View.VISIBLE);
-			playAgain.setVisibility(View.GONE);
+			playAgain.setVisibility(View.INVISIBLE);
 		// Otherwise show the play again button.
 		} else {
-			playNextLevel.setVisibility(View.GONE);
+			playNextLevel.setVisibility(View.INVISIBLE);
 			playAgain.setVisibility(View.VISIBLE);
 		}
 	}

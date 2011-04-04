@@ -33,31 +33,16 @@
          a:id="@+id/end__playAgain"
          a:layout_width="0dip"
          a:layout_height="fill_parent"
-         a:layout_weight="0.35"        
+         a:layout_weight="0.30"        
          a:text="@string/playAgain"
-         a:background="@drawable/button"/>
-           
-       <View
-         a:id="@+id/end__footer_spacer"
-         a:layout_width="0dip"
-         a:layout_height="fill_parent"
-         a:layout_weight="0.3"
-         a:visibility="invisible"/>
-              
-       <Button
-         a:id="@+id/end__playNextLevel"
-         a:layout_width="0dip"
-         a:layout_height="fill_parent"
-         a:layout_weight="0.35"        
-         a:text="@string/playNextLevel"
-         a:background="@drawable/button"/>         
+         a:background="@drawable/button"/>   
 
    	   <Button 
    	   	 a:id="@+id/postToTwitter"
    		 a:text="@string/postToTwitter"
          a:layout_width="0dip"
          a:layout_height="fill_parent"
-         a:layout_weight="0.35"        
+         a:layout_weight="0.20"        
          a:background="@drawable/button"/>
    		
    	   <Button 
@@ -65,7 +50,15 @@
    		 a:text="@string/postToFacebook"
          a:layout_width="0dip"
          a:layout_height="fill_parent"
-         a:layout_weight="0.35"        
+         a:layout_weight="0.20"        
+         a:background="@drawable/button"/>
+         
+         <Button
+         a:id="@+id/end__playNextLevel"
+         a:layout_width="0dip"
+         a:layout_height="fill_parent"
+         a:layout_weight="0.30"        
+         a:text="@string/playNextLevel"
          a:background="@drawable/button"/>
    		
     </LinearLayout>    
