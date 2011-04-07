@@ -59,7 +59,7 @@ public class LevelChooserActivity extends ListActivity {
 				wonderFonts.applyHeaderTextStyle(scoreTextView);
 
 				final LevelScore levelScore = getItem(aPosition);
-				levelNameTextView.setText("Level " + levelScore.level.ordinal());
+				levelNameTextView.setText("Level " + (levelScore.level.ordinal() + 1));
 				scoreTextView.setText("");
 
 				return rowView;
