@@ -89,8 +89,10 @@ public class ScoreActivity extends Activity {
 		
 		
 		messageBuilder.append(collectedSpellCountText + "\n");		
-		messageBuilder.append(getRemainingTimeText(remainingSeconds) + "\n");
-		messageBuilder.append(getScoreString(collectedSpellsCount, remainingSeconds) + "\n");
+		if ( wonLevel ) {
+			messageBuilder.append(getRemainingTimeText(remainingSeconds) + "\n");
+		}
+		messageBuilder.append(getScoreString(collectedSpellsCount, remainingSeconds, wonLevel) + "\n");
 		messageBuilder.append(getWinOrLoseString(wonLevel, nextLevelExists));
 		
 		setupButtons(level, wonLevel, nextLevelExists,messageBuilder.toString());
@@ -120,9 +122,14 @@ public class ScoreActivity extends Activity {
 		}		 		
 	}
 
-	private String getScoreString(final int collectedSpellCount, final int remainingTimeSeconds) {
-		final int score = collectedSpellCount * SCORE_PER_COLLECTED_SPELL 
-		+ remainingTimeSeconds * SCORE_PER_REMAINING_SECOND;
+	private String getScoreString(final int collectedSpellCount, 
+			final int remainingTimeSeconds, final boolean wonLevel) {
+		int score = collectedSpellCount * SCORE_PER_COLLECTED_SPELL;
+		// If the user won the level, as opposed to say, hit a sword, 
+		// then reward them for extra time.
+		if ( wonLevel ) {
+			score += remainingTimeSeconds * SCORE_PER_REMAINING_SECOND;
+		}
 		String scoreText = String.format("Level score: %02d", score);
 		return scoreText;
 	}
