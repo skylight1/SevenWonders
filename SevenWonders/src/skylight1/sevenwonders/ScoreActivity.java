@@ -43,6 +43,7 @@ public class ScoreActivity extends Activity {
 		final Intent callingIntent = getIntent();
 		final boolean wonLevel = callingIntent.getBooleanExtra(KEY_WON_LEVEL, false);
 		final int level = callingIntent.getIntExtra(KEY_LEVEL_ORDINAL, 0);
+		final int oneBasedLevelNumber = level + 1;
 		final int collectedSpellsCount = callingIntent.getIntExtra(
 			ScoreActivity.KEY_COLLECTED_SPELL_COUNT, 0);
 		
@@ -50,6 +51,21 @@ public class ScoreActivity extends Activity {
 			ScoreActivity.KEY_REMAINING_TIME_SECONDS, 0);
 		
 		textStyles = new TextStyles(this);
+		
+		// if the level was won, then unlock the next level
+		final Settings settings = new Settings(this);
+		if (wonLevel) {
+			// add one for one-based-indexing
+			settings.unlockLevel(oneBasedLevelNumber + 1);
+		}
+
+		// update the high score if necessary
+		// add one for one-based-indexing
+		final int previousHighScore = settings.getHighScore(oneBasedLevelNumber);
+		final int calculateScore = calculateScore(collectedSpellsCount, remainingSeconds, wonLevel);
+		if (previousHighScore < calculateScore) {
+			settings.setHighScore(oneBasedLevelNumber, calculateScore);
+		}
 		
 		displayEndOfLevelMessage(wonLevel, level, collectedSpellsCount, remainingSeconds);		
 	}
@@ -124,14 +140,19 @@ public class ScoreActivity extends Activity {
 
 	private String getScoreString(final int collectedSpellCount, 
 			final int remainingTimeSeconds, final boolean wonLevel) {
-		int score = collectedSpellCount * SCORE_PER_COLLECTED_SPELL;
-		// If the user won the level, as opposed to say, hit a sword, 
-		// then reward them for extra time.
-		if ( wonLevel ) {
-			score += remainingTimeSeconds * SCORE_PER_REMAINING_SECOND;
-		}
+		int score = calculateScore(collectedSpellCount, remainingTimeSeconds, wonLevel);
 		String scoreText = String.format("Level score: %02d", score);
 		return scoreText;
+	}
+
+	private int calculateScore(final int aCollectedSpellCount, final int aRemainingTimeSeconds, final boolean aWonLevel) {
+		int score = aCollectedSpellCount * SCORE_PER_COLLECTED_SPELL;
+		// If the user won the level, as opposed to say, hit a sword, 
+		// then reward them for extra time.
+		if ( aWonLevel ) {
+			score += aRemainingTimeSeconds * SCORE_PER_REMAINING_SECOND;
+		}
+		return score;
 	}
 
 	private String getRemainingTimeText(int remainingTimeSeconds) {
