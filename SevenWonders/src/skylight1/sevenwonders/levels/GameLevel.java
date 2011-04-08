@@ -12,10 +12,8 @@ import android.opengl.Matrix;
 public enum GameLevel {
 	FIRST(5, 3, 1) {
 		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
+			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(createSphynx(90, -140, -25, 0));
-			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.ground, R.raw.dunes));
-			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.water, R.raw.textures));
 			decorations.add(createPyramid(0, -220, 0, 100));
 			decorations.add(createPyramid(0, 655, 0, 110));
 			decorations.add(createPyramid(0, -620, -7, 100));
@@ -30,7 +28,7 @@ public enum GameLevel {
 	},
 	SECOND(2, 6, 2) {
 		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
+			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
 			return decorations;
 		}
@@ -43,7 +41,7 @@ public enum GameLevel {
 	},
 	THIRD(5, 4, 3) {
 		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
+			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
 			return decorations;
 		}
@@ -56,7 +54,7 @@ public enum GameLevel {
 	},
 	FOURTH(5, 6, 3) {
 		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
+			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
 			return decorations;
 		}
@@ -69,7 +67,7 @@ public enum GameLevel {
 	},
 	FIFTH(4, 8, 3) {
 		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
+			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
 			return decorations;
 		}
@@ -82,7 +80,7 @@ public enum GameLevel {
 	},
 	SIXTH(4, 10, 3) {
 		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
+			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
 			return decorations;
 		}
@@ -95,7 +93,7 @@ public enum GameLevel {
 	},
 	SEVENTH(3, 12, 3) {
 		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
+			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
 			return decorations;
 		}
@@ -129,7 +127,7 @@ public enum GameLevel {
 		numberOfHazards = aNumberOfHazzards;
 		random = new Random(aRandomSeed);
 	}
-
+	
 	/**
 	 * @return number of spells in the level
 	 */
@@ -157,7 +155,12 @@ public enum GameLevel {
 		return createObjectsAtRandomLocations(HEIGHT_OF_HAZARDS_FROM_GROUND, numberOfHazards, null, R.raw.textured_sword, R.raw.textures);
 	}
 
-	abstract public List<GameObjectDescriptor> getDecorations();
+	public List<GameObjectDescriptor> getDecorations() {
+		final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
+		decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.ground, R.raw.dunes));
+		decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.water, R.raw.textures));
+		return decorations;
+	}
 
 	private static float[] createNewIdentityMatrix() {
 		float[] matrix = new float[16];
