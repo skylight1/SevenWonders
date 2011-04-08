@@ -20,10 +20,13 @@ public class LevelChooserActivity extends ListActivity {
 		final GameLevel level;
 
 		final int score;
+		
+		final boolean locked;
 
-		public LevelScore(GameLevel aLevel, int aScore) {
+		public LevelScore(GameLevel aLevel, int aScore, final boolean aLocked) {
 			level = aLevel;
 			score = aScore;
+			locked = aLocked;
 		}
 	}
 
@@ -39,9 +42,12 @@ public class LevelChooserActivity extends ListActivity {
 		final TextView heading = (TextView) findViewById(R.id.heading);
 		wonderFonts.applyBodyTextStyle(heading);
 
-		List<LevelScore> listOfLevels = new ArrayList<LevelScore>();
+		final Settings settings = new Settings(this);
+		final List<LevelScore> listOfLevels = new ArrayList<LevelScore>();
 		for (GameLevel level : GameLevel.values()) {
-			listOfLevels.add(new LevelScore(level, 1000));
+			// add one for one-based-indexing
+			final int oneBasedLevelNumber = level.ordinal() + 1;
+			listOfLevels.add(new LevelScore(level, settings.getHighScore(oneBasedLevelNumber), settings.isLevelLocked(oneBasedLevelNumber)));
 		}
 		ArrayAdapter<LevelScore> levelScoreAdapter = new ArrayAdapter<LevelScore>(this, R.layout.level_chooser_row, listOfLevels) {
 			@Override
@@ -60,9 +66,19 @@ public class LevelChooserActivity extends ListActivity {
 
 				final LevelScore levelScore = getItem(aPosition);
 				levelNameTextView.setText("Level " + (levelScore.level.ordinal() + 1));
-				scoreTextView.setText("");
+				final String scoreMessage = levelScore.locked ? "LOCKED" : String.format("%d", levelScore.score);
+				scoreTextView.setText(scoreMessage);
 
+				// grey out the row if the level is locked
+				rowView.setEnabled(! levelScore.locked);
+				
 				return rowView;
+			}
+			
+			@Override
+			public boolean isEnabled(int aPosition) {
+				// disable the row if the level is locked
+				return ! getItem(aPosition).locked;
 			}
 		};
 
