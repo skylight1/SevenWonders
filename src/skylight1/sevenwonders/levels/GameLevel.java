@@ -12,8 +12,9 @@ import android.opengl.Matrix;
 public enum GameLevel {
 	FIRST(5, 3, 1) {
 		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = super.getDecorations();
+			final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
 			decorations.add(createSphynx(90, -140, -25, 0));
+			decorations.addAll(super.getDecorations());
 			decorations.add(createPyramid(0, -220, 0, 100));
 			decorations.add(createPyramid(0, 655, 0, 110));
 			decorations.add(createPyramid(0, -620, -7, 100));
