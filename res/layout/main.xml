@@ -3,10 +3,6 @@
 	a:layout_width="fill_parent" a:layout_height="fill_parent"
 	xmlns:a="http://schemas.android.com/apk/res/android">
 
-	<skylight1.sevenwonders.view.SevenWondersGLSurfaceView a:id="@+id/surfaceView" 
-		a:layout_height="fill_parent"
-		a:layout_width="fill_parent"/>
-
 	<TextView a:id="@+id/Countdown" 
 		a:text="" 
 		a:layout_height="wrap_content"
