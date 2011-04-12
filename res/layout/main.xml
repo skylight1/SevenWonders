@@ -77,7 +77,8 @@
 			a:shadowColor="#211"
 			a:shadowDx="1.0"
 			a:shadowDy="1.0"
-			a:text="Loading..."/>	
+			a:padding="20dp"
+			a:gravity="center" />	
 			
 	</FrameLayout>
 </RelativeLayout>
