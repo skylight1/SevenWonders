@@ -102,18 +102,16 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private Integer swordAnimationIndex;
 
+	private final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder;
+
 	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel) {
 		Log.i(TAG, "SevenWondersGLRenderer()");
 		context = aContext;
 		carpet = new Carpet(this);
 		level = aLevel;
 		updateUiHandler = aUpdateUiHandler;
-	}
 
-	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
-		Log.i(TAG, "- onSurfaceCreated - ");
-
-		final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(60453);
+		openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(60453);
 
 		// load all of the decorations (land, water, sphinx, pyramids, etc.)
 		int currentTextureResource = 0;
@@ -154,6 +152,11 @@ public class SevenWondersGLRenderer implements Renderer {
 		final GeometryAwareCollisionObserver hazardCollisionObserver = new HazardCollisionHandler(updateUiHandler);
 		allHazardsGeometry = addObjectsToGeometry(openGLGeometryBuilder, hazardCollisionObserver, level.getHazards(), R.raw.textures);
 		carpet.createGeometry(openGLGeometryBuilder);
+	}
+
+	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
+		Log.i(TAG, "- onSurfaceCreated - ");
+
 		openGLGeometryBuilder.enable(aGl);
 
 		aGl.glColor4f(1, 1, 1, 1);

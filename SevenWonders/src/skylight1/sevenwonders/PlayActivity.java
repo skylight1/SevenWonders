@@ -14,6 +14,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -33,6 +34,8 @@ public class PlayActivity extends Activity {
 
 
 	private SevenWondersGLSurfaceView gLSurfaceView;
+
+	private boolean gLSurfaceViewAdded;
 	
 	private RelativeLayout mainLayout;
   
@@ -67,7 +70,6 @@ public class PlayActivity extends Activity {
     					// Remove splash screen
    				    	Log.i(TAG,"startedRendering()");
    						SoundTracks.getInstance().fadeoutSplashSoundTrack(SoundTracks.SOUNDTRACK);
-   						splashView.setVisibility(View.GONE);
    		    			
    		    			// start the countdown NOW!
    		    			countdownStartTime = SystemClock.uptimeMillis();
@@ -155,14 +157,9 @@ public class PlayActivity extends Activity {
 		TextView loadingTextView = (TextView) findViewById(R.id.loading_textview);
 		textStyles.applyHeaderTextStyle(loadingTextView);
 		
-		gLSurfaceView = (SevenWondersGLSurfaceView) findViewById(R.id.surfaceView);
-		gLSurfaceView.initialize(updateUiHandler, currentLevel);
-
-		
 		final TextView scoreTextView = (TextView) findViewById(R.id.score);
 		scoreTextView.setText("0");
 		textStyles.applyHeaderTextStyle(scoreTextView);
-		
 
 		final TextView scoreDivider = (TextView) findViewById(R.id.scoreDivider);
 		textStyles.applyHeaderTextStyle(scoreDivider);
@@ -170,6 +167,37 @@ public class PlayActivity extends Activity {
 		final TextView targetScoreTextView = (TextView) findViewById(R.id.targetScore);
 		targetScoreTextView.setText("" + currentLevel.getNumberOfSpells());
 		textStyles.applyHeaderTextStyle(targetScoreTextView);
+
+		gLSurfaceView = new SevenWondersGLSurfaceView(this);
+
+		// load the OpenGL objects on another thread, not the UI thread, and not
+		// before displaying the screen
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// run the expensive part on a thread other than the UI thread
+				gLSurfaceView.loadLevel(updateUiHandler, currentLevel);
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						// need to be back in the UI thread to actually add to the screen
+						LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+						RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
+						relativeLayout.addView(gLSurfaceView, 0, params);
+
+						// hide the splash screen
+						relativeLayout.removeView(splashView);
+
+						// start the surface
+						gLSurfaceView.initialize();
+						gLSurfaceView.onResume();
+						
+						// safe to "resume" the surface view now
+						gLSurfaceViewAdded = true;
+					}
+				});
+			}
+		}).start();
 	}
 
 	@Override
@@ -179,7 +207,9 @@ public class PlayActivity extends Activity {
 		if(SoundTracks.getInstance()!=null) {
 			SoundTracks.getInstance().pause();
 		}
-		gLSurfaceView.onPause();
+		if (gLSurfaceViewAdded) {
+			gLSurfaceView.onPause();
+		}
 	}
     
     @Override
@@ -191,7 +221,9 @@ public class PlayActivity extends Activity {
 			SoundTracks.getInstance().resume();
 		}
 		splashView.setVisibility(View.VISIBLE);
-		gLSurfaceView.onResume();
+		if (gLSurfaceViewAdded) {
+			gLSurfaceView.onResume();
+		}
 	}
     
     @Override

@@ -25,12 +25,14 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 		super(context);
 	}
 
-	public void initialize(final Handler aUpdateUiHandler,
-			final GameLevel aLevel) {
-		setDebugFlags(DEBUG_CHECK_GL_ERROR);
-	
+	public void loadLevel(final Handler aUpdateUiHandler, final GameLevel aLevel) {
 		renderer = new SevenWondersGLRenderer(getContext(), aUpdateUiHandler, aLevel);
 		setRenderer(renderer);
+	}
+
+	public void initialize() {
+//		setDebugFlags(DEBUG_CHECK_GL_ERROR);
+	
 		tiltControl = new TiltControl(getContext(), renderer);
 	
 		setClickable(true);
