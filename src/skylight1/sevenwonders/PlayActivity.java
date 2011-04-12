@@ -1,5 +1,4 @@
 package skylight1.sevenwonders;
-
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
@@ -38,7 +37,7 @@ public class PlayActivity extends Activity {
 	private RelativeLayout mainLayout;
   
 	private TextView countdownView;
-
+	
 	private long countdownStartTime;
     
 	private View splashView;
@@ -111,8 +110,10 @@ public class PlayActivity extends Activity {
 						if (latestScore >= currentLevel.getNumberOfSpells()) {
 							changeToScoreActivity(true);
 						}
+						
 						TextView scoreTextView = (TextView) findViewById(R.id.score);
 						scoreTextView.setText("" + latestScore);
+						
 						break;
     			}
     		}
@@ -140,13 +141,16 @@ public class PlayActivity extends Activity {
 		SoundTracks soundTrack = SoundTracks.getInstance();
 		soundTrack.init(getApplicationContext());		
 
-		setContentView(R.layout.main);		
-		countdownView = (TextView) findViewById(R.id.Countdown);
-		debugView = (TextView) findViewById(R.id.FPS);
-		mainLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
-		splashView = findViewById(R.id.splashView);
+		setContentView(R.layout.main);	
 		
 		TextStyles textStyles = new TextStyles(this);
+		countdownView = (TextView) findViewById(R.id.Countdown);
+		textStyles.applyHeaderTextStyle(countdownView);
+		
+		debugView = (TextView) findViewById(R.id.FPS);
+		
+		mainLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
+		splashView = findViewById(R.id.splashView);
 		
 		TextView loadingTextView = (TextView) findViewById(R.id.loading_textview);
 		textStyles.applyHeaderTextStyle(loadingTextView);
@@ -154,10 +158,18 @@ public class PlayActivity extends Activity {
 		gLSurfaceView = (SevenWondersGLSurfaceView) findViewById(R.id.surfaceView);
 		gLSurfaceView.initialize(updateUiHandler, currentLevel);
 
+		
 		final TextView scoreTextView = (TextView) findViewById(R.id.score);
 		scoreTextView.setText("0");
+		textStyles.applyHeaderTextStyle(scoreTextView);
+		
+
+		final TextView scoreDivider = (TextView) findViewById(R.id.scoreDivider);
+		textStyles.applyHeaderTextStyle(scoreDivider);
+		
 		final TextView targetScoreTextView = (TextView) findViewById(R.id.targetScore);
 		targetScoreTextView.setText("" + currentLevel.getNumberOfSpells());
+		textStyles.applyHeaderTextStyle(targetScoreTextView);
 	}
 
 	@Override
