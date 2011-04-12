@@ -116,7 +116,6 @@ public class StoryPagesController implements OnClickListener, Runnable {
         }
     }
 
-
 	/**
      * Sets different labels for the buttons depending on which page we are on.
      */
@@ -142,7 +141,6 @@ public class StoryPagesController implements OnClickListener, Runnable {
 	public void run() {
 		rightButton.setEnabled(true);		
 	}
-	
 
     private void enableAfterDelay() {
     	handler.postDelayed(this, 2000);

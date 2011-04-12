@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Text for the backstory pages. -->
 <resources>    
-    <string name="story01">Ready to explore the Seven Wonders?</string>
-    <string name="story02">Fly your magic carpet through a mysterious landscape!</string>
-    <string name="story03">Turn the device to move left or right.</string>
-    <string name="story04">Bend it forward to speed up and backward to slow down.</string>
-    <string name="story05">To advance to the next level, collect all flying spells.</string>
-    <string name="story06">Steer clear of the deadly spinning swords.</string>         
-    <string name="story07">And make sure you don\'t run out of time!</string>
+    <string name="story01">Two-thousand years ago seven wonders were known to the world, grandest of them was the Great Pyramid of Cheops.</string>
+    <string name="story02">The evil vizier, Nebtawi, has hidden magical ankhs around the Great Pyramid, stealing its power for himself.</string>
+    <string name="story03">Fly your magic carpet quickly and collect the ankhs before all Egypt falls under Nebtawi\'s evil spell.</string>
+    <string name="story04">Tilt left and right to turn your magic carpet, and lean forward and backward to speed up and slow down.</string>
      
     <string name="story_button_left">&lt;&lt;</string>     
     <string name="story_button_right">&gt;&gt;</string>

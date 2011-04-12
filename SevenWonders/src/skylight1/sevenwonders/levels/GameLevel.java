@@ -27,7 +27,7 @@ public enum GameLevel {
 			return obstacles;
 		}
 	},
-	SECOND(2, 6, 2, "This time Nebtawi, the evil vizier, has spread the ankhs far and wide.") {
+	SECOND(2, 6, 2, "Nebtawi, the evil vizier, has spread the ankhs far and wide.") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
@@ -40,7 +40,7 @@ public enum GameLevel {
 			return obstacles;
 		}
 	},
-	THIRD(5, 4, 3, "Race to find the five ankhs before the nefarious Nebtawi arrives.") {
+	THIRD(5, 4, 3, "Race to find all five ankhs before the nefarious Nebtawi arrives.") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
@@ -66,7 +66,7 @@ public enum GameLevel {
 			return obstacles;
 		}
 	},
-	FIFTH(4, 8, 3, "Many swords will bar your path, but the ankhs must be recovered if Egypt is to be saved.") {
+	FIFTH(4, 8, 3, "Many swords will bar your way, but the ankhs must be recovered if Egypt is to be saved.") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
@@ -79,7 +79,7 @@ public enum GameLevel {
 			return obstacles;
 		}
 	},
-	SIXTH(4, 10, 3, "With each ankh recovered, Nebtawi's power wanes.  Hurry now!") {
+	SIXTH(4, 10, 3, "With each ankh recovered, Nebtawi's power wanes. Hurry now!") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
@@ -92,7 +92,7 @@ public enum GameLevel {
 			return obstacles;
 		}
 	},
-	SEVENTH(3, 12, 3, "Collect the remaining ankhs and Nebtawi will be powerless in Egypt!") {
+	SEVENTH(3, 12, 3, "Collect the remaining ankhs and Nebtawi will be defeated in Egypt!") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));

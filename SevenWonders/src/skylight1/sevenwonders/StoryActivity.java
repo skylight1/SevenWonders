@@ -18,10 +18,7 @@ public class StoryActivity extends Activity implements OnOutOfPageSequenceBounds
 	    R.string.story01,
 	    R.string.story02,
 	    R.string.story03,
-	    R.string.story04,
-	    R.string.story05,
-	    R.string.story06,
-	    R.string.story07	    
+	    R.string.story04
 	});
 
 	/** Called when the activity is first created. */
@@ -34,7 +31,6 @@ public class StoryActivity extends Activity implements OnOutOfPageSequenceBounds
         
         new StoryPagesController(this, this, PAGE_TEXTS, isFirstTimeUse);
     }
-
 
 	@Override
 	public void onLeftPageSequenceOnTheLeft() {			
@@ -49,6 +45,4 @@ public class StoryActivity extends Activity implements OnOutOfPageSequenceBounds
 		startActivity(new Intent(this, nextActivityClass));
 		finish();
 	}
-	
-	
 }
