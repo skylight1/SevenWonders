@@ -10,7 +10,7 @@ import skylight1.sevenwonders.view.CubeBounds;
 import android.opengl.Matrix;
 
 public enum GameLevel {
-	FIRST(5, 3, 1) {
+	FIRST(5, 3, 1, "The ankh is a symbol of powerful magic. Collect all three.") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
 			decorations.add(createSphynx(90, -140, -25, 0));
@@ -27,7 +27,7 @@ public enum GameLevel {
 			return obstacles;
 		}
 	},
-	SECOND(2, 6, 2) {
+	SECOND(2, 6, 2, "This time Nebtawi, the evil vizier, has spread the ankhs far and wide.") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
@@ -40,7 +40,7 @@ public enum GameLevel {
 			return obstacles;
 		}
 	},
-	THIRD(5, 4, 3) {
+	THIRD(5, 4, 3, "Race to find the five ankhs before the nefarious Nebtawi arrives.") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
@@ -53,7 +53,7 @@ public enum GameLevel {
 			return obstacles;
 		}
 	},
-	FOURTH(5, 6, 3) {
+	FOURTH(5, 6, 3, "Beware! Nebtawi has set a deadly flying sword to block your path.") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
@@ -66,7 +66,7 @@ public enum GameLevel {
 			return obstacles;
 		}
 	},
-	FIFTH(4, 8, 3) {
+	FIFTH(4, 8, 3, "Many swords will bar your path, but the ankhs must be recovered if Egypt is to be saved.") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
@@ -79,7 +79,7 @@ public enum GameLevel {
 			return obstacles;
 		}
 	},
-	SIXTH(4, 10, 3) {
+	SIXTH(4, 10, 3, "With each ankh recovered, Nebtawi's power wanes.  Hurry now!") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
@@ -92,7 +92,7 @@ public enum GameLevel {
 			return obstacles;
 		}
 	},
-	SEVENTH(3, 12, 3) {
+	SEVENTH(3, 12, 3, "Collect the remaining ankhs and Nebtawi will be powerless in Egypt!") {
 		public List<GameObjectDescriptor> getDecorations() {
 			final List<GameObjectDescriptor> decorations = super.getDecorations();
 			decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.sphinx_scaled, R.raw.sphinx));
@@ -117,16 +117,19 @@ public enum GameLevel {
 	private final int numberOfHazards;
 
 	private final Random random;
+	
+	private final String loadingMessage;
 
 	/**
 	 * @param aRandomSeed
 	 *            Warning! The seed must not result in spells being located within obstacles as it will result in
 	 *            uncollectable spells and incompletable levels!
 	 */
-	private GameLevel(final int aNumberOfSpells, final int aNumberOfHazzards, final long aRandomSeed) {
+	private GameLevel(final int aNumberOfSpells, final int aNumberOfHazzards, final long aRandomSeed, final String aLoadingMessage) {
 		numberOfSpells = aNumberOfSpells;
 		numberOfHazards = aNumberOfHazzards;
 		random = new Random(aRandomSeed);
+		loadingMessage = aLoadingMessage;
 	}
 	
 	/**
@@ -224,5 +227,9 @@ public enum GameLevel {
 		Matrix.setIdentityM(textureTransform, 0);
 
 		return new GameObjectDescriptor(coordinateTransform, null, R.raw.sphinx_scaled, R.raw.sphinx);
+	}
+
+	public String getLoadingMessage() {
+		return loadingMessage;
 	}
 }

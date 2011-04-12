@@ -19,6 +19,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class PlayActivity extends Activity {
+	private static final int REMAINING_SECONDS_AFTER_WHICH_COUNTDOWN_FLASHES = 30;
+	private static final int MILLISECONDS_TO_SHOW_MESSAGE = 2500;
 	public static final int FPS_MESSAGE = 0;
 	public static final int COUNTDOWN_MESSAGE = 1;
 	public static final int START_END_GAME_MESSAGE = 2;
@@ -90,9 +92,9 @@ public class PlayActivity extends Activity {
     						break;
     					}
     					// Change time background color if running out of time.
-    					if (latestRemainingTimeSeconds < 100) {
+    					if (latestRemainingTimeSeconds < REMAINING_SECONDS_AFTER_WHICH_COUNTDOWN_FLASHES) {
     						int backgroundColor = latestRemainingTimeSeconds %2 == 1 ? Color.YELLOW : Color.RED;
-    						countdownView.setBackgroundColor(backgroundColor);
+    						countdownView.setTextColor(backgroundColor);
     					}
     					// Update time text view and send a delayed message to update again later.
     					countdownView.setText(Integer.toString(latestRemainingTimeSeconds));
@@ -170,6 +172,10 @@ public class PlayActivity extends Activity {
 
 		gLSurfaceView = new SevenWondersGLSurfaceView(this);
 
+		final TextView loadingMessage = (TextView) findViewById(R.id.loading_textview);
+		loadingMessage.setText(currentLevel.getLoadingMessage());
+		final long timeMessageWasShown = System.currentTimeMillis();
+		
 		// load the OpenGL objects on another thread, not the UI thread, and not
 		// before displaying the screen
 		new Thread(new Runnable() {
@@ -177,16 +183,28 @@ public class PlayActivity extends Activity {
 			public void run() {
 				// run the expensive part on a thread other than the UI thread
 				gLSurfaceView.loadLevel(updateUiHandler, currentLevel);
+				
+				final long timeSinceMessageWasShown = System.currentTimeMillis() - timeMessageWasShown;
+				// if necessary, wait a while before dismissing the loading message for this level
+				final long remainingTimeForLoadingMessage = MILLISECONDS_TO_SHOW_MESSAGE - timeSinceMessageWasShown;
+				if (remainingTimeForLoadingMessage > 0) {
+					try {
+						Thread.sleep(remainingTimeForLoadingMessage);
+					} catch (InterruptedException e) {
+						// ignore this possibility
+					}
+				}
+				
+				// need to be back in the UI thread to actually add the surfaceview to the screen
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						// need to be back in the UI thread to actually add to the screen
 						LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-						RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
-						relativeLayout.addView(gLSurfaceView, 0, params);
+						RelativeLayout topLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
+						topLayout.addView(gLSurfaceView, 0, params);
 
 						// hide the splash screen
-						relativeLayout.removeView(splashView);
+						topLayout.removeView(splashView);
 
 						// start the surface
 						gLSurfaceView.initialize();
