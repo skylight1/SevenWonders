@@ -70,7 +70,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	private OpenGLGeometry skyboxGeometry;
 
 	// Start a little back so that we aren't inside the pyramid.
-	private Position playerWorldPosition = new Position(0, 0, 200);
+	private Position playerWorldPosition = new Position(0, 0, 0);
 
 	private float playerFacing;
 
@@ -128,8 +128,7 @@ public class SevenWondersGLRenderer implements Renderer {
 				
 				// create a new texture object, store it in the texture id to texture map,
 				// and start a new geometry using the new texture
-				final Texture texture = new Texture(context, objectDescriptor.textureResource);
-				textureResourceIdToTextureMap.put(objectDescriptor.textureResource, texture);
+				final Texture texture = getTexture(objectDescriptor.textureResource, true);
 				openGLGeometryBuilder.startGeometry(texture);
 			}
 
@@ -187,6 +186,11 @@ public class SevenWondersGLRenderer implements Renderer {
 			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> anOpenGLGeometryBuilder, final GeometryAwareCollisionObserver aCollisionObserver,
 			final Collection<GameObjectDescriptor> anObjectDescriptorCollection, int aTextureResource) {
 
+		// return null if there are no objects in the collection
+		if (anObjectDescriptorCollection.isEmpty()) {
+			return null;
+		}
+		
 		final Texture texture = getTexture(aTextureResource, true);
 
 		final OpenGLGeometry[] objectGeometries = new OpenGLGeometry[NUMBER_OF_SPINNING_ANIMATION_FRAMES];
@@ -402,7 +406,9 @@ public class SevenWondersGLRenderer implements Renderer {
 			swordAnimationIndex = (int) ((float) (SystemClock.uptimeMillis() % PERIOD_FOR_SPINNING_ANIMATION_CYCLE)
 					/ (float) PERIOD_FOR_SPINNING_ANIMATION_CYCLE * (float) NUMBER_OF_SPINNING_ANIMATION_FRAMES);
 		}
-		allHazardsGeometry[swordAnimationIndex].draw(aGl);
+		if (allHazardsGeometry != null) {
+			allHazardsGeometry[swordAnimationIndex].draw(aGl);
+		}
 	}
 
 	public synchronized void setPlayerVelocity(int aNewVelocity) {
