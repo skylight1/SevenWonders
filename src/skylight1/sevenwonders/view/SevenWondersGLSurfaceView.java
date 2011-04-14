@@ -31,7 +31,7 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	}
 
 	public void initialize() {
-//		setDebugFlags(DEBUG_CHECK_GL_ERROR);
+		setDebugFlags(DEBUG_CHECK_GL_ERROR);
 	
 		tiltControl = new TiltControl(getContext(), renderer);
 	

@@ -53,7 +53,7 @@ public class PlayActivity extends Activity {
 	
 	private int latestScore;
 
-	private int latestRemainingTimeSeconds=250;
+	private int latestRemainingTimeSeconds = TOTAL_TIME_ALLOWED;
 	
 	private boolean paused;
 		
