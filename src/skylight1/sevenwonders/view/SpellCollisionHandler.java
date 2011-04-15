@@ -3,6 +3,10 @@
  */
 package skylight1.sevenwonders.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import skylight1.opengl.CollisionDetector;
 import skylight1.opengl.FastGeometryBuilder;
 import skylight1.opengl.FastGeometryBuilderFactory;
@@ -14,34 +18,36 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-final class SpellCollisionHandler implements GeometryAwareCollisionObserver {
+final class SpellCollisionHandler implements GeometryAwareCollisionObserver, Cloneable {
+	private static FastGeometryBuilder<?, ?> somewhereFarFarAway;
+	
 	private CollisionDetector collisionDetector;
-
-	private GameLevel level;
 
 	private Handler uiHandler;
 
 	private SevenWondersGLRenderer renderer;
 
-	private FastGeometryBuilder<?, ?> somewhereFarFarAway;
+	private List<OpenGLGeometry> spellGeometries = new ArrayList<OpenGLGeometry>(SevenWondersGLRenderer.NUMBER_OF_SPINNING_ANIMATION_FRAMES);
 
-	final private OpenGLGeometry[][] spellGeometries = new OpenGLGeometry[SevenWondersGLRenderer.NUMBER_OF_SPINNING_ANIMATION_FRAMES][];
-
-	public SpellCollisionHandler(CollisionDetector aCollisionDetector, GameLevel aLevel, Handler aUiHandler,
+	public SpellCollisionHandler(CollisionDetector aCollisionDetector, Handler aUiHandler,
 			SevenWondersGLRenderer aRenderer) {
 		collisionDetector = aCollisionDetector;
-		level = aLevel;
 		uiHandler = aUiHandler;
 		renderer = aRenderer;
 	}
 
 	@Override
-	public void addGeometry(OpenGLGeometry anOpenGLGeometry, int anAnimationIndex, int aGeometryIndex) {
-		if (spellGeometries[anAnimationIndex] == null) {
-			spellGeometries[anAnimationIndex] = new OpenGLGeometry[level.getNumberOfSpells()];
-		}
-		spellGeometries[anAnimationIndex][aGeometryIndex] = anOpenGLGeometry;
-
+	public SpellCollisionHandler clone() throws CloneNotSupportedException {
+		// create a clone, but make it have its own array of spell geometries
+		final SpellCollisionHandler clone = (SpellCollisionHandler) super.clone();
+		clone.spellGeometries = new ArrayList<OpenGLGeometry>(SevenWondersGLRenderer.NUMBER_OF_SPINNING_ANIMATION_FRAMES);
+		return clone;
+	}
+	
+	@Override
+	public void addGeometry(OpenGLGeometry anOpenGLGeometry) {
+		spellGeometries.add(anOpenGLGeometry);
+		
 		if (somewhereFarFarAway == null) {
 			// create a fast geometry that is out of sight
 			somewhereFarFarAway = FastGeometryBuilderFactory.createTexturableNormalizable(anOpenGLGeometry);
@@ -54,22 +60,15 @@ final class SpellCollisionHandler implements GeometryAwareCollisionObserver {
 	}
 
 	@Override
-	public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
+	public void collisionOccurred(final float[] aBoundingSphere) {
 		SoundTracks.getInstance().play(SoundTracks.SPELL);
-		Log.i(SevenWondersGLRenderer.class.getName(), String.format("collided with " + anOpenGLGeometry));
+		Log.i(SevenWondersGLRenderer.class.getName(), String.format("collided with " + Arrays.toString(aBoundingSphere)));
 
-		collisionDetector.removeGeometry(anOpenGLGeometry);
+		collisionDetector.removeBoundingSphere(aBoundingSphere);
 
-		// find the spell index of this geometry
-		for (int spellIndex = 0; spellIndex < level.getNumberOfSpells(); spellIndex++) {
-			if (spellGeometries[SevenWondersGLRenderer.ANIMATION_INDEX_FOR_COLLISION_DETECTION][spellIndex] == anOpenGLGeometry) {
-				// iterate through all animation geometries, moving the objects off screen
-				for (int spellAnimationIndex = 0; spellAnimationIndex < SevenWondersGLRenderer.NUMBER_OF_SPINNING_ANIMATION_FRAMES; spellAnimationIndex++) {
-					spellGeometries[spellAnimationIndex][spellIndex].updateModel(somewhereFarFarAway);
-				}
-				// once a match is found, there's no need to continue looking
-				break;
-			}
+		// iterate through all animation geometries, moving the objects off screen
+		for (int spellAnimationIndex = 0; spellAnimationIndex < SevenWondersGLRenderer.NUMBER_OF_SPINNING_ANIMATION_FRAMES; spellAnimationIndex++) {
+			spellGeometries.get(spellAnimationIndex).updateModel(somewhereFarFarAway);
 		}
 
 		// add one to the score for colliding with a spell

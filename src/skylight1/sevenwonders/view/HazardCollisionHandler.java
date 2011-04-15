@@ -5,7 +5,7 @@ import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.services.SoundTracks;
 import android.os.Handler;
 
-public class HazardCollisionHandler implements GeometryAwareCollisionObserver {
+public class HazardCollisionHandler implements GeometryAwareCollisionObserver, Cloneable {
 
 	private final Handler updateUiHandler;
 
@@ -14,13 +14,18 @@ public class HazardCollisionHandler implements GeometryAwareCollisionObserver {
 	}
 
 	@Override
-	public void collisionOccurred(OpenGLGeometry anOpenGLGeometry) {
+	public HazardCollisionHandler clone() throws CloneNotSupportedException {
+		return (HazardCollisionHandler) super.clone();
+	}
+	
+	@Override
+	public void collisionOccurred(final float[] aBoundingSphere) {
 		SoundTracks.getInstance().play(SoundTracks.DEATH);
 		updateUiHandler.sendEmptyMessage(PlayActivity.START_END_GAME_MESSAGE);
 	}
 
 	@Override
-	public void addGeometry(OpenGLGeometry aAnOpenGLGeometry, int aAnAnimationIndex, int aGeometryIndex) {
+	public void addGeometry(OpenGLGeometry aAnOpenGLGeometry) {
 		// do nothing here
 	}
 }

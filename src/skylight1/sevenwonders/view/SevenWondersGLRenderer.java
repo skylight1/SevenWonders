@@ -15,6 +15,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import skylight1.opengl.CollisionDetector;
 import skylight1.opengl.GeometryBuilder;
+import skylight1.opengl.CollisionDetector.CollisionObserver;
 import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
 import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
 import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
@@ -104,6 +105,10 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder;
 
+	private float startOfFramePlayerWorldPositionX;
+
+	private float startOfFramePlayerWorldPositionZ;
+
 	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel) {
 		Log.i(TAG, "SevenWondersGLRenderer()");
 		context = aContext;
@@ -146,11 +151,26 @@ public class SevenWondersGLRenderer implements Renderer {
 		loadRequiredObj(R.raw.skybox_model, openGLGeometryBuilder);
 		skyboxGeometry = openGLGeometryBuilder.endGeometry();
 		
-		final GeometryAwareCollisionObserver spellsCollisionHandler = new SpellCollisionHandler(collisionDetector, level, updateUiHandler, this);
+		final GeometryAwareCollisionObserver spellsCollisionHandler = new SpellCollisionHandler(collisionDetector, updateUiHandler, this);
 		allSpellsGeometry = addObjectsToGeometry(openGLGeometryBuilder, spellsCollisionHandler, level.getSpells(), R.raw.textures);
 		final GeometryAwareCollisionObserver hazardCollisionObserver = new HazardCollisionHandler(updateUiHandler);
 		allHazardsGeometry = addObjectsToGeometry(openGLGeometryBuilder, hazardCollisionObserver, level.getHazards(), R.raw.textures);
 		carpet.createGeometry(openGLGeometryBuilder);
+
+		// collision with an obstacle moves the player back to where
+		// they were at the start of the frame, prior to any movement
+		final CollisionObserver obstacleCollisionObserver = new CollisionObserver() {
+			@Override
+			public void collisionOccurred(final float[] aBoundingSphere) {
+			    SoundTracks.getInstance().play(SoundTracks.BUMP);
+
+				playerWorldPosition.x = startOfFramePlayerWorldPositionX; 
+				playerWorldPosition.z = startOfFramePlayerWorldPositionZ; 
+			}
+		};
+		for (final float[] boundingSphere : level.getObstacles()) {
+			collisionDetector.addBoundingSphere(boundingSphere, obstacleCollisionObserver);
+		}
 	}
 
 	public void onSurfaceCreated(final GL10 aGl, final EGLConfig aConfig) {
@@ -183,12 +203,24 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	private OpenGLGeometry[] addObjectsToGeometry(
-			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> anOpenGLGeometryBuilder, final GeometryAwareCollisionObserver aCollisionObserver,
+			OpenGLGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>> anOpenGLGeometryBuilder, final GeometryAwareCollisionObserver aCollisionObserverPrototype,
 			final Collection<GameObjectDescriptor> anObjectDescriptorCollection, int aTextureResource) {
 
 		// return null if there are no objects in the collection
 		if (anObjectDescriptorCollection.isEmpty()) {
 			return null;
+		}
+
+		// make one collision observer for each object by cloning the prototype passed in
+		final List<GeometryAwareCollisionObserver> collisionObservers = new ArrayList<GeometryAwareCollisionObserver>(anObjectDescriptorCollection.size());
+		try {
+			for (final GameObjectDescriptor objectDescriptor : anObjectDescriptorCollection) {
+				GeometryAwareCollisionObserver clone;
+				clone = aCollisionObserverPrototype.clone();
+				collisionObservers.add(clone);
+			}
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
 		}
 		
 		final Texture texture = getTexture(aTextureResource, true);
@@ -229,13 +261,19 @@ public class SevenWondersGLRenderer implements Renderer {
 				objFileLoader.createGeometry(transformingGeometryBuilder);
 				final OpenGLGeometry objectGeometry = anOpenGLGeometryBuilder.endGeometry();
 
-				// add it to the collision observer (it may care!)
-				aCollisionObserver.addGeometry(objectGeometry, animationIndex, objectIndex++);
-				
-				// if this is frame 0, add it to the collision detector
+				// find the collision observer for this object
+				final GeometryAwareCollisionObserver geometryAwareCollisionObserver = collisionObservers.get(objectIndex);
+
+				// add the geometry to the collision observer (it just may care!)
+				geometryAwareCollisionObserver.addGeometry(objectGeometry);
+
+				// if this is frame 0, add the goemetry's bounding sphere to the collision detector
 				if (animationIndex == ANIMATION_INDEX_FOR_COLLISION_DETECTION) {
-					collisionDetector.addGeometry(objectGeometry, aCollisionObserver);
+					collisionDetector.addBoundingSphere(objectGeometry.getBoundingSphere(), geometryAwareCollisionObserver);
 				}
+				
+				// next object
+				objectIndex++;
 			}
 			objectGeometries[animationIndex] = anOpenGLGeometryBuilder.endGeometry();
 		}
@@ -285,7 +323,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		
 		playerFacingThisFrame = playerFacing;
-
+		
 		drawCarpet(aGl);
 
 		applyMovement(aGl);
@@ -354,6 +392,10 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	private void applyMovement(final GL10 aGl) {	
+		// keep the old position in case a collision with an obstacle requires a "movement rollback"
+		startOfFramePlayerWorldPositionX = playerWorldPosition.x;
+		startOfFramePlayerWorldPositionZ = playerWorldPosition.z;
+
 		final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
 
 		final float facingX = (float) Math.sin(playerFacingThisFrame / 180f * Math.PI);
