@@ -17,4 +17,5 @@
 	<string name="aboutText1">Seven Wonders\nVersion </string>
 	<string name="visitWebsite">Visit the Seven Wonders Website</string>
 	<string name="aboutText2">\n(c) 2011 Skylight1</string>
+	<string name="retry">Retry</string>
 </resources>

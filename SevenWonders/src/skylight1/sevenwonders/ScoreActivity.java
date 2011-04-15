@@ -169,7 +169,7 @@ public class ScoreActivity extends Activity {
 		return result;
 	}
 
-	private void setupButtons(final int level, boolean wasLevelWon, boolean nextLevelExists, String scoreMessage) {
+	private void setupButtons(final int level, final boolean wasLevelWon, boolean nextLevelExists, String scoreMessage) {
 		final String message = getString(R.string.postScoreMessage) + "\n" + scoreMessage;
 		
 		final Button playNextLevel = (Button) findViewById(R.id.end__playNextLevel);
@@ -178,7 +178,9 @@ public class ScoreActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent().setClass(ScoreActivity.this, PlayActivity.class);
-				intent.putExtra(KEY_LEVEL_ORDINAL, level + 1);
+				// If the player failed to advance to the next level, this turns into a retry button
+				// which will play the same level:
+				intent.putExtra(KEY_LEVEL_ORDINAL, wasLevelWon ? level + 1 : level);
 				startActivity(intent);
 				finish();
 			}
@@ -228,9 +230,9 @@ public class ScoreActivity extends Activity {
 		if (wasLevelWon && nextLevelExists) {
 			playNextLevel.setVisibility(View.VISIBLE);
 			playAgain.setVisibility(View.INVISIBLE);
-		// Otherwise show the play again button.
+		// Otherwise turn it into a retry button and show the play again button.
 		} else {
-			playNextLevel.setVisibility(View.INVISIBLE);
+			playNextLevel.setText(R.string.retry);
 			playAgain.setVisibility(View.VISIBLE);
 		}
 	}
