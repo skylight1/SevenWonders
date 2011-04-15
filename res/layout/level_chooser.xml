@@ -20,7 +20,8 @@
 		<ListView a:id="@android:id/list" a:layout_width="fill_parent"
 			a:layout_height="wrap_content" a:layout_gravity="center" a:gravity="center"
 			a:textSize="20dip" a:paddingTop="7dip"
-			a:paddingLeft="4dip" a:paddingRight="4dip" />
+			a:paddingLeft="4dip" a:paddingRight="4dip" 
+			a:cacheColorHint="#00000000"/>
 
 	</LinearLayout>
 </FrameLayout>
