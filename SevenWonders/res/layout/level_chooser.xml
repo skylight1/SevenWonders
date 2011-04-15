@@ -21,7 +21,8 @@
 			a:layout_height="wrap_content" a:layout_gravity="center" a:gravity="center"
 			a:textSize="20dip" a:paddingTop="7dip"
 			a:paddingLeft="4dip" a:paddingRight="4dip" 
-			a:cacheColorHint="#00000000"/>
+			a:cacheColorHint="#00000000"
+			a:divider="@android:color/transparent" />
 
 	</LinearLayout>
 </FrameLayout>
