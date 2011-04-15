@@ -32,10 +32,9 @@ public enum GameLevel {
 			return spells;
 		}
 		
+		@Override
 		public List<float[]> getObstacles() {
-			final List<float[]> obstacles = new ArrayList<float[]>();
-			obstacles.add(createBoundingSphere(0f, 0f, 0f, 100f));
-			return obstacles;
+			return Collections.<float[]>emptyList();
 		}
 		
 		@Override
@@ -62,9 +61,7 @@ public enum GameLevel {
 		}
 
 		public List<float[]> getObstacles() {
-			final List<float[]> obstacles = new ArrayList<float[]>();
-			obstacles.add(createBoundingSphere(0f, 0f, 0f, 100f));
-			return obstacles;
+			return Collections.<float[]>emptyList();
 		}
 		
 		@Override
@@ -93,9 +90,7 @@ public enum GameLevel {
 		}
 
 		public List<float[]> getObstacles() {
-			final List<float[]> obstacles = new ArrayList<float[]>();
-			obstacles.add(createBoundingSphere(0f, 0f, 0f, 100f));
-			return obstacles;
+			return Collections.<float[]>emptyList();
 		}
 		
 		@Override
@@ -124,14 +119,11 @@ public enum GameLevel {
 		}
 
 		public List<float[]> getObstacles() {
-			final List<float[]> obstacles = new ArrayList<float[]>();
-			obstacles.add(createBoundingSphere(0f, 0f, 0f, 100f));
-			return obstacles;
+			return Collections.<float[]>emptyList();
 		}
 		
 		@Override
 		public Collection<GameObjectDescriptor> getHazards() {
-			// three spells on this level
 			final List<GameObjectDescriptor> hazards = new ArrayList<GameObjectDescriptor>();
 			hazards.add(createHazard(30, -145));
 			return hazards;
@@ -156,9 +148,7 @@ public enum GameLevel {
 		}
 
 		public List<float[]> getObstacles() {
-			final List<float[]> obstacles = new ArrayList<float[]>();
-			obstacles.add(createBoundingSphere(0f, 0f, 0f, 100f));
-			return obstacles;
+			return Collections.<float[]>emptyList();
 		}
 		
 		@Override
@@ -189,9 +179,7 @@ public enum GameLevel {
 		}
 
 		public List<float[]> getObstacles() {
-			final List<float[]> obstacles = new ArrayList<float[]>();
-			obstacles.add(createBoundingSphere(0f, 0f, 0f, 100f));
-			return obstacles;
+			return Collections.<float[]>emptyList();
 		}
 		
 		@Override
@@ -224,9 +212,7 @@ public enum GameLevel {
 		}
 
 		public List<float[]> getObstacles() {
-			final List<float[]> obstacles = new ArrayList<float[]>();
-			obstacles.add(createBoundingSphere(0f, 0f, 0f, 100f));
-			return obstacles;
+			return Collections.<float[]>emptyList();
 		}
 		
 		@Override
@@ -288,6 +274,8 @@ public enum GameLevel {
 	
 	/**
 	 * Things that the player cannot pass through: pyramids, etc.
+	 * 
+	 * Returns a bounding sphere, i.e., x, y, z, r.
 	 */
 	public abstract List<float[]> getObstacles();
 
