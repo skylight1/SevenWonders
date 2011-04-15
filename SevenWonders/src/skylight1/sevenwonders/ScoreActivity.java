@@ -170,7 +170,7 @@ public class ScoreActivity extends Activity {
 	}
 
 	private void setupButtons(final int level, final boolean wasLevelWon, boolean nextLevelExists, String scoreMessage) {
-		final String message = getString(R.string.postScoreMessage) + "\n" + scoreMessage;
+		final String message = getString(R.string.postScoreMessage) + "\n" + scoreMessage + "http://sevenwondersgame.com";
 		
 		final Button playNextLevel = (Button) findViewById(R.id.end__playNextLevel);
 		textStyles.applySmallTextForButtonStyle(playNextLevel);
