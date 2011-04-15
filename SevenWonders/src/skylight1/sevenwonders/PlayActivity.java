@@ -292,7 +292,7 @@ public class PlayActivity extends Activity {
 	private void changeToScoreActivity(boolean wonLevel) {
 		Intent intent = new Intent().setClass(PlayActivity.this, ScoreActivity.class);
 		intent.putExtra(ScoreActivity.KEY_COLLECTED_SPELL_COUNT, latestScore); 
-		intent.putExtra(ScoreActivity.KEY_REMAINING_TIME_SECONDS, remainingGameTimeMillis / ONE_SECOND_IN_MILLISECONDS); 
+		intent.putExtra(ScoreActivity.KEY_REMAINING_TIME_SECONDS, (int) (remainingGameTimeMillis / ONE_SECOND_IN_MILLISECONDS)); 
 		intent.putExtra(ScoreActivity.KEY_LEVEL_ORDINAL, currentLevel.ordinal()); 
 		intent.putExtra(ScoreActivity.KEY_WON_LEVEL, wonLevel); 
 		startActivity(intent);
