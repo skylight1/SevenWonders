@@ -34,7 +34,6 @@ public class PlayActivity extends Activity {
 
 	private static final String TAG = PlayActivity.class.getName();
 
-
 	private SevenWondersGLSurfaceView gLSurfaceView;
 
 	private boolean gLSurfaceViewAdded;
@@ -55,7 +54,11 @@ public class PlayActivity extends Activity {
 
 	private int latestRemainingTimeSeconds = TOTAL_TIME_ALLOWED;
 	
-	private boolean paused;
+	/** If the game has been paused by the menu button. */
+	private boolean isGamePaused;
+	
+	/** When the activity was last paused. */
+	private long activityPausedUptimeMillis;
 		
     //Handler to draw debug info (fps) and countdown and end the game
     private Handler updateUiHandler = new Handler() {
@@ -74,40 +77,44 @@ public class PlayActivity extends Activity {
    						SoundTracks.getInstance().fadeoutSplashSoundTrack(SoundTracks.SOUNDTRACK);
    		    			
    		    			// start the countdown NOW!
-   		    			countdownStartTime = SystemClock.uptimeMillis();
+						countdownStartTime = SystemClock.uptimeMillis();
+   		    			
    		    			sendUpdateCountdownMessage();
     					break;
     				case FPS_MESSAGE:
     					debugView.setText(Integer.toString(msg.arg1));
     					break;
     				case COUNTDOWN_MESSAGE:
-    					if ( !paused ) {
+    					if ( isGameTimeMoving() ) {
     						latestRemainingTimeSeconds = TOTAL_TIME_ALLOWED - (int) ((SystemClock.uptimeMillis() - countdownStartTime)
     								/ ONE_SECOND_IN_MILLISECONDS);
+    					
+	    					// Finish game if out of time.
+	    					if (latestRemainingTimeSeconds < 0) {
+	    						changeToScoreActivity(false);
+	    						break;
+	    					}
+	    					// Change time background color if running out of time.
+	    					if (latestRemainingTimeSeconds < REMAINING_SECONDS_AFTER_WHICH_COUNTDOWN_FLASHES) {
+	    						int backgroundColor = latestRemainingTimeSeconds %2 == 1 ? Color.YELLOW : Color.RED;
+	    						countdownView.setTextColor(backgroundColor);
+	    					}
+	    					// Update time text view and send a delayed message to update again later.
+	    					countdownView.setText(Integer.toString(latestRemainingTimeSeconds));
     					}
-
-    					// Finish game if out of time.
-    					if (latestRemainingTimeSeconds < 0) {
-    						changeToScoreActivity(false);
-    						break;
-    					}
-    					// Change time background color if running out of time.
-    					if (latestRemainingTimeSeconds < REMAINING_SECONDS_AFTER_WHICH_COUNTDOWN_FLASHES) {
-    						int backgroundColor = latestRemainingTimeSeconds %2 == 1 ? Color.YELLOW : Color.RED;
-    						countdownView.setTextColor(backgroundColor);
-    					}
-    					// Update time text view and send a delayed message to update again later.
-    					countdownView.setText(Integer.toString(latestRemainingTimeSeconds));
     					sendUpdateCountdownMessage();    						
     					break;
     				case START_END_GAME_MESSAGE:
     					gLSurfaceView.togglePaused();
     					//TODO: add red tint or something
-    					final Message endGameMessage = updateUiHandler.obtainMessage(END_GAME_MESSAGE);
-    					updateUiHandler.sendMessageDelayed(endGameMessage, 2*ONE_SECOND_IN_MILLISECONDS);
+    					sendEndGameMessage();
     					break;
     				case END_GAME_MESSAGE:
-    					changeToScoreActivity(false);
+    					if ( isGameTimeMoving() ) {
+    						changeToScoreActivity(false);
+    					} else {
+    						sendEndGameMessage();
+    					}
     					break;
     				case NEW_SCORE_MESSAGE:
     					latestScore = msg.arg1;
@@ -121,14 +128,23 @@ public class PlayActivity extends Activity {
 						break;
     			}
     		}
-   		};
+   		}
    	};
-    		
+
+	private boolean isGameTimeMoving() {
+		return !isGamePaused && hasWindowFocus() && 0 == activityPausedUptimeMillis;
+	};
+	
     private void sendUpdateCountdownMessage() {
 		final Message countdownMessage = updateUiHandler.obtainMessage(COUNTDOWN_MESSAGE);
 		updateUiHandler.sendMessageDelayed(countdownMessage, ONE_SECOND_IN_MILLISECONDS);
 	}
 
+	protected void sendEndGameMessage() {
+		final Message endGameMessage = updateUiHandler.obtainMessage(END_GAME_MESSAGE);
+		updateUiHandler.sendMessageDelayed(endGameMessage, 2*ONE_SECOND_IN_MILLISECONDS);
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -221,6 +237,7 @@ public class PlayActivity extends Activity {
 	@Override
     protected void onPause() {
         super.onPause();
+        activityPausedUptimeMillis = SystemClock.uptimeMillis();
 		Log.i(TAG,"onPause()");
 		if(SoundTracks.getInstance()!=null) {
 			SoundTracks.getInstance().pause();
@@ -242,7 +259,15 @@ public class PlayActivity extends Activity {
 		if (gLSurfaceViewAdded) {
 			gLSurfaceView.onResume();
 		}
-	}
+		// If the game was paused, we need to update the countdown start time.
+		if ( activityPausedUptimeMillis > 0 ) {
+			// How many milliseconds were played before.
+			long timeBeforePausedMillis = activityPausedUptimeMillis - countdownStartTime;
+			// Set the start time to as if we played that much.
+			countdownStartTime = SystemClock.uptimeMillis() - timeBeforePausedMillis;
+			activityPausedUptimeMillis = 0;
+		}
+    }
     
     @Override
 	public void onDestroy() {
@@ -267,7 +292,7 @@ public class PlayActivity extends Activity {
 	public boolean onKeyDown(final int aKeyCode, final KeyEvent aEvent) {
 		switch (aKeyCode) {		
 			case KeyEvent.KEYCODE_MENU:
-				paused = !paused;
+				isGamePaused = !isGamePaused;
 				gLSurfaceView.togglePaused();
 				return true;
 		}
