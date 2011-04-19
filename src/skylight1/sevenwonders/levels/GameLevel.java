@@ -1,263 +1,131 @@
 package skylight1.sevenwonders.levels;
 
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addHazard;
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addPyramid;
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addSpell;
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addSphynx;
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.createNewIdentityMatrix;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import skylight1.sevenwonders.R;
-import android.opengl.Matrix;
 
 public enum GameLevel {
-	FIRST(5, "The ankh is a symbol of powerful magic. Collect all five.") {
-		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
-			decorations.addAll(super.getDecorations());
-			decorations.add(createSphynx(90, -190, -30, -90));
-			decorations.add(createPyramid(0, -220, 0, 100));
-			decorations.add(createPyramid(0, 655, 0, 110));
-			decorations.add(createPyramid(0, -620, -7, 100));
-			return decorations;
-		}
+	FIRST("The ankh is a symbol of powerful magic. Collect all five.") {
+		{
+			addSphynx(this, 90, -190, -30, -90);
+			addPyramid(this, 0, -220, 0, 100);
+			addPyramid(this, 0, 655, 0, 110);
+			addPyramid(this, 0, -620, -7, 100);
 
-		@Override
-		public Collection<GameObjectDescriptor> getSpells() {
-			// three spells on this level
-			final List<GameObjectDescriptor> spells = new ArrayList<GameObjectDescriptor>();
-			spells.add(createSpell(30, -130));
-			spells.add(createSpell(150, -200));
-			spells.add(createSpell(300, -180));
-			spells.add(createSpell(400, -160));
-			spells.add(createSpell(500, -100));
-			return spells;
-		}
-		
-		@Override
-		public List<float[]> getObstacles() {
-			return Collections.<float[]>emptyList();
-		}
-		
-		@Override
-		public Collection<GameObjectDescriptor> getHazards() {
-			// no hazards on this level
-			return Collections.<GameObjectDescriptor>emptyList();
+			addSpell(this, 30, -130);
+			addSpell(this, 150, -200);
+			addSpell(this, 300, -180);
+			addSpell(this, 400, -160);
+			addSpell(this, 500, -100);
 		}
 	},
-	SECOND(3, "Nebtawi, the evil vizier, has spread the ankhs far and wide.") {
-		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = super.getDecorations();
-			decorations.add(createSphynx(90, -190, -30, -90));
-			return decorations;
-		}
+	SECOND("Nebtawi, the evil vizier, has spread the ankhs far and wide.") {
+		{
+			addSphynx(this, 90, -190, -30, -90);
 
-		@Override
-		public Collection<GameObjectDescriptor> getSpells() {
-			// three spells on this level
-			final List<GameObjectDescriptor> spells = new ArrayList<GameObjectDescriptor>();
-			spells.add(createSpell(30, -130));
-			spells.add(createSpell(130, -150));
-			spells.add(createSpell(300, -100));
-			return spells;
-		}
-
-		public List<float[]> getObstacles() {
-			return Collections.<float[]>emptyList();
-		}
-		
-		@Override
-		public Collection<GameObjectDescriptor> getHazards() {
-			// no hazards on this level
-			return Collections.<GameObjectDescriptor>emptyList();
+			addSpell(this, 30, -130);
+			addSpell(this, 130, -150);
+			addSpell(this, 300, -100);
 		}
 	},
-	THIRD(5, "Race to find all five ankhs before the nefarious Nebtawi arrives.") {
-		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = super.getDecorations();
-			decorations.add(createSphynx(90, -190, -30, -90));
-			return decorations;
-		}
+	THIRD("Race to find all five ankhs before the nefarious Nebtawi arrives.") {
+		{
+			addSphynx(this, 90, -190, -30, -90);
 
-		@Override
-		public Collection<GameObjectDescriptor> getSpells() {
-			// three spells on this level
-			final List<GameObjectDescriptor> spells = new ArrayList<GameObjectDescriptor>();
-			spells.add(createSpell(30, -130));
-			spells.add(createSpell(130, -150));
-			spells.add(createSpell(300, -100));
-			spells.add(createSpell(-200, 100));
-			spells.add(createSpell(100, 400));
-			return spells;
-		}
-
-		public List<float[]> getObstacles() {
-			return Collections.<float[]>emptyList();
-		}
-		
-		@Override
-		public Collection<GameObjectDescriptor> getHazards() {
-			// no hazards on this level
-			return Collections.<GameObjectDescriptor>emptyList();
+			addSpell(this, 30, -130);
+			addSpell(this, 130, -150);
+			addSpell(this, 300, -100);
+			addSpell(this, -200, 100);
+			addSpell(this, 100, 400);
 		}
 	},
-	FOURTH(5, "Beware! Nebtawi has set a deadly flying sword to block your path.") {
-		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = super.getDecorations();
-			decorations.add(createSphynx(90, -190, -30, -90));
-			return decorations;
-		}
+	FOURTH("Beware! Nebtawi has set a deadly flying sword to block your path.") {
+		{
+			addSphynx(this, 90, -190, -30, -90);
 
-		@Override
-		public Collection<GameObjectDescriptor> getSpells() {
-			// three spells on this level
-			final List<GameObjectDescriptor> spells = new ArrayList<GameObjectDescriptor>();
-			spells.add(createSpell(30, -130));
-			spells.add(createSpell(130, -150));
-			spells.add(createSpell(300, -100));
-			spells.add(createSpell(-200, 100));
-			spells.add(createSpell(100, 400));
-			return spells;
-		}
+			addSpell(this, 30, -130);
+			addSpell(this, 130, -150);
+			addSpell(this, 300, -100);
+			addSpell(this, -200, 100);
+			addSpell(this, 100, 400);
 
-		public List<float[]> getObstacles() {
-			return Collections.<float[]>emptyList();
-		}
-		
-		@Override
-		public Collection<GameObjectDescriptor> getHazards() {
-			final List<GameObjectDescriptor> hazards = new ArrayList<GameObjectDescriptor>();
-			hazards.add(createHazard(30, -145));
-			return hazards;
+			addHazard(this, 30, -145);
 		}
 	},
-	FIFTH(3, "Many swords will bar your way, but the ankhs must be recovered if Egypt is to be saved.") {
-		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = super.getDecorations();
-			decorations.add(createSphynx(90, -190, -30, -90));
-			return decorations;
-		}
+	FIFTH("Many swords will bar your way, but the ankhs must be recovered if Egypt is to be saved.") {
+		{
+			addSphynx(this, 90, -190, -30, -90);
 
-		@Override
-		public Collection<GameObjectDescriptor> getSpells() {
-			// three spells on this level
-			final List<GameObjectDescriptor> spells = new ArrayList<GameObjectDescriptor>();
-			spells.add(createSpell(30, -130));
-			spells.add(createSpell(130, -150));
-			spells.add(createSpell(300, -100));
-			
-			return spells;
-		}
+			addSpell(this, 30, -130);
+			addSpell(this, 130, -150);
+			addSpell(this, 300, -100);
 
-		public List<float[]> getObstacles() {
-			return Collections.<float[]>emptyList();
-		}
-		
-		@Override
-		public Collection<GameObjectDescriptor> getHazards() {
-			// three spells on this level
-			final List<GameObjectDescriptor> hazards = new ArrayList<GameObjectDescriptor>();
-			hazards.add(createHazard(35, -130));
-			hazards.add(createHazard(30, -135));
-			return hazards;
+			addHazard(this, 35, -130);
+			addHazard(this, 30, -135);
 		}
 	},
-	SIXTH(3, "With each ankh recovered, Nebtawi's power wanes. Hurry now!") {
-		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = super.getDecorations();
-			decorations.add(createSphynx(90, -190, -30, -90));
-			return decorations;
-		}
+	SIXTH("With each ankh recovered, Nebtawi's power wanes. Hurry now!") {
+		{
+			addSphynx(this, 90, -190, -30, -90);
 
-		@Override
-		public Collection<GameObjectDescriptor> getSpells() {
-			// three spells on this level
-			final List<GameObjectDescriptor> spells = new ArrayList<GameObjectDescriptor>();
-			spells.add(createSpell(30, -130));
-			spells.add(createSpell(130, -150));
-			spells.add(createSpell(300, -100));
-			
-			return spells;
-		}
+			addSpell(this, 30, -130);
+			addSpell(this, 130, -150);
+			addSpell(this, 300, -100);
 
-		public List<float[]> getObstacles() {
-			return Collections.<float[]>emptyList();
-		}
-		
-		@Override
-		public Collection<GameObjectDescriptor> getHazards() {
-			// three spells on this level
-			final List<GameObjectDescriptor> hazards = new ArrayList<GameObjectDescriptor>();
-			hazards.add(createHazard(35, -130));
-			hazards.add(createHazard(30, -135));
-			hazards.add(createHazard(145, -130));
-			hazards.add(createHazard(290, -125));
-			return hazards;
+			addHazard(this, 35, -130);
+			addHazard(this, 30, -135);
+			addHazard(this, 145, -130);
+			addHazard(this, 290, -125);
 		}
 	},
-	SEVENTH(3, "Collect the remaining ankhs and Nebtawi will be defeated in Egypt!") {
-		public List<GameObjectDescriptor> getDecorations() {
-			final List<GameObjectDescriptor> decorations = super.getDecorations();
-			decorations.add(createSphynx(90, -190, -30, -90));
-			return decorations;
-		}
+	SEVENTH("Collect the remaining ankhs and Nebtawi will be defeated in Egypt!") {
+		{
+			addSphynx(this, 90, -190, -30, -90);
 
-		@Override
-		public Collection<GameObjectDescriptor> getSpells() {
-			// three spells on this level
-			final List<GameObjectDescriptor> spells = new ArrayList<GameObjectDescriptor>();
-			spells.add(createSpell(30, -130));
-			spells.add(createSpell(130, -150));
-			spells.add(createSpell(300, -100));
-			
-			return spells;
-		}
+			addSpell(this, 30, -130);
+			addSpell(this, 130, -150);
+			addSpell(this, 300, -100);
 
-		public List<float[]> getObstacles() {
-			return Collections.<float[]>emptyList();
-		}
-		
-		@Override
-		public Collection<GameObjectDescriptor> getHazards() {
-			// three spells on this level
-			final List<GameObjectDescriptor> hazards = new ArrayList<GameObjectDescriptor>();
-			hazards.add(createHazard(35, -130));
-			hazards.add(createHazard(25, -130));
-			hazards.add(createHazard(30, -135));
-			hazards.add(createHazard(30, -125));
-			return hazards;
+			addHazard(this, 35, -130);
+			addHazard(this, 25, -130);
+			addHazard(this, 30, -135);
+			addHazard(this, 30, -125);
 		}
 	};
 
-	private static final float HEIGHT_OF_HAZARDS_FROM_GROUND = 9f;
-
-	private static final float HEIGHT_OF_SPELLS_FROM_GROUND = 11f;
-
-	private static final float[] SPELLS_TEXTURE_TRANSFORM = new float[16];
-	
-	static {
-		// the texture is within the main texture, so it needs a little transformation to map onto the spell
-		Matrix.setIdentityM(SPELLS_TEXTURE_TRANSFORM, 0);
-		Matrix.translateM(SPELLS_TEXTURE_TRANSFORM, 0, 576f / 1024f, 0, 0);
-		Matrix.scaleM(SPELLS_TEXTURE_TRANSFORM, 0, 0.25f, 0.25f, 1f);
-	}
-	
-	private final int numberOfSpells;
-
 	private final String loadingMessage;
+
+	final Collection<GameObjectDescriptor> spells = new ArrayList<GameObjectDescriptor>();
+
+	final Collection<GameObjectDescriptor> hazards = new ArrayList<GameObjectDescriptor>();
+
+	final Collection<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
+
+	final Collection<float[]> obstacles = new ArrayList<float[]>();
 
 	/**
 	 */
-	private GameLevel(final int aNumberOfSpells, final String aLoadingMessage) {
-		numberOfSpells = aNumberOfSpells;
+	private GameLevel(final String aLoadingMessage) {
 		loadingMessage = aLoadingMessage;
+
+		decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.ground, R.raw.dunes));
+		decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.water, R.raw.textures));
 	}
 
 	/**
 	 * @return number of spells in the level
 	 */
 	public int getNumberOfSpells() {
-		return numberOfSpells;
+		return spells.size();
 	}
-	
+
 	public String getLoadingMessage() {
 		return loadingMessage;
 	}
@@ -265,70 +133,27 @@ public enum GameLevel {
 	/**
 	 * Things that will earn the player a point if the player "collects" them: ankhs, gems, etc.
 	 */
-	public abstract Collection<GameObjectDescriptor> getSpells();
-	
+	public Collection<GameObjectDescriptor> getSpells() {
+		return spells;
+	}
+
 	/**
 	 * Things that will kill the player if the player flies into them: swords, whirl winds, etc.
 	 */
-	public abstract Collection<GameObjectDescriptor> getHazards();
+	public Collection<GameObjectDescriptor> getHazards() {
+		return hazards;
+	}
 	
+	public Collection<GameObjectDescriptor> getDecorations() {
+		return decorations;
+	}
+
 	/**
 	 * Things that the player cannot pass through: pyramids, etc.
 	 * 
 	 * Returns a bounding sphere, i.e., x, y, z, r.
 	 */
-	public abstract List<float[]> getObstacles();
-
-	public List<GameObjectDescriptor> getDecorations() {
-		final List<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
-		decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.ground, R.raw.dunes));
-		decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.water, R.raw.textures));
-		return decorations;
-	}
-	
-	private static GameObjectDescriptor createSpell(int anX, int aZ) {
-		final float[] transformationMatrix = new float[16];
-		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
-		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_SPELLS_FROM_GROUND, aZ);
-		
-		return new GameObjectDescriptor(transformationMatrix, SPELLS_TEXTURE_TRANSFORM, R.raw.ankh, R.raw.textures);
-	}
-	
-	private static GameObjectDescriptor createHazard(int anX, int aZ) {
-		final float[] transformationMatrix = new float[16];
-		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
-		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_HAZARDS_FROM_GROUND, aZ);
-		
-		return new GameObjectDescriptor(transformationMatrix, null, R.raw.textured_sword, R.raw.textures);
-	}
-
-	private static float[] createNewIdentityMatrix() {
-		float[] matrix = new float[16];
-		Matrix.setIdentityM(matrix, 0);
-		return matrix;
-	}
-
-	private static float[] createBoundingSphere(float anX, float aY, float aZ, float aRadius) {
-		return new float[] { anX, aY, aZ, aRadius };
-	}
-
-	private final static GameObjectDescriptor createPyramid(float aRotation, final float anX, final float aY, final float aZ) {
-		float[] coordinateTransform = new float[16];
-		Matrix.setIdentityM(coordinateTransform, 0);
-		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
-		Matrix.translateM(coordinateTransform, 0, anX, aY, aZ);
-
-		return new GameObjectDescriptor(coordinateTransform, null, R.raw.pyramid, R.raw.textures);
-	}
-	
-	private final static GameObjectDescriptor createSphynx(final float aRotation, final float anX, final float aY, final float aZ) {
-		float[] coordinateTransform = new float[16];
-		Matrix.setIdentityM(coordinateTransform, 0);
-		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
-		Matrix.translateM(coordinateTransform, 0, anX, aY, aZ);
-		float[] textureTransform = new float[16];
-		Matrix.setIdentityM(textureTransform, 0);
-
-		return new GameObjectDescriptor(coordinateTransform, null, R.raw.sphinx_scaled, R.raw.sphinx);
+	public Collection<float[]> getObstacles() {
+		return obstacles;
 	}
 }
