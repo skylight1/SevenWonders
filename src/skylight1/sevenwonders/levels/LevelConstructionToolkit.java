@@ -47,6 +47,8 @@ public class LevelConstructionToolkit {
 		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
 		Matrix.translateM(coordinateTransform, 0, anX, aY, aZ);
 		aGameLevel.decorations.add(new GameObjectDescriptor(coordinateTransform, null, R.raw.pyramid, R.raw.textures));
+		
+		aGameLevel.obstacles.add(new float[] {anX, aY, aZ, 50});
 	}
 
 	static void addSphynx(final GameLevel aGameLevel, final float aRotation, final float anX, final float aY,
