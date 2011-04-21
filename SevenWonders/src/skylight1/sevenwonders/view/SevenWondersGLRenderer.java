@@ -5,6 +5,7 @@ import static javax.microedition.khronos.opengles.GL10.GL_CW;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -81,6 +82,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private final CollisionDetector collisionDetector = new CollisionDetector();
 
+	private final CollisionDetector obstacleCollisionDetector = new CollisionDetector();
+	
 	private int score;
 
 	private Carpet carpet;
@@ -163,13 +166,27 @@ public class SevenWondersGLRenderer implements Renderer {
 			@Override
 			public void collisionOccurred(final float[] aBoundingSphere) {
 			    SoundTracks.getInstance().play(SoundTracks.BUMP);
+			    
+				Log.i(TAG, String.format("just colided with (%s) at distance %f, retreating to distance %f", Arrays.toString(aBoundingSphere), (aBoundingSphere[0] - playerWorldPosition.x)
+						* (aBoundingSphere[0] - playerWorldPosition.x)
+						+ (aBoundingSphere[2] - playerWorldPosition.z)
+						* (aBoundingSphere[2] - playerWorldPosition.z), (aBoundingSphere[0] - startOfFramePlayerWorldPositionX)
+						* (aBoundingSphere[0] - startOfFramePlayerWorldPositionX)
+						+ (aBoundingSphere[2] - startOfFramePlayerWorldPositionZ)
+						* (aBoundingSphere[2] - startOfFramePlayerWorldPositionZ)));
 
 				playerWorldPosition.x = startOfFramePlayerWorldPositionX; 
 				playerWorldPosition.z = startOfFramePlayerWorldPositionZ; 
+				
+				final float facingX = (float) Math.sin(playerFacingThisFrame / 180f * Math.PI);
+				final float facingZ = -(float) Math.cos(playerFacingThisFrame / 180f * Math.PI);
+
+				playerWorldPosition.x = playerWorldPosition.x + facingX * -velocity * 100L;
+				playerWorldPosition.z = playerWorldPosition.z + facingZ * -velocity * 100L;
 			}
 		};
 		for (final float[] boundingSphere : level.getObstacles()) {
-			collisionDetector.addBoundingSphere(boundingSphere, obstacleCollisionObserver);
+			obstacleCollisionDetector.addBoundingSphere(boundingSphere, obstacleCollisionObserver);
 		}
 	}
 
@@ -420,8 +437,23 @@ public class SevenWondersGLRenderer implements Renderer {
 			    SoundTracks.getInstance().play(SoundTracks.BUMP);
 			}
 		}
+
+		checkForCollisionsWithObstacles();
+
 		GLU.gluLookAt(aGl, playerWorldPosition.x, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z, playerWorldPosition.x
 				+ facingX, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z + facingZ, 0f, 1f, 0f);
+	}
+
+	private void checkForCollisionsWithObstacles() {
+		float[] centerOfCarpet = temporaryMatrix;
+		// a single point only, otherwise turning away from collisions is problematic
+		Matrix.frustumM(centerOfCarpet, 0, -0.001f, 0.001f, HEIGHT_OF_CARPET_FROM_GROUND, HEIGHT_OF_CARPET_FROM_GROUND+0.001f, 0.001f, 0.002f);
+
+		// Rotate first, otherwise map rotates around center point we translated away from.
+		Matrix.rotateM(centerOfCarpet, 0, playerFacingThisFrame, 0, 1, 0);
+		Matrix.translateM(centerOfCarpet, 0, -playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
+
+		obstacleCollisionDetector.detectCollisions(centerOfCarpet);
 	}
 
 	private long calculateTimeSinceLastRenderMillis() {
