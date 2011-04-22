@@ -9,8 +9,11 @@ import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 public class SplashActivity extends Activity {
 	private static final long SPLASH_DURATION_IN_MILLISECONDS = 3000;
+	private GoogleAnalyticsTracker tracker;
 
 	private Handler handler = new Handler();
 

@@ -2,16 +2,27 @@ package skylight1.sevenwonders;
 
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.TextStyles;
+import skylight1.util.Adverts;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
-public class MenuActivity extends Activity implements OnClickListener {
+import com.adwhirl.AdWhirlLayout;
+import com.adwhirl.AdWhirlLayout.AdWhirlInterface;
+import com.adwhirl.AdWhirlManager;
+import com.adwhirl.AdWhirlTargeting;
+
+public class MenuActivity extends Activity implements OnClickListener {//, AdWhirlInterface {
 	
 	private TextView contentTextView;
 	private Button leftButton;
@@ -20,10 +31,10 @@ public class MenuActivity extends Activity implements OnClickListener {
 	private TextStyles wonderFonts;
 	private Settings settings;
 
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
+		
 		setContentView(R.layout.menu);
 		
         contentTextView = (TextView) findViewById(R.id.menu_content_textview);        
@@ -40,10 +51,13 @@ public class MenuActivity extends Activity implements OnClickListener {
         
         settings = new Settings(this);
         
-
         leftButton.setOnClickListener(this);
         middleButton.setOnClickListener(this);
         rightButton.setOnClickListener(this);   
+
+        ViewGroup layout = (ViewGroup)findViewById(R.id.layout_ad);
+		Adverts.insertAdBanner(this,layout);
+
 	}
 
 	@Override
@@ -88,5 +102,11 @@ public class MenuActivity extends Activity implements OnClickListener {
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		SoundTracks.setVolume(this);
 	}
+
+//	@Override
+//	public void adWhirlGeneric() {
+//		// TODO Auto-generated method stub
+//		
+//	}
 		
 }

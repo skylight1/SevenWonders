@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:a="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:a="http://schemas.android.com/apk/res/android"
+	a:id="@+id/menulayout"
     a:orientation="vertical"
     a:layout_width="fill_parent"
     a:layout_height="fill_parent"
-    a:background="@drawable/bg">    
+    a:background="@drawable/bg">   
+
+    <LinearLayout 
+      a:id="@+id/layout_ad"
+      a:layout_width="320dp"
+      a:layout_height="52dp"
+      a:layout_alignParentBottom="true"
+      a:layout_centerHorizontal="true"
+      a:background="@android:color/transparent">
+<!--      <com.adwhirl.AdWhirlLayout
+        android:id="@+id/adwhirl_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" /> -->
+    </LinearLayout>
+
+    <LinearLayout     
+      a:layout_width="fill_parent"
+      a:layout_height="fill_parent"
+      a:orientation="vertical"
+      a:layout_centerInParent="true"
+      a:layout_above="@id/layout_ad"
+      > 
     <FrameLayout
       a:layout_width="fill_parent"
       a:layout_height="0dip"      
@@ -58,5 +80,7 @@
          a:layout_weight="0.32"        
          a:text="Play &gt;&gt;"
          a:background="@drawable/button"/>         
-    </LinearLayout>    
-</LinearLayout>
+    </LinearLayout>
+    </LinearLayout>
+        
+</RelativeLayout>

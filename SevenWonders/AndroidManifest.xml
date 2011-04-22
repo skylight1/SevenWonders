@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="skylight1.sevenwonders" 
-	android:versionCode="1"
+	package="skylight1.sevenwonders" android:versionCode="1"
 	android:versionName="1.0">
-	<application android:icon="@drawable/icon" 
-		android:label="@string/app_name"
-		android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" android:name="SevenWondersApplication">
+	<application android:icon="@drawable/icon" android:label="@string/app_name"
+		android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+		android:name="SevenWondersApplication">
 
-		<activity 
-			android:name="SplashActivity"
-			android:launchMode="singleInstance"
+		<activity android:name="SplashActivity" android:launchMode="singleInstance"
 			android:screenOrientation="landscape">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -17,66 +14,59 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name="LevelChooserActivity" 
-			android:label="@string/app_name"
+		<activity android:name="LevelChooserActivity" android:label="@string/app_name"
 			android:screenOrientation="landscape" />
 
-		<activity android:name="PlayActivity" 
-			android:label="@string/app_name"
-			android:launchMode="singleInstance" 
-			android:configChanges="keyboardHidden"
+		<activity android:name="PlayActivity" android:label="@string/app_name"
+			android:launchMode="singleInstance" android:configChanges="keyboardHidden"
 			android:screenOrientation="landscape" />
 
-		<activity android:name=".ScoreActivity" 
-		android:screenOrientation="landscape"
-			android:label="@string/app_name">
+		<activity android:name=".ScoreActivity"
+			android:screenOrientation="landscape" android:label="@string/app_name">
 		</activity>
-		
-			<activity android:name="MenuActivity" 
-		android:screenOrientation="landscape"
-			android:label="@string/app_name">
+
+		<activity android:name="MenuActivity"
+			android:screenOrientation="landscape" android:label="@string/app_name">
 		</activity>
-		
-		<activity android:name="AboutActivity" 
-			android:screenOrientation="landscape"
-			android:label="@string/app_name">
+
+		<activity android:name="AboutActivity"
+			android:screenOrientation="landscape" android:label="@string/app_name">
 		</activity>
-		
-		
-			<activity android:name=".SettingsActivity" 
-		android:screenOrientation="landscape"
-			android:label="@string/app_name">
+
+		<activity android:name=".SettingsActivity"
+			android:screenOrientation="landscape" android:label="@string/app_name">
 		</activity>
-		
-		<activity android:name="skylight1.sevenwonders.social.facebook.FacebookScoreActivity" 
+
+		<activity
+			android:name="skylight1.sevenwonders.social.facebook.FacebookScoreActivity"
 			android:label="@string/app_name">
 		</activity>
 
-		<activity android:name="skylight1.sevenwonders.social.facebook.LoginAndGetPermissions" 
-			android:label="@string/app_name">
-		</activity>
-		
-		<activity android:name="skylight1.sevenwonders.social.twitter.TwitterUpdater" 
+		<activity
+			android:name="skylight1.sevenwonders.social.facebook.LoginAndGetPermissions"
 			android:label="@string/app_name">
 		</activity>
 
-		<activity android:name=".StoryActivity" 
-			android:label="@string/app_name"
-			android:launchMode="singleInstance"
-			android:screenOrientation="landscape">
+		<activity android:name="skylight1.sevenwonders.social.twitter.TwitterUpdater"
+			android:label="@string/app_name">
 		</activity>
 
+		<activity android:name=".StoryActivity" android:label="@string/app_name"
+			android:launchMode="singleInstance" android:screenOrientation="landscape">
+		</activity>
 
+		<meta-data android:value="04e5e3bf050649d2857214cfec379d0d"
+			android:name="ADWHIRL_KEY" />
+	
 	</application>
 
 	<uses-sdk android:minSdkVersion="3" android:targetSdkVersion="4" />
 
 	<support-screens android:smallScreens="true"
-		android:normalScreens="true" 
-		android:largeScreens="true"
+		android:normalScreens="true" android:largeScreens="true"
 		android:anyDensity="true" />
 
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 </manifest>
