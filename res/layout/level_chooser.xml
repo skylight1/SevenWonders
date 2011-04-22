@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:a="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:a="http://schemas.android.com/apk/res/android"
 	a:layout_width="fill_parent" a:layout_height="fill_parent"
 	a:background="@drawable/bg" a:paddingTop="7dip"
 	a:paddingLeft="4dip" a:paddingRight="4dip">
+	<LinearLayout 
+      a:id="@+id/layout_ad"
+      a:layout_width="320dp"
+      a:layout_height="52dp"
+      a:layout_alignParentBottom="true"
+      a:layout_centerHorizontal="true"
+      a:background="@android:color/transparent">
+<!--      <com.adwhirl.AdWhirlLayout
+        android:id="@+id/adwhirl_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" /> -->
+    </LinearLayout>
+	
 	<LinearLayout a:orientation="vertical"
 	    a:layout_width="fill_parent"
-		a:layout_height="fill_parent" >
+		a:layout_height="fill_parent" 
+		a:layout_above="@id/layout_ad">
 		<TextView a:id="@+id/heading" a:layout_width="fill_parent"
 		a:layout_marginLeft="12dip"
 		a:layout_marginRight="12dip"
@@ -23,6 +37,6 @@
 			a:paddingLeft="4dip" a:paddingRight="4dip" 
 			a:cacheColorHint="#00000000"
 			a:divider="@android:color/transparent" />
-
+			
 	</LinearLayout>
-</FrameLayout>
+</RelativeLayout>
