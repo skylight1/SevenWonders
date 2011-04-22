@@ -174,15 +174,26 @@ public class SevenWondersGLRenderer implements Renderer {
 						* (aBoundingSphere[0] - startOfFramePlayerWorldPositionX)
 						+ (aBoundingSphere[2] - startOfFramePlayerWorldPositionZ)
 						* (aBoundingSphere[2] - startOfFramePlayerWorldPositionZ)));
-
-				playerWorldPosition.x = startOfFramePlayerWorldPositionX; 
-				playerWorldPosition.z = startOfFramePlayerWorldPositionZ; 
+		
+				float xDistanceToPyramid = aBoundingSphere[0] - startOfFramePlayerWorldPositionX;
+				float zDistanceToPyramid = aBoundingSphere[2] - startOfFramePlayerWorldPositionZ;
+				float xDistanceTraveled = playerWorldPosition.x - startOfFramePlayerWorldPositionX;
+				float zDistanceTraveled = playerWorldPosition.z - startOfFramePlayerWorldPositionZ;
+				float distanceTraveled = (float) Math.sqrt(xDistanceTraveled * xDistanceTraveled + 
+					zDistanceTraveled * zDistanceTraveled);
 				
-				final float facingX = (float) Math.sin(playerFacingThisFrame / 180f * Math.PI);
-				final float facingZ = -(float) Math.cos(playerFacingThisFrame / 180f * Math.PI);
-
-				playerWorldPosition.x = playerWorldPosition.x + facingX * -velocity * 100L;
-				playerWorldPosition.z = playerWorldPosition.z + facingZ * -velocity * 100L;
+				// Take where the player would have gone had he not collided
+				// and subtract the x component of if he had headed directly 
+				// toward the pyramid. This should leave only the motion away 
+				// from the pyramid.
+				float playerSlidingPositionX = playerWorldPosition.x 
+					- (distanceTraveled * xDistanceToPyramid / zDistanceToPyramid);
+				// Now do the same with the z component.
+				float playerSlidingPositionZ = playerWorldPosition.z 
+					- (distanceTraveled * zDistanceToPyramid / xDistanceToPyramid);
+				
+				playerWorldPosition.x = playerSlidingPositionX;
+				playerWorldPosition.z = playerSlidingPositionZ;
 			}
 		};
 		for (final float[] boundingSphere : level.getObstacles()) {
