@@ -39,6 +39,7 @@ import android.opengl.Matrix;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.util.FloatMath;
 import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
@@ -166,34 +167,40 @@ public class SevenWondersGLRenderer implements Renderer {
 			@Override
 			public void collisionOccurred(final float[] aBoundingSphere) {
 			    SoundTracks.getInstance().play(SoundTracks.BUMP);
-			    
-				Log.i(TAG, String.format("just colided with (%s) at distance %f, retreating to distance %f", Arrays.toString(aBoundingSphere), (aBoundingSphere[0] - playerWorldPosition.x)
-						* (aBoundingSphere[0] - playerWorldPosition.x)
-						+ (aBoundingSphere[2] - playerWorldPosition.z)
-						* (aBoundingSphere[2] - playerWorldPosition.z), (aBoundingSphere[0] - startOfFramePlayerWorldPositionX)
-						* (aBoundingSphere[0] - startOfFramePlayerWorldPositionX)
-						+ (aBoundingSphere[2] - startOfFramePlayerWorldPositionZ)
-						* (aBoundingSphere[2] - startOfFramePlayerWorldPositionZ)));
 		
-				float xDistanceToPyramid = aBoundingSphere[0] - startOfFramePlayerWorldPositionX;
-				float zDistanceToPyramid = aBoundingSphere[2] - startOfFramePlayerWorldPositionZ;
-				float xDistanceTraveled = playerWorldPosition.x - startOfFramePlayerWorldPositionX;
-				float zDistanceTraveled = playerWorldPosition.z - startOfFramePlayerWorldPositionZ;
-				float distanceTraveled = (float) Math.sqrt(xDistanceTraveled * xDistanceTraveled + 
-					zDistanceTraveled * zDistanceTraveled);
+			    // Find the distance traveled toward the pyramid.
+				float initialOffsetToPyramidX = aBoundingSphere[0] - startOfFramePlayerWorldPositionX;
+				float initialOffsetToPyramidZ = aBoundingSphere[2] - startOfFramePlayerWorldPositionZ;
+				float collidingOffsetToPyramidX = aBoundingSphere[0] - playerWorldPosition.x;
+				float collidingOffsetToPyramidZ = aBoundingSphere[2] - playerWorldPosition.z;
+				float initialDistanceFromPyramid = Matrix.length(Math.abs(initialOffsetToPyramidX), 0, Math.abs(initialOffsetToPyramidZ));
+				float collidingDistanceFromPyramid = Matrix.length(Math.abs(collidingOffsetToPyramidX), 0, Math.abs(collidingOffsetToPyramidZ));
+				float distanceTraveledTowardPyramid = initialDistanceFromPyramid - collidingDistanceFromPyramid;
+
+				// Find X offset to travel that distance away using same slope as if headed toward pyramid.
+				float xToZ = initialOffsetToPyramidX / initialOffsetToPyramidZ;
+				float slideAmountZ = FloatMath.sqrt(distanceTraveledTowardPyramid * distanceTraveledTowardPyramid / (xToZ * xToZ + 1));
+				float slideOffsetZ = slideAmountZ * initialOffsetToPyramidZ / Math.abs(initialOffsetToPyramidZ);
+
+				// Find Z offset to travel that distance away using same slope as if headed toward pyramid.
+				float zToX = initialOffsetToPyramidZ / initialOffsetToPyramidX;
+				float slideAmountX = FloatMath.sqrt(distanceTraveledTowardPyramid * distanceTraveledTowardPyramid / (zToX * zToX + 1));
+				float slideOffsetX = slideAmountX * initialOffsetToPyramidX / Math.abs(initialOffsetToPyramidX);
 				
 				// Take where the player would have gone had he not collided
-				// and subtract the x component of if he had headed directly 
-				// toward the pyramid. This should leave only the motion away 
-				// from the pyramid.
-				float playerSlidingPositionX = playerWorldPosition.x 
-					- (distanceTraveled * xDistanceToPyramid / zDistanceToPyramid);
-				// Now do the same with the z component.
-				float playerSlidingPositionZ = playerWorldPosition.z 
-					- (distanceTraveled * zDistanceToPyramid / xDistanceToPyramid);
+				// and subtract the distance traveled toward the pyramid. 
+				// This should leave only the motion to the side of the pyramid.
+				float playerSlidingPositionX = playerWorldPosition.x - slideOffsetX;
+				float playerSlidingPositionZ = playerWorldPosition.z - slideOffsetZ;
 				
 				playerWorldPosition.x = playerSlidingPositionX;
 				playerWorldPosition.z = playerSlidingPositionZ;
+			    
+				float slidingOffsetToPyramidX = aBoundingSphere[0] - playerWorldPosition.x;
+				float slidingOffsetToPyramidZ = aBoundingSphere[2] - playerWorldPosition.z;
+				float slidingDistanceFromPyramid = Matrix.length(Math.abs(slidingOffsetToPyramidX), 0, Math.abs(slidingOffsetToPyramidZ));
+				Log.i(TAG, String.format("just colided with (%s) at distance %f, retreating to distance %f", 
+						Arrays.toString(aBoundingSphere), collidingOffsetToPyramidZ, slidingDistanceFromPyramid));
 			}
 		};
 		for (final float[] boundingSphere : level.getObstacles()) {
