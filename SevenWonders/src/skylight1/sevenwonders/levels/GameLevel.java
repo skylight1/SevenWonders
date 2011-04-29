@@ -12,7 +12,7 @@ import java.util.Collection;
 import skylight1.sevenwonders.R;
 
 public enum GameLevel {
-	FIRST("The ankh is a symbol of powerful magic. Collect all five.") {
+	FIRST("The ankh is a symbol of powerful magic. Collect all three.") {
 		{
 			addSphynx(this, 90, -190, -30, -90);
 			addPyramid(this, 0, -220, 0, 100);
@@ -22,23 +22,30 @@ public enum GameLevel {
 			addSpell(this, 30, -130);
 			addSpell(this, 150, -200);
 			addSpell(this, 300, -180);
-			addSpell(this, 400, -160);
-			addSpell(this, 500, -100);
 		}
 	},
 	SECOND("Nebtawi, the evil vizier, has spread the ankhs far and wide.") {
 		{
 			addSphynx(this, 90, -190, -30, -90);
-
+			addPyramid(this, 0, -220, 0, 100);
+			addPyramid(this, 0, 655, 0, 110);
+			addPyramid(this, 0, -620, -7, 100);
+			
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
+			addSpell(this, 400, -160);
+			addSpell(this, 500, -100);
+
 		}
 	},
 	THIRD("Race to find all five ankhs before the nefarious Nebtawi arrives.") {
 		{
 			addSphynx(this, 90, -190, -30, -90);
-
+			addPyramid(this, 0, -220, 0, 100);
+			addPyramid(this, 0, 655, 0, 110);
+			addPyramid(this, 0, -620, -7, 100);
+			
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
@@ -49,7 +56,10 @@ public enum GameLevel {
 	FOURTH("Beware! Nebtawi has set a deadly flying sword to block your path.") {
 		{
 			addSphynx(this, 90, -190, -30, -90);
-
+			addPyramid(this, 0, -220, 0, 100);
+			addPyramid(this, 0, 655, 0, 110);
+			addPyramid(this, 0, -620, -7, 100);
+			
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
@@ -62,19 +72,25 @@ public enum GameLevel {
 	FIFTH("Many swords will bar your way, but the ankhs must be recovered if Egypt is to be saved.") {
 		{
 			addSphynx(this, 90, -190, -30, -90);
-
+			addPyramid(this, 0, -220, 0, 100);
+			addPyramid(this, 0, 655, 0, 110);
+			addPyramid(this, 0, -620, -7, 100);
+			
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
 
-			addHazard(this, 35, -130);
-			addHazard(this, 30, -135);
+			addHazard(this, 35, -120);
+			addHazard(this, 30, -145);
 		}
 	},
 	SIXTH("With each ankh recovered, Nebtawi's power wanes. Hurry now!") {
 		{
 			addSphynx(this, 90, -190, -30, -90);
-
+			addPyramid(this, 0, -220, 0, 100);
+			addPyramid(this, 0, 655, 0, 110);
+			addPyramid(this, 0, -620, -7, 100);
+			
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
@@ -88,7 +104,10 @@ public enum GameLevel {
 	SEVENTH("Collect the remaining ankhs and Nebtawi will be defeated in Egypt!") {
 		{
 			addSphynx(this, 90, -190, -30, -90);
-
+			addPyramid(this, 0, -220, 0, 100);
+			addPyramid(this, 0, 655, 0, 110);
+			addPyramid(this, 0, -620, -7, 100);
+			
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
