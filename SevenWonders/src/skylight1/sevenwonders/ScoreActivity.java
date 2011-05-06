@@ -108,7 +108,7 @@ public class ScoreActivity extends Activity {
 		if ( wonLevel ) {
 			messageBuilder.append(getRemainingTimeText(remainingSeconds) + "\n");
 		}
-		messageBuilder.append(getScoreString(collectedSpellsCount, remainingSeconds, wonLevel) + "\n");
+		messageBuilder.append(getScoreString(collectedSpellsCount, remainingSeconds, wonLevel, level) + "\n");
 		messageBuilder.append(getWinOrLoseString(wonLevel, nextLevelExists));
 		
 		setupButtons(level, wonLevel, nextLevelExists,messageBuilder.toString());
@@ -139,9 +139,16 @@ public class ScoreActivity extends Activity {
 	}
 
 	private String getScoreString(final int collectedSpellCount, 
-			final int remainingTimeSeconds, final boolean wonLevel) {
+			final int remainingTimeSeconds, final boolean wonLevel, final int level) {
 		int score = calculateScore(collectedSpellCount, remainingTimeSeconds, wonLevel);
-		String scoreText = String.format("Level score: %02d", score);
+        String scoreText = String.format("Level score: %02d", score);
+        //display if high score is improved
+        final Settings settings = new Settings(this);
+        int highScore = settings.getHighScore(level+1);
+        int highScoreImprovement = score - highScore;
+        if (highScoreImprovement > 0 ) {
+            scoreText += String.format("\n new high score! (+%02d)", highScoreImprovement);
+        }
 		return scoreText;
 	}
 
