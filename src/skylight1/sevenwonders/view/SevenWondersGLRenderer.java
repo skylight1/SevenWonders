@@ -330,6 +330,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public void onSurfaceChanged(final GL10 aGl, final int aW, final int aH) {
 		aGl.glMatrixMode(GL10.GL_PROJECTION);
+		aGl.glLoadIdentity();
 		aGl.glViewport(0, 0, aW, aH);
 		GLU.gluPerspective(aGl, 45, (float) aW / (float) aH, 0.1f, 5000f);
 
