@@ -31,7 +31,7 @@ public class AboutActivity extends Activity {
 	}
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about);
 		final TextStyles textStyles = new TextStyles(this);
@@ -42,9 +42,10 @@ public class AboutActivity extends Activity {
 		textStyles.applyHeaderTextStyle(website);
 		website.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(final View v) {
+				final String websiteUri = getString(R.string.website_uri);
 				final WebView wv = new WebView(AboutActivity.this);
-				wv.loadUrl("http://sevenwondersgame.com");
+				wv.loadUrl(websiteUri);
 				AboutActivity.this.setContentView(wv);
 			}
 		});
