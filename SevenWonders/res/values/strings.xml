@@ -18,4 +18,12 @@
 	<string name="visitWebsite">Visit the Seven Wonders Website</string>
 	<string name="aboutText2">\n(c) 2011 Skylight1</string>
 	<string name="retry">Retry</string>
+	
+	<string name="splash_activity_visit_website_button">Visit Website</string>
+	<string name="splash_activity_expired_message">
+		Thanks for trying out the beta!\n
+		It has expired.\n
+		Please visit our website for a new version!
+	</string>
+	<string name="website_uri">http://sevenwondersgame.com</string>
 </resources>
