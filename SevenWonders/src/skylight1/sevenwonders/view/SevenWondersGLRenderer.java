@@ -356,7 +356,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 	
 	public void onDrawFrame(final GL10 aGl) {
-		aGl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+		aGl.glClear(GL10.GL_DEPTH_BUFFER_BIT);
 		
 		playerFacingThisFrame = playerFacing;
 		
