@@ -1,7 +1,7 @@
 package skylight1.sevenwonders;
 
-import skylight1.sevenwonders.view.TextStyles;
 import skylight1.sevenwonders.services.SoundTracks;
+import skylight1.sevenwonders.view.TextStyles;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 
 public class SettingsActivity extends Activity {
 
@@ -26,7 +27,6 @@ public class SettingsActivity extends Activity {
 
 		Log.i(TAG, "started");
 		setContentView(R.layout.settings);
-
 		final CheckBox soundCB = (CheckBox) findViewById(R.id.soundCheckBox);
 
 		soundCB.setChecked(settings.isSoundEnabled());
@@ -36,6 +36,21 @@ public class SettingsActivity extends Activity {
 				settings.setSoundEnabled(soundCB.isChecked());
 			}
 		});
+
+		if(SevenWondersApplication.isDebug) {
+			final CheckBox debugCB = (CheckBox) findViewById(R.id.debug);
+			debugCB.setVisibility(View.VISIBLE);
+			debugCB.setChecked(settings.isDebugEnabled());
+			debugCB.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View aV) {
+					settings.setDebugEnabled(debugCB.isChecked());
+				}
+			});
+		} else {
+			final CheckBox debugCB = (CheckBox) findViewById(R.id.debug);
+			debugCB.setVisibility(View.GONE);
+		}
 
 		final Button backButton = (Button) findViewById(R.id.settings_back_button);
 		backButton.setOnClickListener(new OnClickListener() {

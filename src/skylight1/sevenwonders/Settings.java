@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 public class Settings {
 
 	public static final String KEY_IS_SOUND_ENABLED = "KEY_IS_SOUND_ENABLED";
+	public static final String KEY_IS_DEBUG_ENABLED = "KEY_IS_DEBUG_ENABLED";
 
 	private static final String KEY_GAME_WAS_STARTED_AT_LEAST_ONCE = "KEY_GAME_WAS_STARTED_AT_LEAST_ONCE";
 
@@ -23,7 +24,7 @@ public class Settings {
 	}
 
 	public boolean isSoundEnabled() {
-		return prefs.getBoolean(KEY_IS_SOUND_ENABLED, false);
+		return prefs.getBoolean(KEY_IS_SOUND_ENABLED, true);
 	}
 
 	public void setSoundEnabled(boolean isSoundEnabled) {
@@ -57,6 +58,11 @@ public class Settings {
 		editor.putBoolean(String.format(KEY_LEVEL_LOCKED, aLevelNumber), false);
 		editor.commit();
 	}
+	public void lockLevel(final int aLevelNumber) {
+		final SharedPreferences.Editor editor = prefs.edit();
+		editor.putBoolean(String.format(KEY_LEVEL_LOCKED, aLevelNumber), true);
+		editor.commit();
+	}
 
 	public int getHighScore(final int aLevelNumber) {
 		return prefs.getInt(String.format(KEY_LEVEL_HIGH_SCORE, aLevelNumber), 0);
@@ -66,5 +72,14 @@ public class Settings {
 		final SharedPreferences.Editor editor = prefs.edit();
 		editor.putInt(String.format(KEY_LEVEL_HIGH_SCORE, aLevelNumber), aHighScore);
 		editor.commit();
+	}
+
+	public void setDebugEnabled(boolean isDebugEnabled) {
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putBoolean(KEY_IS_DEBUG_ENABLED, isDebugEnabled);
+		editor.commit();
+	}
+	public boolean isDebugEnabled() {
+		return prefs.getBoolean(KEY_IS_DEBUG_ENABLED, false);
 	}
 }
