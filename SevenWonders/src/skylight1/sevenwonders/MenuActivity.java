@@ -2,25 +2,17 @@ package skylight1.sevenwonders;
 
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.TextStyles;
-import skylight1.util.Adverts;
+import skylight1.util.BuildInfo;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
-
-import com.adwhirl.AdWhirlLayout;
-import com.adwhirl.AdWhirlLayout.AdWhirlInterface;
-import com.adwhirl.AdWhirlManager;
-import com.adwhirl.AdWhirlTargeting;
 
 public class MenuActivity extends Activity implements OnClickListener {//, AdWhirlInterface {
 	
@@ -30,13 +22,13 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 	private Button rightButton;
 	private TextStyles wonderFonts;
 	private Settings settings;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.menu);
-		
+			
         contentTextView = (TextView) findViewById(R.id.menu_content_textview);        
         leftButton = (Button) findViewById(R.id.menu_left_button);
         middleButton = (Button) findViewById(R.id.menu_middle_button);
@@ -58,6 +50,16 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
         ViewGroup layout = (ViewGroup)findViewById(R.id.layout_ad);
 		Adverts.insertAdBanner(this,layout);
 
+		if(SevenWondersApplication.isDebug) {
+			final Settings settings = new Settings(this);
+			for (int level = 2; level <= 7; level++) {
+				if(settings.isDebugEnabled()) {
+					settings.unlockLevel(level);
+				} else {
+					settings.lockLevel(level);
+				}
+			}
+		}
 	}
 
 	@Override

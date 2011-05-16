@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:a="http://schemas.android.com/apk/res/android"
+    a:id="@+id/settingsLinearLayout"
     a:orientation="vertical"
     a:layout_width="fill_parent"
     a:layout_height="fill_parent"
@@ -30,6 +31,9 @@
       a:paddingLeft="4dip"
       a:paddingRight="4dip">
 	</CheckBox>
+	<CheckBox a:text="debug" a:id="@+id/debug" a:visibility="gone"
+		a:layout_gravity="center|top" a:layout_width="wrap_content"
+		a:layout_height="wrap_content"></CheckBox>
     </FrameLayout>
         
     <LinearLayout
