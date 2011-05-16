@@ -15,8 +15,8 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import skylight1.opengl.CollisionDetector;
-import skylight1.opengl.GeometryBuilder;
 import skylight1.opengl.CollisionDetector.CollisionObserver;
+import skylight1.opengl.GeometryBuilder;
 import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
 import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
 import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
@@ -28,6 +28,8 @@ import skylight1.opengl.TransformingGeometryBuilder;
 import skylight1.opengl.files.ObjFileLoader;
 import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.R;
+import skylight1.sevenwonders.Settings;
+import skylight1.sevenwonders.SevenWondersApplication;
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.levels.GameObjectDescriptor;
 import skylight1.sevenwonders.services.SoundTracks;
@@ -113,6 +115,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private float startOfFramePlayerWorldPositionZ;
 
+	private Settings settings;
+	
 	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel) {
 		Log.i(TAG, "SevenWondersGLRenderer()");
 		context = aContext;
@@ -120,6 +124,8 @@ public class SevenWondersGLRenderer implements Renderer {
 		level = aLevel;
 		updateUiHandler = aUpdateUiHandler;
 
+		settings = new Settings(aContext);
+		
 		openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(60453);
 
 		// load all of the decorations (land, water, sphinx, pyramids, etc.)
@@ -375,8 +381,12 @@ public class SevenWondersGLRenderer implements Renderer {
 		drawSwords(aGl);
 		drawSkybox(aGl);
 		
-		Message msg = updateUiHandler.obtainMessage(PlayActivity.FPS_MESSAGE, fPSLogger.frameRendered(), 0);
-		updateUiHandler.sendMessage(msg);
+		if (SevenWondersApplication.isDebug) {
+			if (settings.isDebugEnabled()) {
+				Message msg = updateUiHandler.obtainMessage(PlayActivity.FPS_MESSAGE, fPSLogger.frameRendered(), 0);
+				updateUiHandler.sendMessage(msg);
+			}
+		}
 	}
 
 	private void drawCarpet(final GL10 aGl) {
