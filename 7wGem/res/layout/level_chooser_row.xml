@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:a="http://schemas.android.com/apk/res/android"
+	a:orientation="horizontal" a:layout_width="fill_parent" a:gravity="center_vertical"
+	a:layout_height="wrap_content" a:background="@drawable/button">
+
+	<TextView a:id="@+id/levelName" a:layout_width="fill_parent"
+		a:layout_height="wrap_content" a:gravity="left" a:text="Level 1"
+		a:textSize="20dip" a:textColor="#ffff" a:textStyle="bold"
+		a:layout_weight="1" a:shadowRadius="1.3" a:shadowColor="#211"
+		a:shadowDx="1.0" a:shadowDy="1.0" />
+
+	<TextView a:id="@+id/highScore" a:layout_width="fill_parent"
+		a:layout_weight="1" a:layout_height="wrap_content" a:gravity="right"
+		a:text="Locked" a:textSize="20dip" a:textColor="#ffff" a:textStyle="bold"
+		a:shadowRadius="1.3" a:shadowColor="#211" a:shadowDx="1.0" a:shadowDy="1.0" />
+
+</LinearLayout>

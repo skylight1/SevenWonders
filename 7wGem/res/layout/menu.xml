@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:a="http://schemas.android.com/apk/res/android"
+	a:id="@+id/menulayout"
+    a:orientation="vertical"
+    a:layout_width="fill_parent"
+    a:layout_height="fill_parent"
+    a:background="@drawable/bg">   
+
+    <LinearLayout 
+      a:id="@+id/layout_ad"
+      a:layout_width="320dp"
+      a:layout_height="52dp"
+      a:layout_alignParentBottom="true"
+      a:layout_centerHorizontal="true"
+      a:background="@android:color/transparent">
+<!--      <com.adwhirl.AdWhirlLayout
+        android:id="@+id/adwhirl_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" /> -->
+    </LinearLayout>
+
+    <LinearLayout     
+      a:layout_width="fill_parent"
+      a:layout_height="fill_parent"
+      a:orientation="vertical"
+      a:layout_centerInParent="true"
+      a:layout_above="@id/layout_ad"
+      > 
+    <FrameLayout
+      a:layout_width="fill_parent"
+      a:layout_height="0dip"      
+      a:layout_weight="0.70">    
+	     <TextView
+	      a:id="@+id/menu_content_textview"
+	      a:layout_width="320dip"
+	      a:layout_height="wrap_content"
+	      a:layout_gravity="center"
+	      a:gravity="center"
+	      a:text="Welcome\nto\nSeven Wonders!"
+	      a:textSize="20dip"
+	      a:textColor="#ffff"      
+	      a:textStyle="bold"
+	      a:shadowRadius="1.3"
+	      a:shadowColor="#211"
+	      a:shadowDx="1.0"
+	      a:shadowDy="1.0"
+	      a:paddingTop="7dip"
+	      a:paddingBottom="7dip"
+	      a:paddingLeft="4dip"
+	      a:paddingRight="4dip"
+	      a:background="@drawable/story_background"/>    
+    </FrameLayout>
+        
+    <LinearLayout
+        a:id="@+id/menu_footer_layout"
+        a:layout_width="fill_parent"
+        a:layout_height="0dip"
+        a:layout_weight="0.30">
+           
+       <Button
+         a:id="@+id/menu_left_button"
+         a:layout_width="0dip"
+         a:layout_height="fill_parent"
+         a:layout_weight="0.33"        
+         a:text="Info"
+         a:background="@drawable/button"/>
+         
+      <Button
+         a:id="@+id/menu_middle_button"
+         a:layout_width="0dip"
+         a:layout_height="fill_parent"
+         a:layout_weight="0.33"        
+         a:text="Settings"
+         a:background="@drawable/button"/>
+              
+       <Button
+         a:id="@+id/menu_right_button"
+         a:layout_width="0dip"
+         a:layout_height="fill_parent"
+         a:layout_weight="0.32"        
+         a:text="Play &gt;&gt;"
+         a:background="@drawable/button"/>         
+    </LinearLayout>
+    </LinearLayout>
+        
+</RelativeLayout>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout a:id="@+id/RelativeLayout01"
+	a:layout_width="fill_parent" a:layout_height="fill_parent"
+	xmlns:a="http://schemas.android.com/apk/res/android">
+
+	<TextView a:id="@+id/Countdown" 
+		a:text="" 
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_alignParentLeft="true"
+		a:textStyle="bold" 
+		a:textSize="32sp" 
+		a:textColor="#D00"
+		a:layout_marginLeft="6dp" />
+
+	<TextView a:id="@+id/FPS" 
+		a:text="" 
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_alignParentLeft="true"
+		a:layout_alignParentBottom="true" 
+		a:textStyle="bold" 
+		a:textSize="32sp"
+		a:textColor="#0F0" 
+		a:layout_marginLeft="6dp" />
+
+	<TextView a:id="@+id/targetScore" 
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_alignParentRight="true"
+		a:textStyle="bold" 
+		a:textSize="32sp" 
+		a:textColor="#FF0"
+		a:layout_marginRight="6dp" />
+
+	<TextView a:id="@+id/scoreDivider"
+		a:text="/" 
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_toLeftOf="@+id/targetScore"
+		a:textStyle="bold" 
+		a:textSize="32sp" 
+		a:textColor="#FF0"
+		a:layout_marginRight="6dp" />
+
+	<TextView a:id="@+id/score" 
+		a:text="" 
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_toLeftOf="@+id/scoreDivider"
+		a:textStyle="bold" 
+		a:textSize="32sp" 
+		a:textColor="#FF0"
+		a:layout_marginRight="6dp" />
+		
+	<FrameLayout
+		a:id="@+id/splashView"
+		a:layout_height="fill_parent"
+		a:layout_width="fill_parent">
+			
+		<ImageView
+		  a:id="@+id/splashView"
+		  a:layout_height="fill_parent"
+		  a:layout_width="fill_parent" 
+		  a:src="@drawable/bg"
+		  a:scaleType="fitXY"/>
+		  
+		  <TextView
+			a:id="@+id/loading_textview" 
+			a:layout_height="wrap_content"
+			a:layout_width="wrap_content"			
+			a:layout_gravity="center"
+			a:textStyle="bold"
+			a:textSize="32sp" 
+			a:textColor="#fff"
+			a:shadowRadius="1.3"
+			a:shadowColor="#211"
+			a:shadowDx="1.0"
+			a:shadowDy="1.0"
+			a:padding="20dp"
+			a:gravity="center" />	
+			
+	</FrameLayout>
+</RelativeLayout>
