@@ -171,7 +171,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		// they were at the start of the frame, prior to any movement
 		final CollisionObserver obstacleCollisionObserver = new CollisionObserver() {
 			@Override
-			public void collisionOccurred(final float[] aBoundingSphere) {
+			public boolean collisionOccurred(final float[] aBoundingSphere) {
 			    SoundTracks.getInstance().play(SoundTracks.BUMP);
 		
 			    // Find the distance traveled toward the pyramid.
@@ -207,6 +207,9 @@ public class SevenWondersGLRenderer implements Renderer {
 				float slidingDistanceFromPyramid = Matrix.length(Math.abs(slidingOffsetToPyramidX), 0, Math.abs(slidingOffsetToPyramidZ));
 				Log.i(TAG, String.format("just colided with (%s) at distance %f, retreating to distance %f", 
 						Arrays.toString(aBoundingSphere), collidingOffsetToPyramidZ, slidingDistanceFromPyramid));
+				
+				// do not suppress future collisions
+				return false;
 			}
 		};
 		for (final float[] boundingSphere : level.getObstacles()) {

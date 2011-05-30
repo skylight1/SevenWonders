@@ -10,6 +10,8 @@ public class LevelConstructionToolkit {
 
 	private static final float[] SPELLS_TEXTURE_TRANSFORM = new float[16];
 
+	private static final float HEIGHT_OF_GEMS_FROM_GROUND = 13f;
+
 	static {
 		// the texture is within the main texture, so it needs a little transformation to map onto the spell
 		Matrix.setIdentityM(SPELLS_TEXTURE_TRANSFORM, 0);
@@ -22,6 +24,14 @@ public class LevelConstructionToolkit {
 		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
 		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_SPELLS_FROM_GROUND, aZ);
 		aGameLevel.spells.add(new GameObjectDescriptor(transformationMatrix, SPELLS_TEXTURE_TRANSFORM, R.raw.ankh, R.raw.textures));
+	}
+	
+	static void addRuby(final GameLevel aGameLevel, int anX, int aZ) {
+		final float[] transformationMatrix = new float[16];
+		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
+		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_GEMS_FROM_GROUND, aZ);
+		android.opengl.Matrix.scaleM(transformationMatrix, 0, 2, 2, 2);
+		aGameLevel.spells.add(new GameObjectDescriptor(transformationMatrix, null, R.raw.gem, R.raw.textures));
 	}
 
 	static void addHazard(final GameLevel aGameLevel, int anX, int aZ) {

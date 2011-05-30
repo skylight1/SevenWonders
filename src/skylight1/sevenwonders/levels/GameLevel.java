@@ -3,6 +3,7 @@ package skylight1.sevenwonders.levels;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addHazard;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addPyramid;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addSpell;
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addRuby;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addSphynx;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.createNewIdentityMatrix;
 
@@ -18,6 +19,8 @@ public enum GameLevel {
 			addPyramid(this, 0, -220, 0, 100);
 			addPyramid(this, 0, 655, 0, 110);
 			addPyramid(this, 0, -620, -7, 100);
+
+			addRuby(this, 30, -130);
 
 			addSpell(this, 30, -130);
 			addSpell(this, 150, -200);

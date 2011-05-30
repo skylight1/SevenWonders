@@ -19,9 +19,12 @@ public class HazardCollisionHandler implements GeometryAwareCollisionObserver, C
 	}
 	
 	@Override
-	public void collisionOccurred(final float[] aBoundingSphere) {
+	public boolean collisionOccurred(final float[] aBoundingSphere) {
 		SoundTracks.getInstance().play(SoundTracks.DEATH);
 		updateUiHandler.sendEmptyMessage(PlayActivity.START_END_GAME_MESSAGE);
+		
+		// do not suppress future collisions
+		return false;
 	}
 
 	@Override
