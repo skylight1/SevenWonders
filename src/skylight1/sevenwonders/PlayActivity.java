@@ -61,7 +61,13 @@ public class PlayActivity extends Activity {
 	private boolean isActivityPaused;
 	
 	private boolean isRenderingStarted;
+	
+	private boolean endedByWin;
 		
+	private boolean endedByTimeOut;
+	
+	private boolean endedByDeath;
+	
     //Handler to draw debug info (fps) and countdown and end the game
     private Handler updateUiHandler = new Handler() {
     	public void handleMessage(Message msg) {
@@ -95,6 +101,7 @@ public class PlayActivity extends Activity {
     						
 	    					// Finish game if out of time.
 	    					if (remainingGameTimeMillis < 0) {
+	    						endedByTimeOut = true;
 	    						changeToScoreActivity(false);
 	    						break;
 	    					}
@@ -112,9 +119,13 @@ public class PlayActivity extends Activity {
     					sendUpdateCountdownMessage();    						
     					break;
     				case START_END_GAME_MESSAGE:
-    					gLSurfaceView.togglePaused();
-    					//TODO: add red tint or something
-    					sendEndGameMessage();
+    					if(! endedByWin && ! endedByTimeOut) {
+        					gLSurfaceView.togglePaused();
+    						endedByDeath = true;
+    						SoundTracks.getInstance().play(SoundTracks.DEATH);
+        					//TODO: add red tint or something
+        					sendEndGameMessage(); // causes a 2 second delay, probably to let the death sound finish
+    					}
     					break;
     				case END_GAME_MESSAGE:
     					if ( isGameTimeMoving() ) {
@@ -126,6 +137,7 @@ public class PlayActivity extends Activity {
     				case NEW_SCORE_MESSAGE:
     					latestScore = msg.arg1;
 						if (latestScore >= currentLevel.getNumberOfSpells()) {
+							endedByWin = true;
 							changeToScoreActivity(true);
 						}
 						
@@ -160,7 +172,7 @@ public class PlayActivity extends Activity {
 		final Message endGameMessage = updateUiHandler.obtainMessage(END_GAME_MESSAGE);
 		updateUiHandler.sendMessageDelayed(endGameMessage, 2*ONE_SECOND_IN_MILLISECONDS);
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -294,7 +306,7 @@ public class PlayActivity extends Activity {
 		intent.putExtra(ScoreActivity.KEY_COLLECTED_SPELL_COUNT, latestScore); 
 		intent.putExtra(ScoreActivity.KEY_REMAINING_TIME_SECONDS, (int) (remainingGameTimeMillis / ONE_SECOND_IN_MILLISECONDS)); 
 		intent.putExtra(ScoreActivity.KEY_LEVEL_ORDINAL, currentLevel.ordinal()); 
-		intent.putExtra(ScoreActivity.KEY_WON_LEVEL, wonLevel); 
+		intent.putExtra(ScoreActivity.KEY_WON_LEVEL, wonLevel && ! endedByDeath); // if they heard the Wilhem, we can't let them win 
 		startActivity(intent);
 		finish();
 	} 
