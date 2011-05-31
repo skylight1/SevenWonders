@@ -23,22 +23,27 @@ public class LevelConstructionToolkit {
 		final float[] transformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
 		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_SPELLS_FROM_GROUND, aZ);
-		aGameLevel.spells.add(new GameObjectDescriptor(transformationMatrix, SPELLS_TEXTURE_TRANSFORM, R.raw.ankh, R.raw.textures));
+		final CollisionAction spellsCollisionAction = new SpellCollisionAction();
+		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, SPELLS_TEXTURE_TRANSFORM, R.raw.ankh, R.raw.textures), spellsCollisionAction);
+		
+		aGameLevel.numberOfSpells++;
 	}
-	
+
 	static void addRuby(final GameLevel aGameLevel, int anX, int aZ) {
 		final float[] transformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
 		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_GEMS_FROM_GROUND, aZ);
 		android.opengl.Matrix.scaleM(transformationMatrix, 0, 2, 2, 2);
-		aGameLevel.spells.add(new GameObjectDescriptor(transformationMatrix, null, R.raw.gem, R.raw.textures));
+		final CollisionAction rubyCollisionAction = new RubyCollisionAction();
+		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, null, R.raw.gem, R.raw.textures), rubyCollisionAction);
 	}
 
 	static void addHazard(final GameLevel aGameLevel, int anX, int aZ) {
 		final float[] transformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
 		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_HAZARDS_FROM_GROUND, aZ);
-		aGameLevel.hazards.add(new GameObjectDescriptor(transformationMatrix, null, R.raw.textured_sword, R.raw.textures));
+		final CollisionAction hazardCollisionAction = new HazardCollisionAction();
+		aGameLevel.hazards.put(new GameObjectDescriptor(transformationMatrix, null, R.raw.textured_sword, R.raw.textures), hazardCollisionAction);
 	}
 
 	static float[] createNewIdentityMatrix() {
@@ -57,8 +62,8 @@ public class LevelConstructionToolkit {
 		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
 		Matrix.translateM(coordinateTransform, 0, anX, aY, aZ);
 		aGameLevel.decorations.add(new GameObjectDescriptor(coordinateTransform, null, R.raw.pyramid, R.raw.textures));
-		
-		aGameLevel.obstacles.add(new float[] {anX, aY, aZ, 50});
+
+		aGameLevel.obstacles.add(new float[] { anX, aY, aZ, 50 });
 	}
 
 	static void addSphynx(final GameLevel aGameLevel, final float aRotation, final float anX, final float aY,
