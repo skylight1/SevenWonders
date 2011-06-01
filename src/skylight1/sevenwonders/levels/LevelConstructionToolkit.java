@@ -7,16 +7,33 @@ public class LevelConstructionToolkit {
 	private static final float HEIGHT_OF_HAZARDS_FROM_GROUND = 9f;
 
 	private static final float HEIGHT_OF_SPELLS_FROM_GROUND = 11f;
+	
+	private static final float HEIGHT_OF_GEMS_FROM_GROUND = 12.5f;
+
+	private static final float HEIGHT_OF_COINS_FROM_GROUND = 12f;
 
 	private static final float[] SPELLS_TEXTURE_TRANSFORM = new float[16];
-
-	private static final float HEIGHT_OF_GEMS_FROM_GROUND = 13f;
-
 	static {
 		// the texture is within the main texture, so it needs a little transformation to map onto the spell
 		Matrix.setIdentityM(SPELLS_TEXTURE_TRANSFORM, 0);
-		Matrix.translateM(SPELLS_TEXTURE_TRANSFORM, 0, 576f / 1024f, 0, 0);
+		Matrix.translateM(SPELLS_TEXTURE_TRANSFORM, 0, 576f/1024f, 0, 0);
 		Matrix.scaleM(SPELLS_TEXTURE_TRANSFORM, 0, 0.25f, 0.25f, 1f);
+	}
+
+	private static final float[] EMERALD_TEXTURE_TRANSFORM = new float[16];
+	static {
+		// the texture is within the main texture, so it needs a little transformation to map onto the spell
+		Matrix.setIdentityM(EMERALD_TEXTURE_TRANSFORM, 0);
+		Matrix.translateM(EMERALD_TEXTURE_TRANSFORM, 0, -49f/512f, 0, 0);
+	}
+	
+	private static final float[] COIN_TEXTURE_TRANSFORM = new float[16];
+
+	static {
+		// the texture is within the main texture, so it needs a little transformation to map onto the coin
+		Matrix.setIdentityM(COIN_TEXTURE_TRANSFORM, 0);
+		Matrix.translateM(COIN_TEXTURE_TRANSFORM, 0, 256f/512f, 323f/512f, 0);
+		Matrix.scaleM(COIN_TEXTURE_TRANSFORM, 0, 100f/512f, 189f/512f, 1f);
 	}
 
 	static void addSpell(final GameLevel aGameLevel, int anX, int aZ) {
@@ -36,6 +53,25 @@ public class LevelConstructionToolkit {
 		android.opengl.Matrix.scaleM(transformationMatrix, 0, 2, 2, 2);
 		final CollisionAction rubyCollisionAction = new RubyCollisionAction();
 		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, null, R.raw.gem, R.raw.textures), rubyCollisionAction);
+	}
+	
+	static void addEmerald(final GameLevel aGameLevel, int anX, int aZ) {
+		final float[] transformationMatrix = new float[16];
+		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
+		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_GEMS_FROM_GROUND, aZ);
+		android.opengl.Matrix.scaleM(transformationMatrix, 0, 2, 2, 2);
+		final CollisionAction rubyCollisionAction = new RubyCollisionAction();
+		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, EMERALD_TEXTURE_TRANSFORM, R.raw.gem, R.raw.textures), rubyCollisionAction);
+	}
+	
+	static void addCoin(final GameLevel aGameLevel, int anX, int aZ) {
+		final float[] transformationMatrix = new float[16];
+		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
+		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_COINS_FROM_GROUND, aZ);
+		android.opengl.Matrix.scaleM(transformationMatrix, 0, 2, 2, 2);
+//		android.opengl.Matrix.rotateM(transformationMatrix, 0, 90, 0, 0, 1);
+		final CollisionAction rubyCollisionAction = new RubyCollisionAction();
+		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, COIN_TEXTURE_TRANSFORM, R.raw.coin, R.raw.textures), rubyCollisionAction);
 	}
 
 	static void addHazard(final GameLevel aGameLevel, int anX, int aZ) {
