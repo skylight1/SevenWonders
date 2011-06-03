@@ -28,6 +28,7 @@ import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
 import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
 import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
 import skylight1.opengl.files.ObjFileLoader;
+import skylight1.sevenwonders.GameState;
 import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.R;
 import skylight1.sevenwonders.Settings;
@@ -154,10 +155,13 @@ public class SevenWondersGLRenderer implements Renderer {
 	private float startOfFramePlayerWorldPositionZ;
 
 	private Settings settings;
+
+	private final GameState GameState;
 	
-	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel) {
+	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel, final GameState aGameState) {
 		Log.i(TAG, "SevenWondersGLRenderer()");
 		context = aContext;
+		GameState = aGameState;
 		carpet = new Carpet(this);
 		level = aLevel;
 		updateUiHandler = aUpdateUiHandler;
