@@ -2,12 +2,17 @@ package skylight1.sevenwonders.levels;
 
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addHazard;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addPyramid;
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addRuby;
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addCoin;
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addEmerald;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addSpell;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addSphynx;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.createNewIdentityMatrix;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import skylight1.sevenwonders.R;
 
@@ -19,6 +24,12 @@ public enum GameLevel {
 			addPyramid(this, 0, 655, 0, 110);
 			addPyramid(this, 0, -620, -7, 100);
 
+			addRuby(this, 30, -170);
+
+			addCoin(this, 30, -190);
+			
+			addEmerald(this, 30, -210);
+			
 			addSpell(this, 30, -130);
 			addSpell(this, 150, -200);
 			addSpell(this, 300, -180);
@@ -30,7 +41,7 @@ public enum GameLevel {
 			addPyramid(this, 0, -220, 0, 100);
 			addPyramid(this, 0, 655, 0, 110);
 			addPyramid(this, 0, -620, -7, 100);
-			
+
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
@@ -45,7 +56,7 @@ public enum GameLevel {
 			addPyramid(this, 0, -220, 0, 100);
 			addPyramid(this, 0, 655, 0, 110);
 			addPyramid(this, 0, -620, -7, 100);
-			
+
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
@@ -59,7 +70,7 @@ public enum GameLevel {
 			addPyramid(this, 0, -220, 0, 100);
 			addPyramid(this, 0, 655, 0, 110);
 			addPyramid(this, 0, -620, -7, 100);
-			
+
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
@@ -75,7 +86,7 @@ public enum GameLevel {
 			addPyramid(this, 0, -220, 0, 100);
 			addPyramid(this, 0, 655, 0, 110);
 			addPyramid(this, 0, -620, -7, 100);
-			
+
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
@@ -90,7 +101,7 @@ public enum GameLevel {
 			addPyramid(this, 0, -220, 0, 100);
 			addPyramid(this, 0, 655, 0, 110);
 			addPyramid(this, 0, -620, -7, 100);
-			
+
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
@@ -107,7 +118,7 @@ public enum GameLevel {
 			addPyramid(this, 0, -220, 0, 100);
 			addPyramid(this, 0, 655, 0, 110);
 			addPyramid(this, 0, -620, -7, 100);
-			
+
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
@@ -121,13 +132,15 @@ public enum GameLevel {
 
 	private final String loadingMessage;
 
-	final Collection<GameObjectDescriptor> spells = new ArrayList<GameObjectDescriptor>();
+	final Map<GameObjectDescriptor, CollisionAction> mapOfCollectablesToCollisionActions = new HashMap<GameObjectDescriptor, CollisionAction>();
 
-	final Collection<GameObjectDescriptor> hazards = new ArrayList<GameObjectDescriptor>();
+	final Map<GameObjectDescriptor, CollisionAction> hazards = new HashMap<GameObjectDescriptor, CollisionAction>();
 
 	final Collection<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
 
 	final Collection<float[]> obstacles = new ArrayList<float[]>();
+	
+	int numberOfSpells = 0;
 
 	/**
 	 */
@@ -139,10 +152,10 @@ public enum GameLevel {
 	}
 
 	/**
-	 * @return number of spells in the level
+	 * @return number of mapOfCollectablesToCollisionActions in the level
 	 */
 	public int getNumberOfSpells() {
-		return spells.size();
+		return numberOfSpells;
 	}
 
 	public String getLoadingMessage() {
@@ -152,17 +165,20 @@ public enum GameLevel {
 	/**
 	 * Things that will earn the player a point if the player "collects" them: ankhs, gems, etc.
 	 */
-	public Collection<GameObjectDescriptor> getSpells() {
-		return spells;
+	public Map<GameObjectDescriptor, CollisionAction> getCollectables() {
+		return mapOfCollectablesToCollisionActions;
 	}
 
 	/**
 	 * Things that will kill the player if the player flies into them: swords, whirl winds, etc.
 	 */
-	public Collection<GameObjectDescriptor> getHazards() {
+	public Map<GameObjectDescriptor, CollisionAction> getHazards() {
 		return hazards;
 	}
-	
+
+	/**
+	 * Things that are pure eye candy, such as the ground and river.
+	 */
 	public Collection<GameObjectDescriptor> getDecorations() {
 		return decorations;
 	}
