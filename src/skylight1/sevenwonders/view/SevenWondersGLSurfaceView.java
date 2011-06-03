@@ -1,5 +1,6 @@
 package skylight1.sevenwonders.view;
 
+import skylight1.sevenwonders.GameState;
 import skylight1.sevenwonders.levels.GameLevel;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
@@ -16,17 +17,16 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	private SevenWondersGLRenderer renderer;
 	
 	private TiltControl tiltControl;
-	
-	public SevenWondersGLSurfaceView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
 
-	public SevenWondersGLSurfaceView(Context context) {
+	private final GameState gameState;
+	
+	public SevenWondersGLSurfaceView(final Context context, final GameState aGameState) {
 		super(context);
+		gameState = aGameState;
 	}
 
 	public void loadLevel(final Handler aUpdateUiHandler, final GameLevel aLevel) {
-		renderer = new SevenWondersGLRenderer(getContext(), aUpdateUiHandler, aLevel);
+		renderer = new SevenWondersGLRenderer(getContext(), aUpdateUiHandler, aLevel, gameState);
 		setRenderer(renderer);
 	}
 

@@ -222,7 +222,7 @@ public class PlayActivity extends Activity {
 		targetScoreTextView.setText("" + currentLevel.getNumberOfSpells());
 		textStyles.applyHeaderTextStyle(targetScoreTextView);
 
-		gLSurfaceView = new SevenWondersGLSurfaceView(this);
+		gLSurfaceView = new SevenWondersGLSurfaceView(this, gameState);
 
 		final TextView loadingMessage = (TextView) findViewById(R.id.loading_textview);
 		loadingMessage.setText(currentLevel.getLoadingMessage());
