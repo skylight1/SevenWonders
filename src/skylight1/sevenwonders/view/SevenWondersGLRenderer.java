@@ -127,8 +127,6 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private final CollisionDetector obstacleCollisionDetector = new CollisionDetector();
 	
-	private int score;
-
 	private Carpet carpet;
 
 	private List<OpenGLGeometry> decorationGeometries = new ArrayList<OpenGLGeometry>();
@@ -621,11 +619,5 @@ public class SevenWondersGLRenderer implements Renderer {
 	private float constrainVelocity(final float aCandidateVelocity) {
 		return aCandidateVelocity < MINIMUM_VELOCITY ? MINIMUM_VELOCITY
 				: aCandidateVelocity > MAXIMUM_VELOCITY ? MAXIMUM_VELOCITY : aCandidateVelocity;
-	}
-	
-	// TODO move this to be incremented by a message and not in the renderer
-	public int incrementScore(final int anIncrement) {
-		score += anIncrement;
-		return score;
 	}
 }

@@ -83,13 +83,13 @@ public class ScoreActivity extends Activity {
 		
 		final String collectedSpellCountText;
 		if (collectedSpellsCount == 0) {
-			collectedSpellCountText = "No mapOfCollectablesToCollisionActions collected :-(";
+			collectedSpellCountText = "No spells collected :-(";
 		} else {
 			final String spellsText; 
 			if (collectedSpellsCount == 1) {
 				spellsText = "1 Spell";
 			} else {
-				spellsText = String.format("%2d mapOfCollectablesToCollisionActions", collectedSpellsCount);
+				spellsText = String.format("%2d spells", collectedSpellsCount);
 			}
 			
 			final int sum = collectedSpellsCount * SCORE_PER_COLLECTED_SPELL;
