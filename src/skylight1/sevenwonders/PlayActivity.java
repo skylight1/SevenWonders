@@ -26,6 +26,7 @@ public class PlayActivity extends Activity {
 	public static final int NEW_SCORE_MESSAGE = 3;
 	public static final int START_RENDERING_MESSAGE = 4;
 	protected static final int END_GAME_MESSAGE = 5;
+	public static final int MODIFY_REMAINING_TIME_MESSAGE = 6;
 
 	protected static final int TOTAL_TIME_ALLOWED_IN_SECONDS = 180;
 
@@ -143,6 +144,13 @@ public class PlayActivity extends Activity {
 						
 						TextView scoreTextView = (TextView) findViewById(R.id.score);
 						scoreTextView.setText("" + latestScore);
+						
+						break;
+    				case MODIFY_REMAINING_TIME_MESSAGE:
+    					final int timeDeltaInSeconds = msg.arg1;
+    					remainingGameTimeMillis += timeDeltaInSeconds * ONE_SECOND_IN_MILLISECONDS;
+    					
+    					// TODO would be nice to update the UI at this point, but it will be updated in at most one second anyway! 
 						
 						break;
     			}
