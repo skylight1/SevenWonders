@@ -1,12 +1,10 @@
 package skylight1.sevenwonders.view;
 
-import static javax.microedition.khronos.opengles.GL10.GL_CCW;
-import static javax.microedition.khronos.opengles.GL10.GL_CW;
+import static javax.microedition.khronos.opengles.GL10.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,18 +13,18 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import skylight1.opengl.CollisionDetector;
+import skylight1.opengl.CollisionDetector.CollisionObserver;
 import skylight1.opengl.FastGeometryBuilder;
 import skylight1.opengl.FastGeometryBuilderFactory;
 import skylight1.opengl.GeometryBuilder;
+import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
+import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
+import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
 import skylight1.opengl.OpenGLGeometry;
 import skylight1.opengl.OpenGLGeometryBuilder;
 import skylight1.opengl.OpenGLGeometryBuilderFactory;
 import skylight1.opengl.Texture;
 import skylight1.opengl.TransformingGeometryBuilder;
-import skylight1.opengl.CollisionDetector.CollisionObserver;
-import skylight1.opengl.GeometryBuilder.NormalizableTriangle3D;
-import skylight1.opengl.GeometryBuilder.TexturableRectangle2D;
-import skylight1.opengl.GeometryBuilder.TexturableTriangle3D;
 import skylight1.opengl.files.ObjFileLoader;
 import skylight1.sevenwonders.GameState;
 import skylight1.sevenwonders.PlayActivity;
@@ -36,13 +34,12 @@ import skylight1.sevenwonders.SevenWondersApplication;
 import skylight1.sevenwonders.levels.CollisionAction;
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.levels.GameObjectDescriptor;
-import skylight1.sevenwonders.levels.HazardCollisionAction;
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.util.FPSLogger;
 import android.content.Context;
+import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 import android.opengl.Matrix;
-import android.opengl.GLSurfaceView.Renderer;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -156,12 +153,12 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private Settings settings;
 
-	private final GameState GameState;
+	private final GameState gameState;
 	
 	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel, final GameState aGameState) {
 		Log.i(TAG, "SevenWondersGLRenderer()");
 		context = aContext;
-		GameState = aGameState;
+		gameState = aGameState;
 		carpet = new Carpet(this);
 		level = aLevel;
 		updateUiHandler = aUpdateUiHandler;
@@ -217,6 +214,12 @@ public class SevenWondersGLRenderer implements Renderer {
 		final CollisionObserver obstacleCollisionObserver = new CollisionObserver() {
 			@Override
 			public boolean collisionOccurred(final float[] aBoundingSphere) {
+				// Return early without doing anything if the player has gained the ability to fly through obstacles.
+				if ( gameState.isPlayerAbleToFlyThroughObstacles ) {
+					// Ability doesn't currently time out, so return true, which prevents future collision checking.
+					return true;
+				}
+				
 			    SoundTracks.getInstance().play(SoundTracks.BUMP);
 		
 			    // Find the distance traveled toward the pyramid.
@@ -623,5 +626,9 @@ public class SevenWondersGLRenderer implements Renderer {
 	private float constrainVelocity(final float aCandidateVelocity) {
 		return aCandidateVelocity < MINIMUM_VELOCITY ? MINIMUM_VELOCITY
 				: aCandidateVelocity > MAXIMUM_VELOCITY ? MAXIMUM_VELOCITY : aCandidateVelocity;
+	}
+	
+	public GameState getGameState() {
+		return gameState;
 	}
 }

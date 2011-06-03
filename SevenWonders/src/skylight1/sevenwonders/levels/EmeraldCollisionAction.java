@@ -3,18 +3,20 @@
  */
 package skylight1.sevenwonders.levels;
 
-import skylight1.sevenwonders.PlayActivity;
+import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.SevenWondersGLRenderer;
 import android.os.Handler;
-import android.os.Message;
 
 final class EmeraldCollisionAction implements CollisionAction {
 	@Override
 	public void collision(Handler aUiHandler, SevenWondersGLRenderer aSevenWondersGLRenderer) {
-		// TODO add a cool sound here
+		// TODO add a different sound here
+		SoundTracks.getInstance().play(SoundTracks.SPELL);
 
-		// notify the message handler that the time has been increased
-		final Message message = aUiHandler.obtainMessage(PlayActivity.MODIFY_REMAINING_TIME_MESSAGE, 30, 0);
-		aUiHandler.sendMessage(message);
+		// TODO have a level with a story title that explains this. 
+		// e.g. "Find the magic green ruby for safety from swords!"
+		// TODO some sort of UI indicator as well. emerald icon on screen, dialog message, swords disappear, etc.
+		// would making the item be a shield be more obvious?
+		aSevenWondersGLRenderer.getGameState().isPlayerInvincible = true;
 	}
 }
