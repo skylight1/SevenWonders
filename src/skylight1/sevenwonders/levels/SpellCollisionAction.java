@@ -7,7 +7,6 @@ import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.SevenWondersGLRenderer;
 import android.os.Handler;
-import android.os.Message;
 
 final class SpellCollisionAction implements CollisionAction {
 	@Override
