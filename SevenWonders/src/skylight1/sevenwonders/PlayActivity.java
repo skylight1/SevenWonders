@@ -23,7 +23,7 @@ public class PlayActivity extends Activity {
 	public static final int FPS_MESSAGE = 0;
 	public static final int COUNTDOWN_MESSAGE = 1;
 	public static final int START_END_GAME_MESSAGE = 2;
-	public static final int NEW_SCORE_MESSAGE = 3;
+	public static final int SPELL_COLLECTED_MESSAGE = 3;
 	public static final int START_RENDERING_MESSAGE = 4;
 	protected static final int END_GAME_MESSAGE = 5;
 	public static final int MODIFY_REMAINING_TIME_MESSAGE = 6;
@@ -52,8 +52,6 @@ public class PlayActivity extends Activity {
 	
 	private GameLevel currentLevel;
 	
-	private int latestScore;
-
 	private long remainingGameTimeMillis = TOTAL_TIME_ALLOWED_IN_SECONDS * ONE_SECOND_IN_MILLISECONDS;
 	
 	/** If the game has been paused by the menu button. */
@@ -68,6 +66,8 @@ public class PlayActivity extends Activity {
 	private boolean endedByTimeOut;
 	
 	private boolean endedByDeath;
+	
+	private GameState gameState = new GameState();
 	
     //Handler to draw debug info (fps) and countdown and end the game
     private Handler updateUiHandler = new Handler() {
@@ -135,15 +135,15 @@ public class PlayActivity extends Activity {
     						sendEndGameMessage();
     					}
     					break;
-    				case NEW_SCORE_MESSAGE:
-    					latestScore = msg.arg1;
-						if (latestScore >= currentLevel.getNumberOfSpells()) {
+    				case SPELL_COLLECTED_MESSAGE:
+    					gameState.numberOfSpellsCollected++;
+						if (gameState.numberOfSpellsCollected >= currentLevel.getNumberOfSpells()) {
 							endedByWin = true;
 							changeToScoreActivity(true);
 						}
 						
 						TextView scoreTextView = (TextView) findViewById(R.id.score);
-						scoreTextView.setText("" + latestScore);
+						scoreTextView.setText("" + gameState.numberOfSpellsCollected);
 						
 						break;
     				case MODIFY_REMAINING_TIME_MESSAGE:
@@ -311,7 +311,7 @@ public class PlayActivity extends Activity {
 
 	private void changeToScoreActivity(boolean wonLevel) {
 		Intent intent = new Intent().setClass(PlayActivity.this, ScoreActivity.class);
-		intent.putExtra(ScoreActivity.KEY_COLLECTED_SPELL_COUNT, latestScore); 
+		intent.putExtra(ScoreActivity.KEY_COLLECTED_SPELL_COUNT, gameState.numberOfSpellsCollected); 
 		intent.putExtra(ScoreActivity.KEY_REMAINING_TIME_SECONDS, (int) (remainingGameTimeMillis / ONE_SECOND_IN_MILLISECONDS)); 
 		intent.putExtra(ScoreActivity.KEY_LEVEL_ORDINAL, currentLevel.ordinal()); 
 		intent.putExtra(ScoreActivity.KEY_WON_LEVEL, wonLevel && ! endedByDeath); // if they heard the Wilhem, we can't let them win 
