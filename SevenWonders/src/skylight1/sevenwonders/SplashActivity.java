@@ -27,7 +27,7 @@ public class SplashActivity extends Activity {
 	
 	private static final long SPLASH_DURATION_IN_MILLISECONDS = 3000;
 	
-	private static final Date EXPIRATION = parseNumericDate("6/5/11");
+	private static final Date EXPIRATION = null;//parseNumericDate("6/5/11");
 	
 	private static final int EXPIRED_DIALOG_ID = 1;
 	
