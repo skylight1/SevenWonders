@@ -312,7 +312,8 @@ public class PlayActivity extends Activity {
 	private void changeToScoreActivity(boolean wonLevel) {
 		Intent intent = new Intent().setClass(PlayActivity.this, ScoreActivity.class);
 		intent.putExtra(ScoreActivity.KEY_COLLECTED_SPELL_COUNT, gameState.numberOfSpellsCollected); 
-		intent.putExtra(ScoreActivity.KEY_REMAINING_TIME_SECONDS, (int) (remainingGameTimeMillis / ONE_SECOND_IN_MILLISECONDS)); 
+		intent.putExtra(ScoreActivity.KEY_COLLECTED_COIN_COUNT, gameState.getNumberofCoinsCollected());
+		intent.putExtra(ScoreActivity.KEY_REMAINING_TIME_SECONDS, (int) (remainingGameTimeMillis / ONE_SECOND_IN_MILLISECONDS));
 		intent.putExtra(ScoreActivity.KEY_LEVEL_ORDINAL, currentLevel.ordinal()); 
 		intent.putExtra(ScoreActivity.KEY_WON_LEVEL, wonLevel && ! endedByDeath); // if they heard the Wilhem, we can't let them win 
 		startActivity(intent);
