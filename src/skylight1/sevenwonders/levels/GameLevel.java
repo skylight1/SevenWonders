@@ -23,8 +23,7 @@ public enum GameLevel {
 	// The pyramid makes a good landmark for users who get lost 
 	// and can't see the ankh from far away.
 	TEACH_COLLECTION_WITH_EASY_LANDMARK(
-		"The ankh is a symbol of powerful magic." +
-		"Collect the ankh in front of the pyramid.") {
+		"Collect the ankh in front of the pyramid before Nebtawi can!") {
 		{
 			addPyramid(this, 0, -80, 0, -450);
 			addSpell(this, -20, -310);
@@ -34,17 +33,76 @@ public enum GameLevel {
 	// This level has one ankh near each of three pyramids.
 	// The user has to navigate between them.
 	TEACH_COLLECTING_MULTIPLE_WITH_EASY_LANDMARKS(
-		"A powerful ankh is near each pyramid." +
-		"Collect them all.") {
+		"Each of three pyramids has an ankh of power nearby to collect!") {
 		{
 			addPyramid(this, 0, -80, 0, -450);
 			addSpell(this, -20, -310);
 
 			addPyramid(this, 0, -140, 0, -350);
-			addSpell(this, -160, -210);
+			addSpell(this, -200, -210);
 
 			addPyramid(this, 0, -140, 0, 350);
-			addSpell(this, -160, 400);
+			addSpell(this, -220, 330);
+		}
+	},
+	
+	// This level has a trail of ankhs and coins the user has to follow.
+	TEACH_COLLECTING_NO_LANDMARKS(
+		"Collect the trail of ankhs without getting lost or missing one.") {
+		{
+
+			addSphynx(this, 90, -190, -30, -90);
+			
+			addCoin(this,  30, -250);
+			addCoin(this,  80, -220);
+			
+			addSpell(this, 130, -180);
+			addCoin(this,  180, -130);
+			addCoin(this,  230,  -80);
+
+			addSpell(this, 280,  -30);
+			addCoin(this,  330,   20);
+			addCoin(this,  380,   70);
+			
+			addSpell(this, 430, 120);
+			addCoin(this,  480, 170);
+			addCoin(this,  520, 220);
+			
+			addSpell(this, 570, 270);
+		}
+	},
+	
+	// This level has a sword that has to be flown around to get the ankh.
+	TEACH_AVOIDING_SWORDS(
+		"Fly wide around Nebtawi's evil flying sword to get the ankh behind it!") {
+		{
+
+			addPyramid(this, 0, -140, 0, -480);
+			addSpell(this, -100, -400);
+			
+			addHazard(this, -50, -200);
+		}
+	},
+	
+	// This level requires using the invincibility emerald.
+	TEACH_EMERALD(
+		"Get the Sphinx's greeen emerald of safety to pass through the storm of swords.") {
+		{
+
+			
+			addSpell(this,  -100, -400);
+			addHazard(this, -150, -400);
+			addHazard(this, -125, -425);
+			addHazard(this, -100, -450);
+			addHazard(this,  -75, -425);
+			addHazard(this,  -50, -400);
+			addHazard(this,  -75, -375);
+			addHazard(this, -100, -350);
+			addHazard(this, -125, -375);
+			addHazard(this, -150, -400);
+			
+			addSphynx(this, 90, -190, -30, -90);
+			addEmerald(this, -25, 90);
 		}
 	},
 	
