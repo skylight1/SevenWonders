@@ -17,6 +17,37 @@ import java.util.Map;
 import skylight1.sevenwonders.R;
 
 public enum GameLevel {
+
+	// This level has one ankh and one pyramid.
+	// Both are immediately in view as soon as you start so are easy to find.
+	// The pyramid makes a good landmark for users who get lost 
+	// and can't see the ankh from far away.
+	TEACH_COLLECTION_WITH_EASY_LANDMARK(
+		"The ankh is a symbol of powerful magic." +
+		"Collect the ankh in front of the pyramid.") {
+		{
+			addPyramid(this, 0, -80, 0, -450);
+			addSpell(this, -20, -310);
+		}
+	},
+	
+	// This level has one ankh near each of three pyramids.
+	// The user has to navigate between them.
+	TEACH_COLLECTING_MULTIPLE_WITH_EASY_LANDMARKS(
+		"A powerful ankh is near each pyramid." +
+		"Collect them all.") {
+		{
+			addPyramid(this, 0, -80, 0, -450);
+			addSpell(this, -20, -310);
+
+			addPyramid(this, 0, -140, 0, -350);
+			addSpell(this, -160, -210);
+
+			addPyramid(this, 0, -140, 0, 350);
+			addSpell(this, -160, 400);
+		}
+	},
+	
 	FIRST("The ankh is a symbol of powerful magic. Collect all three.") {
 		{
 			addSphynx(this, 90, -190, -30, -90);
