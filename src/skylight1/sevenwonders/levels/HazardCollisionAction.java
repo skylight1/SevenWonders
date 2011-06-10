@@ -8,7 +8,7 @@ public class HazardCollisionAction implements CollisionAction {
 	@Override
 	public void collision(Handler aUiHandler, SevenWondersGLRenderer aSevenWondersGLRenderer) {
 		// Return early without doing anything if the player is invincible.
-		if ( aSevenWondersGLRenderer.getGameState().isPlayerInvincible ) {
+		if ( aSevenWondersGLRenderer.getGameState().isPlayerInvincible() ) {
 			return;
 		}
 		

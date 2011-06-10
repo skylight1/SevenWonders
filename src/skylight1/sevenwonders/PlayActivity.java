@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ public class PlayActivity extends Activity {
 	public static final int START_RENDERING_MESSAGE = 4;
 	protected static final int END_GAME_MESSAGE = 5;
 	public static final int MODIFY_REMAINING_TIME_MESSAGE = 6;
+	public static final int PLAYER_INVICIBILTY_CHANGED_MESSAGE = 7;
 
 	protected static final int TOTAL_TIME_ALLOWED_IN_SECONDS = 180;
 
@@ -49,10 +51,10 @@ public class PlayActivity extends Activity {
 	private View splashView;
 	
 	private TextView debugView;
+	private ImageView invicibilityIconImageView;
+	private ImageView passThroughObstaclesIconImageView;
 	
 	private GameLevel currentLevel;
-	
-	private long remainingGameTimeMillis = TOTAL_TIME_ALLOWED_IN_SECONDS * ONE_SECOND_IN_MILLISECONDS;
 	
 	/** If the game has been paused by the menu button. */
 	private boolean isGameManuallyPaused;
@@ -96,12 +98,12 @@ public class PlayActivity extends Activity {
     				case COUNTDOWN_MESSAGE:
     					if ( isGameTimeMoving() ) {
     						long gameTimeElapsedMillis = SystemClock.uptimeMillis() - lastGameTimeUptimeMillis;
-    						remainingGameTimeMillis -= gameTimeElapsedMillis;
-    						long remainingGameTimeSeconds = remainingGameTimeMillis / ONE_SECOND_IN_MILLISECONDS;
+    						gameState.reduceRemainingTimeMillis(gameTimeElapsedMillis);
+    						long remainingGameTimeSeconds = gameState.getRemainingGameTimeMillis() / ONE_SECOND_IN_MILLISECONDS;
     						lastGameTimeUptimeMillis = SystemClock.uptimeMillis();
     						
 	    					// Finish game if out of time.
-	    					if (remainingGameTimeMillis < 0) {
+	    					if (gameState.getRemainingGameTimeMillis() < 0) {
 	    						endedByTimeOut = true;
 	    						changeToScoreActivity(false);
 	    						break;
@@ -115,6 +117,10 @@ public class PlayActivity extends Activity {
 	    					long minutes = remainingGameTimeSeconds / 60;
 	    					long seconds = remainingGameTimeSeconds % 60;
 	    					countdownView.setText(String.format("%d:%02d", minutes, seconds));
+
+	    					// update the special ability icons
+	    					invicibilityIconImageView.setVisibility(gameState.isPlayerInvincible() ? View.VISIBLE : View.INVISIBLE);
+	    					passThroughObstaclesIconImageView.setVisibility(gameState.isPlayerAbleToFlyThroughObstacles() ? View.VISIBLE : View.INVISIBLE);
     					}
     					//send a delayed message to update again later.
     					sendUpdateCountdownMessage();    						
@@ -146,9 +152,14 @@ public class PlayActivity extends Activity {
 						scoreTextView.setText("" + gameState.numberOfSpellsCollected);
 						
 						break;
+//    				case PLAYER_INVICIBILTY_CHANGED_MESSAGE:
+//    					final ImageView invicibilityIconImageView = (ImageView) findViewById(R.id.invincibilityIcon);
+//    					invicibilityIconImageView.setVisibility(gameState.isPlayerInvincible() ? View.VISIBLE : View.INVISIBLE);
+//    					
+//    					break;
     				case MODIFY_REMAINING_TIME_MESSAGE:
     					final int timeDeltaInSeconds = msg.arg1;
-    					remainingGameTimeMillis += timeDeltaInSeconds * ONE_SECOND_IN_MILLISECONDS;
+    					gameState.setRemainingGameTimeMillis(gameState.getRemainingGameTimeMillis() + (timeDeltaInSeconds * ONE_SECOND_IN_MILLISECONDS));
     					
     					// TODO would be nice to update the UI at this point, but it will be updated in at most one second anyway! 
 						
@@ -157,7 +168,7 @@ public class PlayActivity extends Activity {
     		}
    		}
    	};
-
+   	
 	private boolean isGameTimeMoving() {
 		return isRenderingStarted 
 			&& !isGameManuallyPaused 
@@ -183,12 +194,14 @@ public class PlayActivity extends Activity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Log.i(TAG,"onCreate()");
+
 		super.onCreate(savedInstanceState);
-		
+
 		Settings settings =  new Settings(this);
 		settings.setGameWasStartedAtLeastOnceFlag();
 
-		Log.i(TAG,"onCreate()");
+		gameState.setRemainingGameTimeMillis(TOTAL_TIME_ALLOWED_IN_SECONDS * ONE_SECOND_IN_MILLISECONDS);
 		
 		final int levelOrdinal = getIntent().getIntExtra(ScoreActivity.KEY_LEVEL_ORDINAL, 0);
 		currentLevel = GameLevel.values()[levelOrdinal];
@@ -222,6 +235,9 @@ public class PlayActivity extends Activity {
 		targetScoreTextView.setText("" + currentLevel.getNumberOfSpells());
 		textStyles.applyHeaderTextStyle(targetScoreTextView);
 
+		invicibilityIconImageView = (ImageView) findViewById(R.id.invincibilityIcon);
+		passThroughObstaclesIconImageView = (ImageView) findViewById(R.id.passThroughObstaclesIcon);
+		
 		gLSurfaceView = new SevenWondersGLSurfaceView(this, gameState);
 
 		final TextView loadingMessage = (TextView) findViewById(R.id.loading_textview);
@@ -313,7 +329,7 @@ public class PlayActivity extends Activity {
 		Intent intent = new Intent().setClass(PlayActivity.this, ScoreActivity.class);
 		intent.putExtra(ScoreActivity.KEY_COLLECTED_SPELL_COUNT, gameState.numberOfSpellsCollected); 
 		intent.putExtra(ScoreActivity.KEY_COLLECTED_COIN_COUNT, gameState.getNumberofCoinsCollected());
-		intent.putExtra(ScoreActivity.KEY_REMAINING_TIME_SECONDS, (int) (remainingGameTimeMillis / ONE_SECOND_IN_MILLISECONDS));
+		intent.putExtra(ScoreActivity.KEY_REMAINING_TIME_SECONDS, (int) (gameState.getRemainingGameTimeMillis() / ONE_SECOND_IN_MILLISECONDS));
 		intent.putExtra(ScoreActivity.KEY_LEVEL_ORDINAL, currentLevel.ordinal()); 
 		intent.putExtra(ScoreActivity.KEY_WON_LEVEL, wonLevel && ! endedByDeath); // if they heard the Wilhem, we can't let them win 
 		startActivity(intent);

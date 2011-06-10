@@ -165,7 +165,7 @@ public enum GameLevel {
 
 	final Map<GameObjectDescriptor, CollisionAction> mapOfCollectablesToCollisionActions = new HashMap<GameObjectDescriptor, CollisionAction>();
 
-	final Map<GameObjectDescriptor, CollisionAction> hazards = new HashMap<GameObjectDescriptor, CollisionAction>();
+	final Map<GameObjectDescriptor, CollisionAction> mapOfHazardsToCollisionActions = new HashMap<GameObjectDescriptor, CollisionAction>();
 
 	final Collection<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
 
@@ -204,7 +204,7 @@ public enum GameLevel {
 	 * Things that will kill the player if the player flies into them: swords, whirl winds, etc.
 	 */
 	public Map<GameObjectDescriptor, CollisionAction> getHazards() {
-		return hazards;
+		return mapOfHazardsToCollisionActions;
 	}
 
 	/**

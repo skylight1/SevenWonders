@@ -24,6 +24,24 @@
 		a:textColor="#0F0" 
 		a:layout_marginLeft="6dp" />
 
+	<ImageView a:id="@+id/passThroughObstaclesIcon" 
+		a:visibility="invisible"
+		a:src="@drawable/ruby"
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_alignParentRight="true"
+		a:layout_alignParentBottom="true" 
+		a:layout_marginLeft="6dp" />
+
+	<ImageView a:id="@+id/invincibilityIcon" 
+		a:visibility="invisible"
+		a:src="@drawable/emerald"
+		a:layout_height="wrap_content"
+		a:layout_width="wrap_content" 
+		a:layout_toLeftOf="@id/passThroughObstaclesIcon"
+		a:layout_alignParentBottom="true" 
+		a:layout_marginLeft="6dp" />
+
 	<TextView a:id="@+id/targetScore" 
 		a:layout_height="wrap_content"
 		a:layout_width="wrap_content" 

@@ -78,7 +78,7 @@ public class LevelConstructionToolkit {
 		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
 		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_HAZARDS_FROM_GROUND, aZ);
 		final CollisionAction hazardCollisionAction = new HazardCollisionAction();
-		aGameLevel.hazards.put(new GameObjectDescriptor(transformationMatrix, null, R.raw.textured_sword, R.raw.textures), hazardCollisionAction);
+		aGameLevel.mapOfHazardsToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, null, R.raw.textured_sword, R.raw.textures), hazardCollisionAction);
 	}
 
 	static float[] createNewIdentityMatrix() {
