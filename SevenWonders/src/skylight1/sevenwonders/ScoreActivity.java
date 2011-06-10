@@ -21,14 +21,18 @@ import android.widget.TextView;
  */
 public class ScoreActivity extends Activity {
 
-	private static final int SCORE_PER_REMAINING_SECOND = 100;
+	private static final int SCORE_PER_REMAINING_SECOND = 50;
 
 	private static final int SCORE_PER_COLLECTED_SPELL = 1000;
+
+	private static final int SCORE_PER_COLLECTED_COIN = 500;
 
 	static final String KEY_REMAINING_TIME_SECONDS = "KEY_REMAINING_TIME_SECONDS";
 
 	static final String KEY_COLLECTED_SPELL_COUNT = "KEY_COLLECTED_SPELL_COUNT";
 	
+	static final String KEY_COLLECTED_COIN_COUNT = "KEY_COLLECTED_COIN_COUNT";
+
 	static final String KEY_LEVEL_ORDINAL = "KEY_LEVEL_ORDINAL";
 
 	static final String KEY_WON_LEVEL = "KEY_WON_LEVEL";
@@ -46,7 +50,9 @@ public class ScoreActivity extends Activity {
 		final int oneBasedLevelNumber = level + 1;
 		final int collectedSpellsCount = callingIntent.getIntExtra(
 			ScoreActivity.KEY_COLLECTED_SPELL_COUNT, 0);
-		
+		final int collectedCoinCount = callingIntent.getIntExtra(
+			ScoreActivity.KEY_COLLECTED_COIN_COUNT, 0);
+
 		final int remainingSeconds = callingIntent.getIntExtra(
 			ScoreActivity.KEY_REMAINING_TIME_SECONDS, 0);
 		
@@ -62,32 +68,34 @@ public class ScoreActivity extends Activity {
 		// update the high score if necessary
 		// add one for one-based-indexing
 		final int previousHighScore = settings.getHighScore(oneBasedLevelNumber);
-		final int calculateScore = calculateScore(collectedSpellsCount, remainingSeconds, wonLevel);
+		final int calculateScore = calculateScore(collectedSpellsCount, collectedCoinCount, remainingSeconds, wonLevel);
 		if (previousHighScore < calculateScore) {
 			settings.setHighScore(oneBasedLevelNumber, calculateScore);
 		}
 		
-		displayEndOfLevelMessage(wonLevel, level, collectedSpellsCount, remainingSeconds);		
+		displayEndOfLevelMessage(wonLevel, level, collectedSpellsCount, collectedCoinCount, remainingSeconds);
 	}
 
 	/**
 	 * Format and display a END OF LEVEL message.
-	 * @param wonLevel
-	 * @param level
-	 * @param collectedSpellsCount
-	 * @param remainingSeconds
-	 */
+     * @param wonLevel
+     * @param level
+     * @param collectedSpellsCount
+     * @param collectedCoinCount
+     * @param remainingSeconds
+     */
 	private void displayEndOfLevelMessage(boolean wonLevel, int level, int collectedSpellsCount,
-											int remainingSeconds) {
+                                          int collectedCoinCount, int remainingSeconds) {
 		
 		
 		final String collectedSpellCountText;
+		final String collectedCoinCountText;
 		if (collectedSpellsCount == 0) {
 			collectedSpellCountText = "No spells collected :-(";
 		} else {
 			final String spellsText; 
 			if (collectedSpellsCount == 1) {
-				spellsText = "1 Spell";
+				spellsText = "1 spell";
 			} else {
 				spellsText = String.format("%2d spells", collectedSpellsCount);
 			}
@@ -96,7 +104,21 @@ public class ScoreActivity extends Activity {
 			collectedSpellCountText = String.format("%s: %2d X %d = +%d",
 				spellsText, collectedSpellsCount, SCORE_PER_COLLECTED_SPELL, sum );
 		}
-		
+		if (collectedCoinCount == 0) {
+			collectedCoinCountText = "No coins collected :-(";
+		} else {
+			final String coinsText;
+			if (collectedCoinCount == 1) {
+				coinsText = "1 coin";
+			} else {
+				coinsText = String.format("%2d coins", collectedCoinCount);
+			}
+
+			final int sum = collectedCoinCount * SCORE_PER_COLLECTED_COIN;
+			collectedCoinCountText = String.format("%s: %2d X %d = +%d",
+				coinsText, collectedCoinCount, SCORE_PER_COLLECTED_COIN, sum );
+		}
+
 		boolean nextLevelExists = level < GameLevel.values().length - 1;
 		
 		// Build the message.		
@@ -105,10 +127,11 @@ public class ScoreActivity extends Activity {
 		
 		
 		messageBuilder.append(collectedSpellCountText + "\n");		
+		messageBuilder.append(collectedCoinCountText + "\n");
 		if ( wonLevel ) {
 			messageBuilder.append(getRemainingTimeText(remainingSeconds) + "\n");
 		}
-		messageBuilder.append(getScoreString(collectedSpellsCount, remainingSeconds, wonLevel, level) + "\n");
+		messageBuilder.append(getScoreString(collectedSpellsCount, collectedCoinCount, remainingSeconds, wonLevel, level) + "\n");
 		messageBuilder.append(getWinOrLoseString(wonLevel, nextLevelExists));
 		
 		setupButtons(level, wonLevel, nextLevelExists,messageBuilder.toString());
@@ -138,9 +161,9 @@ public class ScoreActivity extends Activity {
 		}		 		
 	}
 
-	private String getScoreString(final int collectedSpellCount, 
-			final int remainingTimeSeconds, final boolean wonLevel, final int level) {
-		int score = calculateScore(collectedSpellCount, remainingTimeSeconds, wonLevel);
+	private String getScoreString(final int collectedSpellCount,
+                                  int collectedCoinCount, final int remainingTimeSeconds, final boolean wonLevel, final int level) {
+		int score = calculateScore(collectedSpellCount, collectedCoinCount, remainingTimeSeconds, wonLevel);
         String scoreText = String.format("Level score: %02d", score);
         //display if high score is improved
         final Settings settings = new Settings(this);
@@ -152,9 +175,10 @@ public class ScoreActivity extends Activity {
 		return scoreText;
 	}
 
-	private int calculateScore(final int aCollectedSpellCount, final int aRemainingTimeSeconds, final boolean aWonLevel) {
+	private int calculateScore(final int aCollectedSpellCount, int aCollectedCoinCount, final int aRemainingTimeSeconds, final boolean aWonLevel) {
 		int score = aCollectedSpellCount * SCORE_PER_COLLECTED_SPELL;
-		// If the user won the level, as opposed to say, hit a sword, 
+		score += aCollectedCoinCount * SCORE_PER_COLLECTED_COIN;
+		// If the user won the level, as opposed to say, hit a sword,
 		// then reward them for extra time.
 		if ( aWonLevel ) {
 			score += aRemainingTimeSeconds * SCORE_PER_REMAINING_SECOND;
