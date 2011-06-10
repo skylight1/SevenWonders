@@ -91,6 +91,14 @@ public class LevelConstructionToolkit {
 		return new float[] { anX, aY, aZ, aRadius };
 	}
 
+	/**
+	 * 
+	 * @param aGameLevel
+	 * @param aRotation
+	 * @param anX
+	 * @param aY float how high the pyramid sticks out of the ground
+	 * @param aZ
+	 */
 	static void addPyramid(final GameLevel aGameLevel, float aRotation, final float anX, final float aY, final float aZ) {
 		float[] coordinateTransform = new float[16];
 		Matrix.setIdentityM(coordinateTransform, 0);
