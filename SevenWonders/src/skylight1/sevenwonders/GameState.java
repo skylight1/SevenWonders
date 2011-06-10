@@ -1,16 +1,42 @@
 package skylight1.sevenwonders;
 
 public class GameState {
+	private long remainingGameTimeMillis;
 	
-	// Currently only access by main UI thread, so doesn't need synchronization.
 	public int numberOfSpellsCollected;
+	private int remainingInvincibilityTimeMillis;
 	
-	// Currently only accessed by render thread, so doesn't need synchronization.
-	public boolean isPlayerAbleToFlyThroughObstacles;
-	public boolean isPlayerInvincible;
+	private int remainingPassThroughObstaclesTimeMillis;
 	
-	// Accessed by render thread, will need to be read by main thread for figuring out score later, so synchronized.
 	private int numberofCoinsCollected;
+	
+	public int getRemainingPassThroughSolidsTimeMillis() {
+		return remainingPassThroughObstaclesTimeMillis;
+	}
+
+	public void setRemainingPassThroughObstaclesTimeMillis(int aRemainingPassThroughSolidsTimeMillis) {
+		remainingPassThroughObstaclesTimeMillis = aRemainingPassThroughSolidsTimeMillis;
+	}
+	
+	public boolean isPlayerAbleToFlyThroughObstacles() {
+		return remainingPassThroughObstaclesTimeMillis > 0;
+	}
+	
+	public boolean isPlayerInvincible() {
+		return remainingInvincibilityTimeMillis > 0;
+	}
+	
+	public int getRemainingInvincibilityTimeMillis() {
+		return remainingInvincibilityTimeMillis;
+	}
+
+	public void setRemainingInvincibilityTimeMillis(int aRemainingInvincibilityTimeMillis) {
+		remainingInvincibilityTimeMillis = aRemainingInvincibilityTimeMillis;
+	}
+
+	public void setRemainingGameTimeMillis(long aRemainingGameTimeMillis) {
+		remainingGameTimeMillis = aRemainingGameTimeMillis;
+	}
 
 	public synchronized void incrementNumberofCoinsCollected() {
 		numberofCoinsCollected++;
@@ -19,5 +45,14 @@ public class GameState {
 	public synchronized int getNumberofCoinsCollected() {
 		return numberofCoinsCollected;
 	}
-	
+
+	public void reduceRemainingTimeMillis(final long aChangeInTime) {
+		remainingGameTimeMillis -= aChangeInTime;
+		remainingInvincibilityTimeMillis -= aChangeInTime;
+		remainingPassThroughObstaclesTimeMillis -= aChangeInTime;
+	}
+
+	public long getRemainingGameTimeMillis() {
+		return remainingGameTimeMillis;
+	}
 }

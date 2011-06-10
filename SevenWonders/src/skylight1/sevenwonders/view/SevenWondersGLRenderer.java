@@ -215,7 +215,7 @@ public class SevenWondersGLRenderer implements Renderer {
 			@Override
 			public boolean collisionOccurred(final float[] aBoundingSphere) {
 				// Return early without doing anything if the player has gained the ability to fly through obstacles.
-				if ( gameState.isPlayerAbleToFlyThroughObstacles ) {
+				if ( gameState.isPlayerAbleToFlyThroughObstacles() ) {
 					// Ability doesn't currently time out, so return true, which prevents future collision checking.
 					return true;
 				}
