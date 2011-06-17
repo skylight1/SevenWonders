@@ -92,8 +92,6 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final String TAG = SevenWondersGLRenderer.class.getName();
 
-	private static final float HEIGHT_OF_CARPET_FROM_GROUND = 12f;
-
 	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
 
 	private static final float MINIMUM_VELOCITY = -MAXIMUM_VELOCITY / 10f;
@@ -471,7 +469,7 @@ public class SevenWondersGLRenderer implements Renderer {
 	private void detectCollisions() {
 		float[] carpetBoundingBox = temporaryMatrix;
 		// TODO should we use Matrix.orthoM()
-		Matrix.frustumM(carpetBoundingBox, 0, -0.3f, 0.3f, HEIGHT_OF_CARPET_FROM_GROUND, HEIGHT_OF_CARPET_FROM_GROUND + 2f, 0.1f, 1f);
+		Matrix.frustumM(carpetBoundingBox, 0, -0.3f, 0.3f, GameState.HEIGHT_OF_CARPET_FROM_GROUND, GameState.HEIGHT_OF_CARPET_FROM_GROUND + 2f, 0.1f, 1f);
 
 		// Rotate first, otherwise map rotates around center point we translated away from.
 		Matrix.rotateM(carpetBoundingBox, 0, playerFacingThisFrame, 0, 1, 0);
@@ -514,14 +512,14 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		checkForCollisionsWithObstacles();
 
-		GLU.gluLookAt(aGl, playerWorldPosition.x, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z, playerWorldPosition.x
-				+ facingX, HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z + facingZ, 0f, 1f, 0f);
+		GLU.gluLookAt(aGl, playerWorldPosition.x, GameState.HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z, playerWorldPosition.x
+				+ facingX, GameState.HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z + facingZ, 0f, 1f, 0f);
 	}
 
 	private void checkForCollisionsWithObstacles() {
 		float[] centerOfCarpet = temporaryMatrix;
 		// a single point only, otherwise turning away from collisions is problematic
-		Matrix.frustumM(centerOfCarpet, 0, -0.001f, 0.001f, HEIGHT_OF_CARPET_FROM_GROUND, HEIGHT_OF_CARPET_FROM_GROUND+0.001f, 0.001f, 0.002f);
+		Matrix.frustumM(centerOfCarpet, 0, -0.001f, 0.001f, GameState.HEIGHT_OF_CARPET_FROM_GROUND, GameState.HEIGHT_OF_CARPET_FROM_GROUND+0.001f, 0.001f, 0.002f);
 
 		// Rotate first, otherwise map rotates around center point we translated away from.
 		Matrix.rotateM(centerOfCarpet, 0, playerFacingThisFrame, 0, 1, 0);

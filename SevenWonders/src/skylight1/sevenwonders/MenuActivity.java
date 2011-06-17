@@ -49,17 +49,6 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 
         ViewGroup layout = (ViewGroup)findViewById(R.id.layout_ad);
 		Adverts.insertAdBanner(this,layout);
-
-		if(SevenWondersApplication.isDebug) {
-			final Settings settings = new Settings(this);
-			for (int level = 2; level <= 7; level++) {
-				if(settings.isDebugEnabled()) {
-					settings.unlockLevel(level);
-				} else {
-					settings.lockLevel(level);
-				}
-			}
-		}
 	}
 
 	@Override

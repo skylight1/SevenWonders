@@ -9,6 +9,8 @@ public class GameState {
 	private int remainingPassThroughObstaclesTimeMillis;
 	
 	private int numberofCoinsCollected;
+
+	public static final float HEIGHT_OF_CARPET_FROM_GROUND = 12f;
 	
 	public int getRemainingPassThroughSolidsTimeMillis() {
 		return remainingPassThroughObstaclesTimeMillis;

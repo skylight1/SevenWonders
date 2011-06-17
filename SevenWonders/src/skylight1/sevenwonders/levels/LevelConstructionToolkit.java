@@ -1,5 +1,6 @@
 package skylight1.sevenwonders.levels;
 
+import skylight1.sevenwonders.GameState;
 import skylight1.sevenwonders.R;
 import android.opengl.Matrix;
 
@@ -103,10 +104,10 @@ public class LevelConstructionToolkit {
 		float[] coordinateTransform = new float[16];
 		Matrix.setIdentityM(coordinateTransform, 0);
 		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
-		Matrix.translateM(coordinateTransform, 0, anX, aY, aZ);
+		Matrix.translateM(coordinateTransform, 0, anX, aY - 25, aZ);
 		aGameLevel.decorations.add(new GameObjectDescriptor(coordinateTransform, null, R.raw.pyramid, R.raw.textures));
 
-		aGameLevel.obstacles.add(new float[] { anX, aY, aZ, 50 });
+		aGameLevel.obstacles.add(new float[] { anX, GameState.HEIGHT_OF_CARPET_FROM_GROUND, aZ, 90 });
 	}
 
 	static void addSphynx(final GameLevel aGameLevel, final float aRotation, final float anX, final float aY,
