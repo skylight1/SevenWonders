@@ -50,6 +50,11 @@ public class Settings {
 		if (aLevelNumber == 1) {
 			return false;
 		}
+		
+		if(SevenWondersApplication.isDebug && isDebugEnabled()) {
+			return false;
+		}
+		
 		return prefs.getBoolean(String.format(KEY_LEVEL_LOCKED, aLevelNumber), true);
 	}
 
