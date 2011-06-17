@@ -106,6 +106,18 @@ public enum GameLevel {
 		}
 	},
 	
+	// This level requires using the pass through objects ruby.
+	TEACH_RUBY(
+		"Get the Sphinx's red ruby of passage to retrieve the ankh inside the pyramid.") {
+		{
+			addPyramid(this, 0, -80, 0, -450);
+			addSpell(this, -80, -450);
+			
+			addSphynx(this, 90, -190, -30, -90);
+			addRuby(this, -25, 90);
+		}
+	},	
+	
 	FIRST("The ankh is a symbol of powerful magic. Collect all three.") {
 		{
 			addSphynx(this, 90, -190, -30, -90);
