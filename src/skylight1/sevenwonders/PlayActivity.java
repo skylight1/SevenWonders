@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class PlayActivity extends Activity {
+	private static final int WARNING_TIME_FOR_POWER_DOWN_MILLIS = 5000;
 	private static final int MILLISECONDS_TO_SHOW_MESSAGE = 2500;
 	public static final int FPS_MESSAGE = 0;
 	public static final int COUNTDOWN_MESSAGE = 1;
@@ -119,8 +120,10 @@ public class PlayActivity extends Activity {
 	    					countdownView.setText(String.format("%d:%02d", minutes, seconds));
 
 	    					// update the special ability icons
-	    					invicibilityIconImageView.setVisibility(gameState.isPlayerInvincible() ? View.VISIBLE : View.INVISIBLE);
-	    					passThroughObstaclesIconImageView.setVisibility(gameState.isPlayerAbleToFlyThroughObstacles() ? View.VISIBLE : View.INVISIBLE);
+	    					final int remainingInvincibilityTimeMillis = gameState.getRemainingInvincibilityTimeMillis();
+							invicibilityIconImageView.setVisibility(gameState.isPlayerInvincible() && (remainingInvincibilityTimeMillis > WARNING_TIME_FOR_POWER_DOWN_MILLIS || remainingInvincibilityTimeMillis / 500 % 2 == 0) ? View.VISIBLE : View.INVISIBLE);
+							final int remainingPassThroughtObstaclesTimeMillis = gameState.getRemainingPassThroughSolidsTimeMillis();
+	    					passThroughObstaclesIconImageView.setVisibility(gameState.isPlayerAbleToFlyThroughObstacles() && (remainingPassThroughtObstaclesTimeMillis > WARNING_TIME_FOR_POWER_DOWN_MILLIS || remainingPassThroughtObstaclesTimeMillis / 500 % 2 == 0) ? View.VISIBLE : View.INVISIBLE);
     					}
     					//send a delayed message to update again later.
     					sendUpdateCountdownMessage();    						
@@ -184,7 +187,7 @@ public class PlayActivity extends Activity {
 
 	private void sendUpdateCountdownMessage() {
 		final Message countdownMessage = updateUiHandler.obtainMessage(COUNTDOWN_MESSAGE);
-		updateUiHandler.sendMessageDelayed(countdownMessage, ONE_SECOND_IN_MILLISECONDS);
+		updateUiHandler.sendMessageDelayed(countdownMessage, ONE_SECOND_IN_MILLISECONDS / 2);
 	}
 
 	protected void sendEndGameMessage() {
