@@ -31,8 +31,6 @@ public class PlayActivity extends Activity {
 	public static final int MODIFY_REMAINING_TIME_MESSAGE = 6;
 	public static final int PLAYER_INVICIBILTY_CHANGED_MESSAGE = 7;
 
-	protected static final int TOTAL_TIME_ALLOWED_IN_SECONDS = 180;
-
 	private static final int REMAINING_SECONDS_AFTER_WHICH_COUNTDOWN_FLASHES = 30;
 
 	private static final long ONE_SECOND_IN_MILLISECONDS = 1000;
@@ -204,10 +202,11 @@ public class PlayActivity extends Activity {
 		Settings settings =  new Settings(this);
 		settings.setGameWasStartedAtLeastOnceFlag();
 
-		gameState.setRemainingGameTimeMillis(TOTAL_TIME_ALLOWED_IN_SECONDS * ONE_SECOND_IN_MILLISECONDS);
-		
 		final int levelOrdinal = getIntent().getIntExtra(ScoreActivity.KEY_LEVEL_ORDINAL, 0);
 		currentLevel = GameLevel.values()[levelOrdinal];
+		
+		gameState.setRemainingGameTimeMillis(
+			currentLevel.getDefaultTotalTimeAllowedInSeconds() * ONE_SECOND_IN_MILLISECONDS);
 		
 		SoundTracks.setEnabled(settings.isSoundEnabled());
 		SoundTracks soundTrack = SoundTracks.getInstance();

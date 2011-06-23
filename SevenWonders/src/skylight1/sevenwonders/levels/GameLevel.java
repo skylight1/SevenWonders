@@ -25,6 +25,7 @@ public enum GameLevel {
 	TEACH_COLLECTION_WITH_EASY_LANDMARK(
 		"Collect the ankh in front of the pyramid before Nebtawi can!") {
 		{
+			setTotalTimeAllowedInSeconds(100);
 			addPyramid(this, 0, -80, 0, -450);
 			addSpell(this, -20, -310);
 		}
@@ -231,6 +232,8 @@ public enum GameLevel {
 		}
 	};
 
+	protected static final int DEFAULT_TOTAL_TIME_ALLOWED_IN_SECONDS = 180;
+
 	private final String loadingMessage;
 
 	final Map<GameObjectDescriptor, CollisionAction> mapOfCollectablesToCollisionActions = new HashMap<GameObjectDescriptor, CollisionAction>();
@@ -242,6 +245,8 @@ public enum GameLevel {
 	final Collection<float[]> obstacles = new ArrayList<float[]>();
 	
 	int numberOfSpells = 0;
+	
+	private int totalTimeAllowedInSeconds = DEFAULT_TOTAL_TIME_ALLOWED_IN_SECONDS;
 
 	/**
 	 */
@@ -291,5 +296,21 @@ public enum GameLevel {
 	 */
 	public Collection<float[]> getObstacles() {
 		return obstacles;
+	}
+
+	/**
+	 * Gets the number of seconds the player has to complete the level.
+	 * @return int number of seconds
+	 */
+	public int getDefaultTotalTimeAllowedInSeconds() {
+		return totalTimeAllowedInSeconds;
+	}
+
+	/**
+	 * Sets the number of seconds the player has to complete the level.
+	 * @param int aTotalTimeAllowedInSeconds
+	 */
+	public void setTotalTimeAllowedInSeconds(int aTotalTimeAllowedInSeconds) {
+		totalTimeAllowedInSeconds = aTotalTimeAllowedInSeconds;
 	}
 }
