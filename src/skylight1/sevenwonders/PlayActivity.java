@@ -52,6 +52,7 @@ public class PlayActivity extends Activity {
 	private TextView debugView;
 	private ImageView invicibilityIconImageView;
 	private ImageView passThroughObstaclesIconImageView;
+	private ImageView soullessMageImageView;
 	
 	private GameLevel currentLevel;
 	
@@ -131,7 +132,7 @@ public class PlayActivity extends Activity {
         					gLSurfaceView.togglePaused();
     						endedByDeath = true;
     						SoundTracks.getInstance().play(SoundTracks.DEATH);
-        					//TODO: add red tint or something
+    						soullessMageImageView.setVisibility(View.VISIBLE);
         					sendEndGameMessage(); // causes a 2 second delay, probably to let the death sound finish
     					}
     					break;
@@ -239,6 +240,7 @@ public class PlayActivity extends Activity {
 
 		invicibilityIconImageView = (ImageView) findViewById(R.id.invincibilityIcon);
 		passThroughObstaclesIconImageView = (ImageView) findViewById(R.id.passThroughObstaclesIcon);
+		soullessMageImageView = (ImageView) findViewById(R.id.soullessMage);
 		
 		gLSurfaceView = new SevenWondersGLSurfaceView(this, gameState);
 
