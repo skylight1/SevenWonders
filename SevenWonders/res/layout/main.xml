@@ -33,6 +33,13 @@
 		a:layout_alignParentBottom="true" 
 		a:layout_marginLeft="6dp" />
 
+	<ImageView a:id="@+id/soullessMage" 
+		a:visibility="gone"
+		a:src="@drawable/soulless_mage"
+		a:layout_height="fill_parent"
+		a:layout_width="fill_parent"
+	 />
+
 	<ImageView a:id="@+id/invincibilityIcon" 
 		a:visibility="invisible"
 		a:src="@drawable/emerald"
