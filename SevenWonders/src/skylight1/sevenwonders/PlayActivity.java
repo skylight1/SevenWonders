@@ -156,7 +156,11 @@ public class PlayActivity extends Activity {
 						if (gameState.numberOfSpellsCollected >= currentLevel.getNumberOfSpells()) {
 							endedByWin = true;
 							
-							final Animation animation = AnimationUtils.loadAnimation(PlayActivity.this, R.anim.soulless_mage_goes_poof);
+							final boolean nextLevelExists = nextLevelExists();
+							final int animationId = nextLevelExists ? 
+									R.anim.soulless_mage_runs_away : R.anim.soulless_mage_goes_poof;
+							
+							final Animation animation = AnimationUtils.loadAnimation(PlayActivity.this, animationId);
     						soullessMageImageView.startAnimation(animation);
     						animation.setAnimationListener(new AnimationListener() {
 								@Override
@@ -220,7 +224,9 @@ public class PlayActivity extends Activity {
 
 	protected void sendEndGameMessage(boolean aWonLevel) {
 		final Message endGameMessage = updateUiHandler.obtainMessage(END_GAME_MESSAGE, aWonLevel);
-		updateUiHandler.sendMessageDelayed(endGameMessage, 2*ONE_SECOND_IN_MILLISECONDS);
+		int secondsBeforeEndingGame = nextLevelExists() ? 2 : 4;
+		updateUiHandler.sendMessageDelayed(endGameMessage, 
+			secondsBeforeEndingGame * ONE_SECOND_IN_MILLISECONDS);
 	}
 
 	@Override
@@ -379,5 +385,11 @@ public class PlayActivity extends Activity {
 				return true;
 		}
 		return super.onKeyDown(aKeyCode, aEvent);
+	}
+
+	private boolean nextLevelExists() {
+		final boolean nextLevelExists = 
+			currentLevel.ordinal() < GameLevel.values().length - 1;
+		return nextLevelExists;
 	}
 }
