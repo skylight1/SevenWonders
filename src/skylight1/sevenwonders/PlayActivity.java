@@ -15,6 +15,9 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -132,22 +135,48 @@ public class PlayActivity extends Activity {
         					gLSurfaceView.togglePaused();
     						endedByDeath = true;
     						SoundTracks.getInstance().play(SoundTracks.DEATH);
+    						
+							final Animation animation = AnimationUtils.loadAnimation(PlayActivity.this, R.anim.soulless_mage_slides_in);
+    						soullessMageImageView.startAnimation(animation);
     						soullessMageImageView.setVisibility(View.VISIBLE);
-        					sendEndGameMessage(); // causes a 2 second delay, probably to let the death sound finish
+    						
+        					sendEndGameMessage(false); // causes a 2 second delay, probably to let the death sound finish
     					}
     					break;
     				case END_GAME_MESSAGE:
+    					Boolean wonLevel = (Boolean) msg.obj;
     					if ( isGameTimeMoving() ) {
-    						changeToScoreActivity(false);
+    						changeToScoreActivity(wonLevel);
     					} else {
-    						sendEndGameMessage();
+    						sendEndGameMessage(wonLevel);
     					}
     					break;
     				case SPELL_COLLECTED_MESSAGE:
     					gameState.numberOfSpellsCollected++;
 						if (gameState.numberOfSpellsCollected >= currentLevel.getNumberOfSpells()) {
 							endedByWin = true;
-							changeToScoreActivity(true);
+							
+							final Animation animation = AnimationUtils.loadAnimation(PlayActivity.this, R.anim.soulless_mage_goes_poof);
+    						soullessMageImageView.startAnimation(animation);
+    						animation.setAnimationListener(new AnimationListener() {
+								@Override
+								public void onAnimationStart(final Animation aAnimation) {
+									// Nothing special done on start.
+								}
+								
+								@Override
+								public void onAnimationRepeat(final Animation aAnimation) {
+									// Do nothing. We don't repeat.
+								}
+								
+								@Override
+								public void onAnimationEnd(final Animation aAnimation) {
+									// After mage goes poof, don't show him.
+		    						soullessMageImageView.setVisibility(View.GONE);
+								}
+							});
+    						soullessMageImageView.setVisibility(View.VISIBLE);
+        					sendEndGameMessage(true); // causes a 2 second delay, to show the villain going poof
 						}
 						
 						TextView scoreTextView = (TextView) findViewById(R.id.score);
@@ -189,8 +218,8 @@ public class PlayActivity extends Activity {
 		updateUiHandler.sendMessageDelayed(countdownMessage, ONE_SECOND_IN_MILLISECONDS / 2);
 	}
 
-	protected void sendEndGameMessage() {
-		final Message endGameMessage = updateUiHandler.obtainMessage(END_GAME_MESSAGE);
+	protected void sendEndGameMessage(boolean aWonLevel) {
+		final Message endGameMessage = updateUiHandler.obtainMessage(END_GAME_MESSAGE, aWonLevel);
 		updateUiHandler.sendMessageDelayed(endGameMessage, 2*ONE_SECOND_IN_MILLISECONDS);
 	}
 
