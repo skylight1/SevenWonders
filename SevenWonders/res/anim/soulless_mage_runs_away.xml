@@ -17,13 +17,29 @@
 	Fades something out and shrinks it down to nothing
 	keeping it centered as it shrinks down. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android">
+
     <scale
         android:fromXScale="1.0"
-        android:toXScale="0"
+        android:toXScale="0.75"
         android:fromYScale="1.0"
+        android:toYScale="0.75"
+        android:pivotX="100%"
+        android:pivotY="30%" 
+        />
+        
+    <translate 
+    	android:fromXDelta="-100%p" 
+    	android:toXDelta="0" 
+    	android:duration="800"/>
+    
+    <scale
+        android:fromXScale="0.75"
+        android:toXScale="0"
+        android:fromYScale="0.75"
         android:toYScale="0"
-        android:pivotX="25%"
-        android:pivotY="50%" 
+        android:pivotX="100%"
+        android:pivotY="30%" 
         android:duration="1000"
+        android:startOffset="800"
         />
 </set>
