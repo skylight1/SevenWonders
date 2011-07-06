@@ -32,7 +32,6 @@ public class PlayActivity extends Activity {
 	public static final int START_RENDERING_MESSAGE = 4;
 	protected static final int END_GAME_MESSAGE = 5;
 	public static final int MODIFY_REMAINING_TIME_MESSAGE = 6;
-	public static final int PLAYER_INVICIBILTY_CHANGED_MESSAGE = 7;
 
 	private static final int REMAINING_SECONDS_AFTER_WHICH_COUNTDOWN_FLASHES = 30;
 
@@ -84,7 +83,8 @@ public class PlayActivity extends Activity {
     		}
     		
     		if(mainLayout!=null) {
-    			switch (msg.what) {
+    			final long remainingGameTimeMillis = gameState.getRemainingGameTimeMillis();
+				switch (msg.what) {
     				case START_RENDERING_MESSAGE:
     					// Remove splash screen
    				    	Log.i(TAG,"startedRendering()");
@@ -102,11 +102,11 @@ public class PlayActivity extends Activity {
     					if ( isGameTimeMoving() ) {
     						long gameTimeElapsedMillis = SystemClock.uptimeMillis() - lastGameTimeUptimeMillis;
     						gameState.reduceRemainingTimeMillis(gameTimeElapsedMillis);
-    						long remainingGameTimeSeconds = gameState.getRemainingGameTimeMillis() / ONE_SECOND_IN_MILLISECONDS;
+    						long remainingGameTimeSeconds = remainingGameTimeMillis / ONE_SECOND_IN_MILLISECONDS;
     						lastGameTimeUptimeMillis = SystemClock.uptimeMillis();
     						
 	    					// Finish game if out of time.
-	    					if (gameState.getRemainingGameTimeMillis() < 0) {
+	    					if (remainingGameTimeMillis < 0) {
 	    						endedByTimeOut = true;
 	    						changeToScoreActivity(false);
 	    						break;
@@ -123,9 +123,9 @@ public class PlayActivity extends Activity {
 
 	    					// update the special ability icons
 	    					final int remainingInvincibilityTimeMillis = gameState.getRemainingInvincibilityTimeMillis();
-							invicibilityIconImageView.setVisibility(gameState.isPlayerInvincible() && (remainingInvincibilityTimeMillis > WARNING_TIME_FOR_POWER_DOWN_MILLIS || remainingInvincibilityTimeMillis / 500 % 2 == 0) ? View.VISIBLE : View.INVISIBLE);
+							invicibilityIconImageView.setVisibility(gameState.isPlayerInvincible() && (remainingInvincibilityTimeMillis > WARNING_TIME_FOR_POWER_DOWN_MILLIS || remainingGameTimeMillis / 500 % 2 == 0) ? View.VISIBLE : View.INVISIBLE);
 							final int remainingPassThroughtObstaclesTimeMillis = gameState.getRemainingPassThroughSolidsTimeMillis();
-	    					passThroughObstaclesIconImageView.setVisibility(gameState.isPlayerAbleToFlyThroughObstacles() && (remainingPassThroughtObstaclesTimeMillis > WARNING_TIME_FOR_POWER_DOWN_MILLIS || remainingPassThroughtObstaclesTimeMillis / 500 % 2 == 0) ? View.VISIBLE : View.INVISIBLE);
+	    					passThroughObstaclesIconImageView.setVisibility(gameState.isPlayerAbleToFlyThroughObstacles() && (remainingPassThroughtObstaclesTimeMillis > WARNING_TIME_FOR_POWER_DOWN_MILLIS || remainingGameTimeMillis / 500 % 2 == 0) ? View.VISIBLE : View.INVISIBLE);
     					}
     					//send a delayed message to update again later.
     					sendUpdateCountdownMessage();    						
@@ -190,14 +190,9 @@ public class PlayActivity extends Activity {
 						scoreTextView.setText("" + gameState.numberOfSpellsCollected);
 						
 						break;
-//    				case PLAYER_INVICIBILTY_CHANGED_MESSAGE:
-//    					final ImageView invicibilityIconImageView = (ImageView) findViewById(R.id.invincibilityIcon);
-//    					invicibilityIconImageView.setVisibility(gameState.isPlayerInvincible() ? View.VISIBLE : View.INVISIBLE);
-//    					
-//    					break;
     				case MODIFY_REMAINING_TIME_MESSAGE:
     					final int timeDeltaInSeconds = msg.arg1;
-    					gameState.setRemainingGameTimeMillis(gameState.getRemainingGameTimeMillis() + (timeDeltaInSeconds * ONE_SECOND_IN_MILLISECONDS));
+    					gameState.setRemainingGameTimeMillis(remainingGameTimeMillis + (timeDeltaInSeconds * ONE_SECOND_IN_MILLISECONDS));
     					
     					// TODO would be nice to update the UI at this point, but it will be updated in at most one second anyway! 
 						
