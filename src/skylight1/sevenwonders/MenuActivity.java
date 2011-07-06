@@ -72,12 +72,14 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 	}
 
 	private void showSettings() {
-		startActivity(new Intent(this, SettingsActivity.class));		
+		startActivity(new Intent(this, SettingsActivity.class));	
+		if(tracker!=null)
 		tracker.trackPageView("/settings"); 
 	}
 
 	private void showStory() {
 		startActivity(new Intent(this, StoryActivity.class));		
+		if(tracker!=null)
 		tracker.trackPageView("/story"); 
 	}
 
@@ -91,6 +93,7 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 
 	private void startGame() {
 		startActivity(new Intent(this, LevelChooserActivity.class));		
+		if(tracker!=null)
 		tracker.trackPageView("/gameorstory"); 
 	}
 	
