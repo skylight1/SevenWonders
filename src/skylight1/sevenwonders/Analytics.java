@@ -1,19 +1,22 @@
 package skylight1.sevenwonders;
 
 import skylight1.util.Assets;
+import skylight1.util.BuildInfo;
 import android.content.Context;
+
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 public class Analytics {
 
 //TODO: REFLECT!
-//private GoogleAnalyticsTracker tracker;
+private GoogleAnalyticsTracker tracker;
 	private String ga_id;
 	
 	public Analytics(Context context) {
 		ga_id = Assets.getString("ga_id",context);
 //TODO: REFLECT!
-//        tracker = GoogleAnalyticsTracker.getInstance();
-//        tracker.setProductVersion("BTB", BuildInfo.getVersionName(this));
+        tracker = GoogleAnalyticsTracker.getInstance();
+        tracker.setProductVersion("7W", BuildInfo.getVersionName(context));
 	}
 
 	private boolean isValid() {
@@ -33,27 +36,26 @@ public class Analytics {
 
 	public void start(Context context) {
 //TODO: REFLECT! and note: start tracker can be started with a dispatch interval (in seconds) so add that method!
-//        tracker.start(ga_id, context);
+        tracker.start(ga_id, context);
     }
 
 	public void trackEvent(String string, String string2, String hashedPhoneId, int i) {
 // TODO: REFLECT!
-//	    tracker.trackEvent(string, string2, hashedPhoneId, i);
+	    tracker.trackEvent(string, string2, hashedPhoneId, i);
     }
 
 	public void trackPageView(String string) {
 // TODO: REFLECT!
-//	    tracker.trackPageView(string);
+	    tracker.trackPageView(string);
     }
 
 	public void dispatch() {
 // TODO: REFLECT!
-//	    tracker.dispatch();
+	    tracker.dispatch();
     }
 
 	public void stop() {
 // TODO: REFLECT!
-//	    tracker.stop();
+	    tracker.stop();
     }
-
 }
