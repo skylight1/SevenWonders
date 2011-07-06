@@ -26,7 +26,7 @@ public enum GameLevel {
 		"Collect the ankh in front of the pyramid before Nebtawi can!") {
 		{
 			setTotalTimeAllowedInSeconds(100);
-			addPyramid(this, 0, -80, 0, -450);
+			addPyramid(this, 0, -80, -10, -450);
 			addSpell(this, 20, -310);
 		}
 	},
@@ -36,14 +36,14 @@ public enum GameLevel {
 	TEACH_COLLECTING_MULTIPLE_WITH_EASY_LANDMARKS(
 		"Each of three pyramids has an ankh of power nearby to collect!") {
 		{
-			addPyramid(this, 0, -80, 0, -450);
-			addSpell(this, -20, -310);
+			addPyramid(this, 0, -80, -10, -450);
+			addSpell(this, 20, -310);
 
-			addPyramid(this, 0, -140, 0, -350);
-			addSpell(this, -200, -210);
+			addPyramid(this, 0, -340, -10, -550);
+			addSpell(this, -400, -410);
 
-			addPyramid(this, 0, -140, 0, 350);
-			addSpell(this, -220, 330);
+			addPyramid(this, 0, -340, -10, 550);
+			addSpell(this, -480, 430);
 		}
 	},
 	
