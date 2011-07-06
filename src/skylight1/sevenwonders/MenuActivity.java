@@ -2,6 +2,7 @@ package skylight1.sevenwonders;
 
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.TextStyles;
+import skylight1.util.Analytics;
 import skylight1.util.BuildInfo;
 import android.app.Activity;
 import android.content.Intent;
@@ -22,7 +23,8 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 	private Button rightButton;
 	private TextStyles wonderFonts;
 	private Settings settings;
-	
+	protected Analytics tracker;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
@@ -49,6 +51,8 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 
         ViewGroup layout = (ViewGroup)findViewById(R.id.layout_ad);
 		Adverts.insertAdBanner(this,layout);
+		
+        tracker = Analytics.getInstance(this,"BTB", BuildInfo.getVersionName(this));
 	}
 
 	@Override
@@ -69,10 +73,12 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 
 	private void showSettings() {
 		startActivity(new Intent(this, SettingsActivity.class));		
+		tracker.trackPageView("/settings"); 
 	}
 
 	private void showStory() {
 		startActivity(new Intent(this, StoryActivity.class));		
+		tracker.trackPageView("/story"); 
 	}
 
 	private void startGameOrShowStory() {
@@ -85,6 +91,7 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 
 	private void startGame() {
 		startActivity(new Intent(this, LevelChooserActivity.class));		
+		tracker.trackPageView("/gameorstory"); 
 	}
 	
 	@Override
@@ -92,6 +99,17 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 		super.onResume();
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		SoundTracks.setVolume(this);
+        if(tracker!=null) {
+        	tracker.start(this);
+        }
+	}
+
+	@Override
+	public void onPause() {
+		super.onDestroy();
+        if(tracker!=null) {
+        	tracker.stop();
+        }		
 	}
 
 //	@Override
