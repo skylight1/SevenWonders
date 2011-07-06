@@ -15,14 +15,16 @@ public class SoundTracks
 //	public static final int WIND = 1;
 	public static final int SPELL = 1;
 	public static final int DEATH = 2;
-	public static final int BUMP = 3;
+	public static final int COIN = 3;
+	public static final int BUMP = 4;
 
 	private final int soundResources[] = {
 			R.raw.soundtrack, //loops
 //			R.raw.wind, //loops   - disabled for now
 			R.raw.spell,
+			R.raw.death,
+			R.raw.coin_sound,
 //			R.raw.bump, // using mediaplayer instead
-			R.raw.death
 			};
 
 	private final int SOUNDPOOL_STREAMS = soundResources.length;
