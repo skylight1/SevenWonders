@@ -4,7 +4,7 @@ import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addHazard;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addPyramid;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addRuby;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addCoin;
-import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addEmerald;
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addProtection;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addSpell;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addSphynx;
 import static skylight1.sevenwonders.levels.LevelConstructionToolkit.createNewIdentityMatrix;
@@ -85,9 +85,9 @@ public enum GameLevel {
 		}
 	},
 	
-	// This level requires using the invincibility emerald.
-	TEACH_EMERALD(
-		"Get the Sphinx's greeen emerald of safety to pass through the storm of swords.") {
+	// This level requires using the invincibility shield.
+	TEACH_INVULNERABILITY(
+		"Collect the Sphinx's shield to pass safely through the storm of swords.") {
 		{
 
 			
@@ -103,7 +103,7 @@ public enum GameLevel {
 			addHazard(this, -150, -400);
 			
 			addSphynx(this, 90, -190, -30, -90);
-			addEmerald(this, -25, 90);
+			addProtection(this, -25, 90);
 		}
 	},
 	
@@ -130,7 +130,7 @@ public enum GameLevel {
 
 			addCoin(this, 30, -190);
 			
-			addEmerald(this, 30, -210);
+			addProtection(this, 30, -210);
 			
 			addSpell(this, 30, -130);
 			addSpell(this, 150, -200);

@@ -42,7 +42,7 @@
 
 	<ImageView a:id="@+id/invincibilityIcon" 
 		a:visibility="invisible"
-		a:src="@drawable/emerald"
+		a:src="@drawable/shield"
 		a:layout_height="wrap_content"
 		a:layout_width="wrap_content" 
 		a:layout_toLeftOf="@id/passThroughObstaclesIcon"
