@@ -156,30 +156,33 @@ public class PlayActivity extends Activity {
 						if (gameState.numberOfSpellsCollected >= currentLevel.getNumberOfSpells()) {
 							endedByWin = true;
 							
+							// Show villain going poof if it is the last level.
 							final boolean nextLevelExists = nextLevelExists();
-							final int animationId = nextLevelExists ? 
-									R.anim.soulless_mage_runs_away : R.anim.soulless_mage_goes_poof;
+							if ( !nextLevelExists ) {
+								final int animationId = R.anim.soulless_mage_goes_poof;
+								
+								final Animation animation = AnimationUtils.loadAnimation(PlayActivity.this, animationId);
+	    						soullessMageImageView.startAnimation(animation);
+	    						animation.setAnimationListener(new AnimationListener() {
+									@Override
+									public void onAnimationStart(final Animation aAnimation) {
+										// Nothing special done on start.
+									}
+									
+									@Override
+									public void onAnimationRepeat(final Animation aAnimation) {
+										// Do nothing. We don't repeat.
+									}
+									
+									@Override
+									public void onAnimationEnd(final Animation aAnimation) {
+										// After mage goes poof, don't show him.
+			    						soullessMageImageView.setVisibility(View.GONE);
+									}
+								});
+	    						soullessMageImageView.setVisibility(View.VISIBLE);
+							}
 							
-							final Animation animation = AnimationUtils.loadAnimation(PlayActivity.this, animationId);
-    						soullessMageImageView.startAnimation(animation);
-    						animation.setAnimationListener(new AnimationListener() {
-								@Override
-								public void onAnimationStart(final Animation aAnimation) {
-									// Nothing special done on start.
-								}
-								
-								@Override
-								public void onAnimationRepeat(final Animation aAnimation) {
-									// Do nothing. We don't repeat.
-								}
-								
-								@Override
-								public void onAnimationEnd(final Animation aAnimation) {
-									// After mage goes poof, don't show him.
-		    						soullessMageImageView.setVisibility(View.GONE);
-								}
-							});
-    						soullessMageImageView.setVisibility(View.VISIBLE);
         					sendEndGameMessage(true); // causes a 2 second delay, to show the villain going poof
 						}
 						
