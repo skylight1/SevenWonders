@@ -27,7 +27,7 @@ public enum GameLevel {
 		{
 			setTotalTimeAllowedInSeconds(100);
 			addPyramid(this, 0, -80, 0, -450);
-			addSpell(this, -20, -310);
+			addSpell(this, 20, -310);
 		}
 	},
 	
