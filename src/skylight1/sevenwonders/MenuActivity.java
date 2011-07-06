@@ -2,11 +2,9 @@ package skylight1.sevenwonders;
 
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.TextStyles;
-import skylight1.util.Analytics;
 import skylight1.util.BuildInfo;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.View;
@@ -53,6 +51,7 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 		Adverts.insertAdBanner(this,layout);
 		
         tracker = Analytics.getInstance(this,"BTB", BuildInfo.getVersionName(this));
+		tracker.start(this);
 	}
 
 	@Override
@@ -73,13 +72,11 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 
 	private void showSettings() {
 		startActivity(new Intent(this, SettingsActivity.class));	
-		if(tracker!=null)
 		tracker.trackPageView("/settings"); 
 	}
 
 	private void showStory() {
 		startActivity(new Intent(this, StoryActivity.class));		
-		if(tracker!=null)
 		tracker.trackPageView("/story"); 
 	}
 
@@ -93,8 +90,7 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 
 	private void startGame() {
 		startActivity(new Intent(this, LevelChooserActivity.class));		
-		if(tracker!=null)
-		tracker.trackPageView("/gameorstory"); 
+		tracker.trackPageView("/game");
 	}
 	
 	@Override
@@ -102,18 +98,18 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 		super.onResume();
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		SoundTracks.setVolume(this);
-        if(tracker!=null) {
-        	tracker.start(this);
-        }
 	}
-
-	@Override
-	public void onPause() {
-		super.onDestroy();
-        if(tracker!=null) {
-        	tracker.stop();
-        }		
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tracker.dispatch();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+	    tracker.dispatch();
+	    tracker.stop();
+    }
 
 //	@Override
 //	public void adWhirlGeneric() {
