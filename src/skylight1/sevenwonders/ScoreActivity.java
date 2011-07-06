@@ -216,6 +216,9 @@ public class ScoreActivity extends Activity {
 				finish();
 			}
 		});
+		if ( wasLevelWon && !nextLevelExists ) {
+			playNextLevel.setVisibility(View.GONE);
+		}
 
 		final Button playAgain = (Button) findViewById(R.id.end__playAgain);
 		textStyles.applySmallTextForButtonStyle(playAgain);
