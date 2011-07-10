@@ -216,9 +216,6 @@ public class ScoreActivity extends Activity {
 				finish();
 			}
 		});
-		if ( wasLevelWon && !nextLevelExists ) {
-			playNextLevel.setVisibility(View.GONE);
-		}
 
 		final Button playAgain = (Button) findViewById(R.id.end__playAgain);
 		textStyles.applySmallTextForButtonStyle(playAgain);
@@ -259,15 +256,18 @@ public class ScoreActivity extends Activity {
 			}
 		});
 		
-		// If the user won the level and there is a next level, show the 
-		// play next level button.
-		if (wasLevelWon && nextLevelExists) {
-			playNextLevel.setVisibility(View.VISIBLE);
-			playAgain.setVisibility(View.INVISIBLE);
-		// Otherwise turn it into a retry button and show the play again button.
+		// If won the last level
+		if ( wasLevelWon && !nextLevelExists ) {
+			// No play next level or retry level button needed, there is no next and they won the current level.
+			playNextLevel.setVisibility(View.GONE);
 		} else {
+			// Play game again button only needed if won last level and there's nothing else to do.
+			playAgain.setVisibility(View.GONE);			
+		}
+
+		// If lost the level, the play next button shows the retry text.
+		if (!wasLevelWon) {
 			playNextLevel.setText(R.string.retry);
-			playAgain.setVisibility(View.VISIBLE);
 		}
 	}
 	@Override
