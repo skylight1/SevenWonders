@@ -78,10 +78,10 @@ public enum GameLevel {
 		"Fly wide around Nebtawi's evil flying sword to get the ankh behind it!") {
 		{
 
-			addPyramid(this, 0, -140, 0, -480);
-			addSpell(this, -100, -400);
+			addPyramid(this, 0, -80, -10, -450);
+			addSpell(this, 20, -310);
 			
-			addHazard(this, -50, -200);
+			addHazard(this, 20, -250);
 		}
 	},
 	
