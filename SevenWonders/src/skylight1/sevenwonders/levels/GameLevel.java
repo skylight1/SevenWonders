@@ -73,6 +73,8 @@ public enum GameLevel {
 		}
 	},
 	
+	//TODO insert level introducing coins
+	
 	// This level has a sword that has to be flown around to get the ankh.
 	TEACH_AVOIDING_SWORDS(
 		"Fly wide around Nebtawi's evil flying sword to get the ankh behind it!") {
