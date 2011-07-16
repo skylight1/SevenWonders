@@ -276,7 +276,8 @@ public class SevenWondersGLRenderer implements Renderer {
 		// times.
 		aGl.glEnable(GL10.GL_CULL_FACE);
 		aGl.glEnable(GL10.GL_DEPTH_TEST);
-		aGl.glDisable(GL10.GL_BLEND);
+		aGl.glEnable(GL10.GL_BLEND);
+		//aGl.glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		aGl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		aGl.glShadeModel(GL10.GL_SMOOTH);
 		aGl.glEnable(GL10.GL_LIGHTING);
@@ -414,15 +415,15 @@ public class SevenWondersGLRenderer implements Renderer {
 		applyMovement(aGl);
 
 		detectCollisions();
-		
+
+		drawSkybox(aGl);
+		drawSpells(aGl);		
+		drawSwords(aGl);
+
 		for (int geometryIndex = 0; geometryIndex < decorationGeometries.size(); geometryIndex++) {
 			final OpenGLGeometry geometry = decorationGeometries.get(geometryIndex);
 			geometry.draw(aGl);
 		}
-
-		drawSpells(aGl);
-		drawSwords(aGl);
-		drawSkybox(aGl);
 		
 		if (SevenWondersApplication.isDebug) {
 			if (settings.isDebugEnabled()) {
