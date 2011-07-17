@@ -48,7 +48,7 @@ public class LevelConstructionToolkit {
 		final float[] highlightTransformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(highlightTransformationMatrix, 0);
 		android.opengl.Matrix.translateM(highlightTransformationMatrix, 0, anX, 0, aZ);
-		android.opengl.Matrix.scaleM(highlightTransformationMatrix, 0, 8, 8, 8);
+		android.opengl.Matrix.scaleM(highlightTransformationMatrix, 0, 8, 80, 8);
 		aGameLevel.decorations.add(new GameObjectDescriptor(highlightTransformationMatrix, null, R.raw.transparent_white_cyclinder, R.raw.textures));
 	}
 
