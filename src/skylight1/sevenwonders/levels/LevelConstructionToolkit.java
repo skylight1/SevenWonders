@@ -47,8 +47,8 @@ public class LevelConstructionToolkit {
 		// TODO remove the column when appropriate: when the ankh is collected, on harder difficulty, after the level is won once, etc..
 		final float[] highlightTransformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(highlightTransformationMatrix, 0);
-		android.opengl.Matrix.translateM(highlightTransformationMatrix, 0, anX, 40, aZ);
-		android.opengl.Matrix.scaleM(highlightTransformationMatrix, 0, 8, 3, 8);
+		android.opengl.Matrix.translateM(highlightTransformationMatrix, 0, anX, 75, aZ);
+		android.opengl.Matrix.scaleM(highlightTransformationMatrix, 0, 8, 2, 8);
 		aGameLevel.glows.add(new GameObjectDescriptor(highlightTransformationMatrix, null, R.raw.transparent_white_cyclinder, R.raw.textures));
 	}
 
