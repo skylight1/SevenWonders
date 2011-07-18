@@ -244,6 +244,8 @@ public enum GameLevel {
 
 	final Collection<GameObjectDescriptor> decorations = new ArrayList<GameObjectDescriptor>();
 
+	final Collection<GameObjectDescriptor> glows = new ArrayList<GameObjectDescriptor>();
+
 	final Collection<float[]> obstacles = new ArrayList<float[]>();
 	
 	int numberOfSpells = 0;
@@ -314,5 +316,12 @@ public enum GameLevel {
 	 */
 	public void setTotalTimeAllowedInSeconds(int aTotalTimeAllowedInSeconds) {
 		totalTimeAllowedInSeconds = aTotalTimeAllowedInSeconds;
+	}
+
+	/**
+	 * Glows that brighten things.
+	 */
+	public Collection<GameObjectDescriptor> getGlows() {
+		return glows;
 	}
 }

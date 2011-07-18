@@ -49,7 +49,7 @@ public class LevelConstructionToolkit {
 		android.opengl.Matrix.setIdentityM(highlightTransformationMatrix, 0);
 		android.opengl.Matrix.translateM(highlightTransformationMatrix, 0, anX, 40, aZ);
 		android.opengl.Matrix.scaleM(highlightTransformationMatrix, 0, 8, 3, 8);
-		aGameLevel.decorations.add(new GameObjectDescriptor(highlightTransformationMatrix, null, R.raw.transparent_white_cyclinder, R.raw.textures));
+		aGameLevel.glows.add(new GameObjectDescriptor(highlightTransformationMatrix, null, R.raw.transparent_white_cyclinder, R.raw.textures));
 	}
 
 	static void addRuby(final GameLevel aGameLevel, int anX, int aZ) {

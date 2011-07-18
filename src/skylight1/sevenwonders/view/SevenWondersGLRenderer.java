@@ -126,6 +126,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	private Carpet carpet;
 
 	private List<OpenGLGeometry> decorationGeometries = new ArrayList<OpenGLGeometry>();
+
+	private List<OpenGLGeometry> glowGeometries = new ArrayList<OpenGLGeometry>();
 	
 	private final Map<Integer, Texture> textureResourceIdToTextureMap = new HashMap<Integer, Texture>();
 
@@ -192,6 +194,38 @@ public class SevenWondersGLRenderer implements Renderer {
 		if (openGLGeometryBuilder.isBuildingGeometry()) {
 			final OpenGLGeometry lastGeometry = openGLGeometryBuilder.endGeometry();
 			decorationGeometries.add(lastGeometry);
+		}
+
+		boolean first = true;
+		for (GameObjectDescriptor objectDescriptor : level.getGlows()) {
+			// if the texture has changed (including the first time through), then ...
+			if (objectDescriptor.textureResource != currentTextureResource) {
+				// wrap up the existing geometry (if any, since first time through there won't be an existing geometry)
+				if (openGLGeometryBuilder.isBuildingGeometry()) {
+					final OpenGLGeometry previousGeometry = openGLGeometryBuilder.endGeometry();
+					glowGeometries.add(previousGeometry);
+				}
+				
+				currentTextureResource = objectDescriptor.textureResource;
+				
+				// create a new texture object, store it in the texture id to texture map,
+				// and start a new geometry using the new texture
+				final Texture texture = getTexture(objectDescriptor.textureResource, true);
+				openGLGeometryBuilder.startGeometry(texture);
+			} else if ( first ) {
+				final Texture texture = getTexture(objectDescriptor.textureResource, true);
+				openGLGeometryBuilder.startGeometry(texture);				
+				first = false;
+			}
+
+			// load the object
+			TransformingGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> transformingGeometryBuilder = new TransformingGeometryBuilder<TexturableTriangle3D<NormalizableTriangle3D<Object>>, TexturableRectangle2D<Object>>(openGLGeometryBuilder, objectDescriptor.coordinateTransformationMatrix, objectDescriptor.textureTransformationMatrix);
+			loadRequiredObj(objectDescriptor.objectFileResourceId, transformingGeometryBuilder);
+		}
+		// wrap up the existing geometry (if any, since first time through there won't be an existing geometry)
+		if (openGLGeometryBuilder.isBuildingGeometry()) {
+			final OpenGLGeometry lastGeometry = openGLGeometryBuilder.endGeometry();
+			glowGeometries.add(lastGeometry);
 		}
 		
 		openGLGeometryBuilder.startGeometry(getTexture(R.raw.skybox_texture, false));		
@@ -276,9 +310,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		// times.
 		aGl.glEnable(GL10.GL_CULL_FACE);
 		aGl.glEnable(GL10.GL_DEPTH_TEST);
-		aGl.glEnable(GL10.GL_BLEND);
-		//aGl.glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		aGl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		aGl.glDisable(GL10.GL_BLEND);
 		aGl.glShadeModel(GL10.GL_SMOOTH);
 		aGl.glEnable(GL10.GL_LIGHTING);
 		aGl.glLightModelfv(GL10.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.75f, 0.75f, 0.75f, 1f }, 0);
@@ -424,6 +456,15 @@ public class SevenWondersGLRenderer implements Renderer {
 			final OpenGLGeometry geometry = decorationGeometries.get(geometryIndex);
 			geometry.draw(aGl);
 		}
+
+		// Draw glows with additive blending
+		aGl.glEnable(GL10.GL_BLEND);
+		aGl.glBlendFunc(GL_ONE, GL_ONE);
+		for (int geometryIndex = 0; geometryIndex < glowGeometries.size(); geometryIndex++) {
+			final OpenGLGeometry geometry = glowGeometries.get(geometryIndex);
+			geometry.draw(aGl);
+		}
+		aGl.glDisable(GL10.GL_BLEND);
 		
 		if (SevenWondersApplication.isDebug) {
 			if (settings.isDebugEnabled()) {
