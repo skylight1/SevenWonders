@@ -444,11 +444,22 @@ public class SevenWondersGLRenderer implements Renderer {
 		
 		drawCarpet(aGl);
 
+		float worldAngle = carpet.getWorldAngle();
+		aGl.glPushMatrix();		
+		aGl.glRotatef(worldAngle, 0f, 0f, 1f);
+
+		
+		drawSkybox(aGl, worldAngle);
+		
+
+		
 		applyMovement(aGl);
 
 		detectCollisions();
+	
 
-		drawSkybox(aGl);
+	
+
 		drawSpells(aGl);		
 		drawSwords(aGl);
 
@@ -465,6 +476,9 @@ public class SevenWondersGLRenderer implements Renderer {
 			geometry.draw(aGl);
 		}
 		aGl.glDisable(GL10.GL_BLEND);
+
+		aGl.glPopMatrix();
+
 		
 		if (SevenWondersApplication.isDebug) {
 			if (settings.isDebugEnabled()) {
@@ -487,18 +501,20 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glFrontFace(GL_CCW);
 	}
 
-	private void drawSkybox(GL10 aGl) {	
+	private void drawSkybox(GL10 aGl, float worldAngle) {	
 		// save the current matrix for later - later? what later?
 		aGl.glPushMatrix();
 
 		// rotate the skybox to match the player's facing
-		Matrix.setIdentityM(temporaryMatrix, 0);
-		Matrix.rotateM(temporaryMatrix, 0, playerFacingThisFrame, 0, 1, 0);
-		aGl.glLoadMatrixf(temporaryMatrix, 0);
+//		Matrix.setIdentityM(temporaryMatrix, 0);
+//		Matrix.rotateM(temporaryMatrix, 0, playerFacingThisFrame, 0, 1, 0);
+//		aGl.glLoadMatrixf(temporaryMatrix, 0);
+		aGl.glRotatef(playerFacingThisFrame, 0f, 1f, 0f);
 
 		aGl.glDisable(GL10.GL_LIGHTING);
 		aGl.glDisable(GL10.GL_LIGHT0);
-		
+
+//		aGl.glRotatef(worldAngle, 0f, 0f, 1f);
 		skyboxGeometry.draw(aGl);
 		
 		aGl.glEnable(GL10.GL_LIGHTING);

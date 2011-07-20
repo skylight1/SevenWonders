@@ -60,6 +60,10 @@ public class Carpet {
 	private float lastAngle;
 	
 	private float priorTolastAngle;
+	
+	private float lastWorldAngle;
+	
+	private float priorTolastWorldAngle;
 
 	private SevenWondersGLRenderer renderer;	
 
@@ -128,6 +132,31 @@ public class Carpet {
 			lastAngle = angle;
 			return angle;	
 	}
+	
+	public float getWorldAngle() {
+		float angle = 0;			
+		synchronized (this) {
+			if ( turnEventsHistory.isEmpty() ) {
+				return 0;
+			}
+			
+			final long timeOfMostRecentEvent = turnEventsHistory.getLast().time;
+			final Iterator<TimestampedFloat> iterator = turnEventsHistory.iterator();
+			while (iterator.hasNext()) {
+				TimestampedFloat v = iterator.next();
+				long millisSinceCreation = v.createdHowManyMillisAgo(timeOfMostRecentEvent);					
+				if (millisSinceCreation > 0 && millisSinceCreation <  TIMESPAN_IN_MILLIS_TO_CONSIDER_FOR_CARPET_ROLLING ) {
+					float fractionOfWindow = (float) millisSinceCreation / TIMESPAN_IN_MILLIS_TO_CONSIDER_FOR_CARPET_ROLLING;
+					angle -= v.value * (1f-fractionOfWindow); 
+				}
+			}
+		}
+		angle = -1.0f*angle;
+		priorTolastWorldAngle = lastWorldAngle; 
+		angle = (lastWorldAngle+angle+priorTolastWorldAngle)/3;
+		lastWorldAngle = angle;
+		return angle;	
+}
 
 
 	public void draw(GL10 aGl, boolean aPaused) {
