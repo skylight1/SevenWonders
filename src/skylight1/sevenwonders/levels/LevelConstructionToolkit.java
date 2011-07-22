@@ -36,7 +36,6 @@ public class LevelConstructionToolkit {
 		final float[] ankhTransformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(ankhTransformationMatrix, 0);
 		android.opengl.Matrix.translateM(ankhTransformationMatrix, 0, anX, HEIGHT_OF_SPELLS_FROM_GROUND, aZ);
-		// Ankhs were difficult to see, so double the size.
 		android.opengl.Matrix.scaleM(ankhTransformationMatrix, 0, 2, 2, 2);
 		final CollisionAction spellsCollisionAction = new SpellCollisionAction();
 		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(ankhTransformationMatrix, SPELLS_TEXTURE_TRANSFORM, R.raw.ankh, R.raw.textures), spellsCollisionAction);
@@ -48,7 +47,7 @@ public class LevelConstructionToolkit {
 		final float[] highlightTransformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(highlightTransformationMatrix, 0);
 		android.opengl.Matrix.translateM(highlightTransformationMatrix, 0, anX, 75, aZ);
-		android.opengl.Matrix.scaleM(highlightTransformationMatrix, 0, 8, 2, 8);
+		android.opengl.Matrix.scaleM(highlightTransformationMatrix, 0, 2, 2, 2);
 		aGameLevel.glows.add(new GameObjectDescriptor(highlightTransformationMatrix, null, R.raw.transparent_white_cyclinder, R.raw.textures));
 	}
 
