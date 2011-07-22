@@ -40,7 +40,7 @@ public enum GameLevel {
 			addSpell(this, 20, -310);
 
 			addPyramid(this, 0, -340, -10, -550);
-			addSpell(this, -400, -410);
+			addSpell(this, -350, -350);
 
 			addPyramid(this, 0, -340, -10, 550);
 			addSpell(this, -480, 430);

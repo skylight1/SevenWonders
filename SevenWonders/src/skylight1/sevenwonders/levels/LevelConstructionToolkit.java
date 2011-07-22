@@ -37,18 +37,18 @@ public class LevelConstructionToolkit {
 		android.opengl.Matrix.setIdentityM(ankhTransformationMatrix, 0);
 		android.opengl.Matrix.translateM(ankhTransformationMatrix, 0, anX, HEIGHT_OF_SPELLS_FROM_GROUND, aZ);
 		android.opengl.Matrix.scaleM(ankhTransformationMatrix, 0, 2, 2, 2);
-		final CollisionAction spellsCollisionAction = new SpellCollisionAction();
-		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(ankhTransformationMatrix, SPELLS_TEXTURE_TRANSFORM, R.raw.ankh, R.raw.textures), spellsCollisionAction);
-
-		aGameLevel.numberOfSpells++;
 
 		// And show a column of transparent light on top of them.
-		// TODO remove the column when appropriate: when the ankh is collected, on harder difficulty, after the level is won once, etc..
 		final float[] highlightTransformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(highlightTransformationMatrix, 0);
 		android.opengl.Matrix.translateM(highlightTransformationMatrix, 0, anX, 75, aZ);
 		android.opengl.Matrix.scaleM(highlightTransformationMatrix, 0, 2, 2, 2);
+		int glowIndex = aGameLevel.glows.size();
 		aGameLevel.glows.add(new GameObjectDescriptor(highlightTransformationMatrix, null, R.raw.transparent_white_cyclinder, R.raw.textures));
+
+		final CollisionAction spellsCollisionAction = new SpellCollisionAction(glowIndex);
+		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(ankhTransformationMatrix, SPELLS_TEXTURE_TRANSFORM, R.raw.ankh, R.raw.textures), spellsCollisionAction);
+		aGameLevel.numberOfSpells++;
 	}
 
 	static void addRuby(final GameLevel aGameLevel, int anX, int aZ) {
