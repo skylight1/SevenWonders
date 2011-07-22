@@ -173,10 +173,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(60453);
 
 		// load all of the decorations (land, water, sphinx, pyramids, etc.)
-		addGeometriesFromGameObjects(decorationGeometries, level.getDecorations());
+		addGeometriesFromGameObjects(decorationGeometries, level.getDecorations(), false);
 
 		// load glows that brighten areas
-		addGeometriesFromGameObjects(glowGeometries, level.getGlows());
+		addGeometriesFromGameObjects(glowGeometries, level.getGlows(), true);
 		
 		openGLGeometryBuilder.startGeometry(getTexture(R.raw.skybox_texture, false));		
 		loadRequiredObj(R.raw.skybox_model, openGLGeometryBuilder);
@@ -247,11 +247,11 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	private void addGeometriesFromGameObjects(final List<OpenGLGeometry> aDestinationGeometries,
-			final Collection<GameObjectDescriptor> aGameObjects) {
+			final Collection<GameObjectDescriptor> aGameObjects, final boolean aUseseparateGeometries) {
 		int currentTextureResource = 0;
 		for (GameObjectDescriptor objectDescriptor : aGameObjects) {
 			// if the texture has changed (including the first time through), then ...
-			if (objectDescriptor.textureResource != currentTextureResource) {
+			if (aUseseparateGeometries || objectDescriptor.textureResource != currentTextureResource) {
 				// wrap up the existing geometry (if any, since first time through there won't be an existing geometry)
 				if (openGLGeometryBuilder.isBuildingGeometry()) {
 					final OpenGLGeometry previousGeometry = openGLGeometryBuilder.endGeometry();
@@ -448,13 +448,7 @@ public class SevenWondersGLRenderer implements Renderer {
 			geometry.draw(aGl);
 		}
 
-		// Draw glows with additive blending
-		aGl.glEnable(GL10.GL_BLEND);
-		for (int geometryIndex = 0; geometryIndex < glowGeometries.size(); geometryIndex++) {
-			final OpenGLGeometry geometry = glowGeometries.get(geometryIndex);
-			geometry.draw(aGl);
-		}
-		aGl.glDisable(GL10.GL_BLEND);
+		drawGlows(aGl);
 
 		aGl.glPopMatrix();
 
@@ -464,6 +458,18 @@ public class SevenWondersGLRenderer implements Renderer {
 				updateUiHandler.sendMessage(msg);
 			}
 		}
+	}
+
+	private void drawGlows(final GL10 aGl) {
+		// Blend function is set to additive blending at init time, which adds light, not obscures
+		aGl.glEnable(GL10.GL_BLEND);
+		for (int geometryIndex = 0; geometryIndex < glowGeometries.size(); geometryIndex++) {
+			final OpenGLGeometry geometry = glowGeometries.get(geometryIndex);
+			if ( null != geometry ) {
+				geometry.draw(aGl);
+			}
+		}
+		aGl.glDisable(GL10.GL_BLEND);
 	}
 
 	private void drawCarpet(final GL10 aGl) {
@@ -484,15 +490,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glPushMatrix();
 
 		// rotate the skybox to match the player's facing
-//		Matrix.setIdentityM(temporaryMatrix, 0);
-//		Matrix.rotateM(temporaryMatrix, 0, playerFacingThisFrame, 0, 1, 0);
-//		aGl.glLoadMatrixf(temporaryMatrix, 0);
 		aGl.glRotatef(playerFacingThisFrame, 0f, 1f, 0f);
-
 		aGl.glDisable(GL10.GL_LIGHTING);
 		aGl.glDisable(GL10.GL_LIGHT0);
 
-//		aGl.glRotatef(worldAngle, 0f, 0f, 1f);
 		skyboxGeometry.draw(aGl);
 		
 		aGl.glEnable(GL10.GL_LIGHTING);
@@ -668,5 +669,9 @@ public class SevenWondersGLRenderer implements Renderer {
 	
 	public GameState getGameState() {
 		return gameState;
+	}
+
+	public void hideGlowAt(final int aGlowIndex) {
+		glowGeometries.set(aGlowIndex, null);
 	}
 }
