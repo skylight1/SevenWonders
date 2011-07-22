@@ -48,6 +48,7 @@ import android.util.FloatMath;
 import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
+	
 	public static class CollisionActionToCollisionObserverAdapter implements CollisionObserver {
 		private final List<OpenGLGeometry> listOfOpenGLGeometries;
 		private final CollisionAction collisionAction;
@@ -85,9 +86,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		}
 	}
 
-	static final int ANIMATION_INDEX_FOR_COLLISION_DETECTION = 0;
+	static final float MAXIMUM_VELOCITY = 300f * 1000f / 60f / 60f / 1000f;
 
-	public static final float MAXIMUM_VELOCITY = 300f * 1000f / 60f / 60f / 1000f;
+	// Used to reduce turning velocity, which was too high as the phone angle times the time delta alone.
+	private static final int TURNING_VELOCITY_DIVISOR = 100;
 
 	private static final int END_OF_WORLD_MARGIN = 100;
 
@@ -97,7 +99,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final float MINIMUM_VELOCITY = -MAXIMUM_VELOCITY / 10f;
 
-	static final int NUMBER_OF_SPINNING_ANIMATION_FRAMES = 16;
+	private static final int NUMBER_OF_SPINNING_ANIMATION_FRAMES = 16;
 
 	private static final int PERIOD_FOR_SPINNING_ANIMATION_CYCLE = 1000;
 
@@ -115,6 +117,8 @@ public class SevenWondersGLRenderer implements Renderer {
 	private Position playerWorldPosition = new Position(0, 0, 0);
 
 	private float playerFacing;
+	
+	private float turningVelocity;
 
 	private float velocity;
 
@@ -419,6 +423,10 @@ public class SevenWondersGLRenderer implements Renderer {
 	public void onDrawFrame(final GL10 aGl) {
 		aGl.glClear(GL10.GL_DEPTH_BUFFER_BIT);
 		
+		final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
+		float turnAmountFromTurningVelocity = turningVelocity * timeDeltaMS / TURNING_VELOCITY_DIVISOR;
+		turn(turnAmountFromTurningVelocity);
+		
 		playerFacingThisFrame = playerFacing;
 		
 		drawCarpet(aGl);
@@ -429,7 +437,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glRotatef(worldAngle, 0f, 0f, 1f);
 		drawSkybox(aGl, worldAngle);
 				
-		applyMovement(aGl);
+		applyMovement(aGl, timeDeltaMS);
 		detectCollisions();
 
 		drawSpells(aGl);		
@@ -508,19 +516,17 @@ public class SevenWondersGLRenderer implements Renderer {
 		}
 	}
 
-	private void applyMovement(final GL10 aGl) {	
+	private void applyMovement(final GL10 aGl, final long aTimeDeltaMS) {	
 		// keep the old position in case a collision with an obstacle requires a "movement rollback"
 		startOfFramePlayerWorldPositionX = playerWorldPosition.x;
 		startOfFramePlayerWorldPositionZ = playerWorldPosition.z;
-
-		final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
 
 		final float facingX = (float) Math.sin(playerFacingThisFrame / 180f * Math.PI);
 		final float facingZ = -(float) Math.cos(playerFacingThisFrame / 180f * Math.PI);
 
 		if ( !paused ) {
-			final float newPositionX = playerWorldPosition.x + facingX * velocity * timeDeltaMS;
-			final float newPositionZ = playerWorldPosition.z + facingZ * velocity * timeDeltaMS;
+			final float newPositionX = playerWorldPosition.x + facingX * velocity * aTimeDeltaMS;
+			final float newPositionZ = playerWorldPosition.z + facingZ * velocity * aTimeDeltaMS;
 	
 			// Only update the position if it isn't too far from the end of the world.
 			if (newPositionX > (CubeBounds.TERRAIN.x1 + END_OF_WORLD_MARGIN)
@@ -585,14 +591,14 @@ public class SevenWondersGLRenderer implements Renderer {
 		}
 	}
 
-	public synchronized void setPlayerVelocity(int aNewVelocity) {
+	public synchronized void setPlayerVelocity(final int aNewVelocity) {
 		if ( paused ) {
 			return;
 		}
 		velocity = aNewVelocity;
 	}
 
-	public synchronized void turn(float anAngleOfTurn) {
+	public synchronized void turn(final float anAngleOfTurn) {
 		if ( paused ) {
 			return;
 		}
@@ -600,21 +606,28 @@ public class SevenWondersGLRenderer implements Renderer {
 		carpet.recordTurnAngle(anAngleOfTurn);
 	}
 
-	public synchronized void setPlayerFacing(float anAngleAbosulte) {
+	public synchronized void setTurningVelocity(final float aTurningVelocity) {
+		if ( paused ) {
+			return;
+		}
+		turningVelocity = aTurningVelocity;
+	}
+
+	public synchronized void setPlayerFacing(final float anAngleAbosulte) {
 		if ( paused ) {
 			return;
 		}
 		playerFacing = anAngleAbosulte;
 	}
 
-	public synchronized void changeVelocity(float aVelocityIncrement) {
+	public synchronized void changeVelocity(final float aVelocityIncrement) {
 		if ( paused ) {
 			return;
 		}
 		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, velocity + aVelocityIncrement));
 	}
 
-	public synchronized void setVelocity(float aVelocity) {
+	public synchronized void setVelocity(final float aVelocity) {
 		if ( paused ) {
 			return;
 		}
