@@ -492,12 +492,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		// rotate the skybox to match the player's facing
 		aGl.glRotatef(playerFacingThisFrame, 0f, 1f, 0f);
 		aGl.glDisable(GL10.GL_LIGHTING);
-		aGl.glDisable(GL10.GL_LIGHT0);
 
 		skyboxGeometry.draw(aGl);
 		
 		aGl.glEnable(GL10.GL_LIGHTING);
-		aGl.glEnable(GL10.GL_LIGHT0);
 		
 		// restore the matrix
 		aGl.glPopMatrix();
