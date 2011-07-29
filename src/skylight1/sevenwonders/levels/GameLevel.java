@@ -18,7 +18,7 @@ import skylight1.sevenwonders.R;
 
 public enum GameLevel {
 
-	// This level has one ankh and one pyramid.
+	// This level=1 has one ankh and one pyramid.
 	// Both are immediately in view as soon as you start so are easy to find.
 	// The pyramid makes a good landmark for users who get lost 
 	// and can't see the ankh from far away.
@@ -31,7 +31,7 @@ public enum GameLevel {
 		}
 	},
 	
-	// This level has one ankh near each of three pyramids.
+	// This level=2 has one ankh near each of three pyramids.
 	// The user has to navigate between them.
 	TEACH_COLLECTING_MULTIPLE_WITH_EASY_LANDMARKS(
 		"Each of three pyramids has an ankh nearby.  Collect all three.", R.drawable.icon) {
@@ -47,7 +47,7 @@ public enum GameLevel {
 		}
 	},
 	
-	// This level has a trail of ankhs and coins the user has to follow.
+	// This level=3 has a trail of ankhs and coins the user has to follow.
 	TEACH_COLLECTING_NO_LANDMARKS(
 		"Nebtawi, the evil vizier, has spread the ankhs far and wide. Race to find all five.", R.drawable.icon) {
 		{
@@ -63,7 +63,7 @@ public enum GameLevel {
 			addSpell(this, 100, 400);
 		}
 	},
-	
+	// This level=4
 	TEACH_COIN(
 		"Nebtawi's magic has brought forth lost treasures from the desert. Riches await you.", R.drawable.icon) {
 		{
@@ -79,7 +79,7 @@ public enum GameLevel {
 		}
 	},
 	
-	// This level has a sword that has to be flown around to get the ankh.
+	// This level=5 has a sword that has to be flown around to get the ankh.
 	TEACH_AVOIDING_SWORDS(
 		"Fly wide around Nebtawi's flying sword to collect the ankh behind it!", R.drawable.icon) {
 		{
@@ -90,7 +90,7 @@ public enum GameLevel {
 			addHazard(this, 20, -250);
 		}
 	},
-	
+	// This level=6
 	MANY_SWORDS(
 		"Many swords will bar your way, but the ankhs must be recovered if Egypt is to be saved.", R.drawable.icon) {
 		{
@@ -111,14 +111,14 @@ public enum GameLevel {
 			addCoin(this, 200, 210);
 		}
 	},
-	
+	// This level=7
 	THE_GAUNTLET(
 		"Fly carefully between the swords to recover the ankhs.", R.drawable.icon) {
 		{
 			addPyramid(this, 0, -80, -10, -450);
 			addSphynx(this, 90, -190, -30, -90);
 			
-			addSpell(this,  -100, -400);
+			addSpell(this,  -170, -300);
 			addHazard(this, -150, -400);
 			addHazard(this, -125, -425);
 			addHazard(this, -100, -450);
@@ -132,14 +132,14 @@ public enum GameLevel {
 		}
 	},
 	
-	// This level teaches using the shield.
+	// This level=8 teaches using the shield.
 	TEACH_INVULNERABILITY(
 		"Collect the Sphinx's shield to pass safely through the storm of swords.", R.drawable.shield) {
 		{
 			addPyramid(this, 0, -80, -10, -450);
 			addSphynx(this, 90, -190, -30, -90);
 
-			addSpell(this,  -100, -400);
+			addSpell(this,  -100, -300);
 			addHazard(this, -150, -400);
 			addHazard(this, -125, -425);
 			addHazard(this, -100, -450);
@@ -153,14 +153,14 @@ public enum GameLevel {
 		}
 	},
 	
-	// This level requires using the shield.
+	// This level=9 requires using the shield.
 	TEACH_INVULNERABILITY_TIME_LIMIT(
 		"The shield does not last forever. Move quickly through the storms of swords.", R.drawable.shield) {
 		{
 			addPyramid(this, 0, -80, -10, -450);
 			addSphynx(this, 90, -190, -30, -90);
 			
-			addSpell(this,  -100, -400);
+			addSpell(this,  -100, -200);
 			addHazard(this, -150, -400);
 			addHazard(this, -125, -425);
 			addHazard(this, -100, -450);
@@ -175,14 +175,15 @@ public enum GameLevel {
 		}
 	},
 	
-	// This level requires using the shield.
+	// This level=10 requires using the shield.
 	LOTS_OF_SWORDS_N_SHIELDS(
 		"Think of some clever title", R.drawable.shield) {
 		{
 			addPyramid(this, 0, -80, -10, -450);
 			addSphynx(this, 90, -190, -30, -90);
-			
-			addSpell(this,  -100, -400);
+			//the more negative(z) means farther away
+			//addSpell(this,x,z)
+			addSpell(this,  -100, -600);
 			addHazard(this, -150, -400);
 			addHazard(this, -125, -425);
 			addHazard(this, -100, -450);
