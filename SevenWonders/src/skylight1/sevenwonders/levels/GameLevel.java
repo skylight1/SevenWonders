@@ -59,7 +59,7 @@ public enum GameLevel {
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
-			addSpell(this, -200, 100);
+			addSpell(this, -370, 100);
 			addSpell(this, 100, 400);
 		}
 	},
@@ -97,8 +97,8 @@ public enum GameLevel {
 			addPyramid(this, 0, -80, -10, -450);
 			addSphynx(this, 90, -190, -30, -90);
 
-			addSpell(this,  -100, -400);
-			addHazard(this, -150, -400);
+			addSpell(this,  -150, -400);
+			addHazard(this, -190, -400);
 			addHazard(this, -125, -425);
 			addHazard(this, -100, -450);
 			addHazard(this, -75, -425);
@@ -278,6 +278,10 @@ public enum GameLevel {
 		
 		decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.ground, R.raw.dunes));
 		decorations.add(new GameObjectDescriptor(createNewIdentityMatrix(), null, R.raw.water, R.raw.textures));
+	}
+
+	public int getIconResourceId() {
+		return iconResourceId;
 	}
 
 	/**
