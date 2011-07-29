@@ -495,7 +495,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		skyboxGeometry.draw(aGl);
 		
-		aGl.glEnable(GL10.GL_LIGHTING);
+	   aGl.glEnable(GL10.GL_LIGHTING);
 		
 		// restore the matrix
 		aGl.glPopMatrix();
