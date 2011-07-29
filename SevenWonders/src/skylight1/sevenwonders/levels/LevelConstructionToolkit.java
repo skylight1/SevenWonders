@@ -15,6 +15,8 @@ public class LevelConstructionToolkit {
 
 	private static final float HEIGHT_OF_COINS_FROM_GROUND = 12f;
 
+	private static final float HEIGHT_OF_SCARAB_FROM_GROUND = 12f;
+
 	private static final float[] SPELLS_TEXTURE_TRANSFORM = new float[16];
 	static {
 		// the texture is within the main texture, so it needs a little transformation to map onto the spell
@@ -32,6 +34,15 @@ public class LevelConstructionToolkit {
 		Matrix.scaleM(COIN_TEXTURE_TRANSFORM, 0, 100f / 512f, 189f / 512f, 1f);
 	}
 
+	private static final float[] SCARAB_TEXTURE_TRANSFORM = new float[16];
+	
+	static {
+		// the texture is within the main texture, so it needs a little transformation to map onto the scarab
+		Matrix.setIdentityM(SCARAB_TEXTURE_TRANSFORM, 0);
+		Matrix.translateM(SCARAB_TEXTURE_TRANSFORM, 0, 360f / 512f, 323f / 512f, 0);
+		Matrix.scaleM(SCARAB_TEXTURE_TRANSFORM, 0, 85f / 512f, 139f / 512f, 1f);
+	}
+	
 	static void addSpell(final GameLevel aGameLevel, int anX, int aZ) {
 		final float[] ankhTransformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(ankhTransformationMatrix, 0);
@@ -40,7 +51,9 @@ public class LevelConstructionToolkit {
 
 		// And show a column of transparent light on top of them.
 		final float[] highlightTransformationMatrix = new float[16];
+		final float[] highlightTextureMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(highlightTransformationMatrix, 0);
+		android.opengl.Matrix.setIdentityM(highlightTextureMatrix, 0);
 		android.opengl.Matrix.translateM(highlightTransformationMatrix, 0, anX, 75, aZ);
 		android.opengl.Matrix.scaleM(highlightTransformationMatrix, 0, 4, 4, 4);
 		int glowIndex = aGameLevel.glows.size();
@@ -75,6 +88,15 @@ public class LevelConstructionToolkit {
 		android.opengl.Matrix.scaleM(transformationMatrix, 0, 2, 2, 2);
 		final CollisionAction coinCollisionAction = new CoinCollisionAction();
 		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, COIN_TEXTURE_TRANSFORM, R.raw.coin, R.raw.textures), coinCollisionAction);
+	}
+	
+	static void addExtraTime(final GameLevel aGameLevel, int anX, int aZ) {
+		final float[] transformationMatrix = new float[16];
+		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
+		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_SCARAB_FROM_GROUND, aZ);
+		android.opengl.Matrix.scaleM(transformationMatrix, 0, 2f, 2f, 2f);
+		final CollisionAction scarabCollisionAction = new ExtraTimeAction();
+		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, SCARAB_TEXTURE_TRANSFORM, R.raw.scarab, R.raw.textures), scarabCollisionAction);
 	}
 	
 	static void addTimeAdded(final GameLevel aGameLevel, int anX, int aZ) {
