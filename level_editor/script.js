@@ -11,6 +11,8 @@ if (!window.console)
 // Objects shown in the game for this level.
 var gameObjects;
 
+var gameObjectBeingMoved;
+
 // Objects offered in the palette, they can be dragged on to the level to add a game object.
 var paletteObjects;
 
@@ -39,6 +41,7 @@ function Sprite(name, firstLeft, firstTop) {
 		this.top = newTop;
 		this.right = newLeft + this.image.width;
 		this.bottom = newTop + this.image.height;
+		draw();
 	}
 	this.move(firstLeft, firstTop);
 }
@@ -108,17 +111,49 @@ function draw() {
 	
 }
 
-function collisionCheckSprites(a, b) {
-	if ( null == a || null == b ) {
+function doesSpriteContain(sprite, x, y) {
+		
+	console.log("x: " + x);
+	console.log("y: " + x);
+	console.log("left: " + sprite.left);
+	console.log("right: " + sprite.right);
+	console.log("bottom: " + sprite.bottom);
+	console.log("top: " + sprite.top);
+	
+	if ( null == sprite ) {
 		return false;
 	}
-	return (a.left <= b.right &&
-		b.left <= a.right &&
-		a.top <= b.bottom &&
-		b.top <= a.bottom)
+	return (sprite.left <= x &&
+			sprite.right >= x &&
+			sprite.bottom >= y &&
+			sprite.top <= y)
 }
 
-function handleClick() {
+function handleClick(e) {
+
+	// If dragging something, clicking drops it.
+	if ( null != gameObjectBeingMoved ) {
+		gameObjectBeingMoved = null;
+		return;
+	}
+
+	// Convert mouse coordinates into canvas coordinates.
+	var mouseX = e.clientX - canvas.offsetLeft + window.pageXOffset;
+	var mouseY = e.clientY - canvas.offsetTop + window.pageYOffset;
+	
+	// Otherwise, check if we are clicking to pick something up.
+	for( var i in gameObjects ) {
+		var gameObject = gameObjects[i];
+		if ( doesSpriteContain(gameObject, mouseX, mouseY) ) {
+			
+			console.log("Object grabbed!");
+
+			gameObjectBeingMoved = gameObject;
+			gameObject.move(mouseX, mouseY);
+			break;
+		}
+	}
+		
 }
 
 function handleMouseOver() {
@@ -128,4 +163,14 @@ function handleMouseOut() {
 }
 
 function handleMouseMove(e) {
+	// Convert mouse coordinates into canvas coordinates.
+	var mouseX = e.clientX - canvas.offsetLeft + window.pageXOffset;
+	var mouseY = e.clientY - canvas.offsetTop + window.pageYOffset;
+	
+	if ( null != gameObjectBeingMoved ) {
+		console.log("Moving object!");
+		gameObjectBeingMoved.move(mouseX, mouseY);
+	} else {
+		console.log("No grabbed object.");
+	}
 }
