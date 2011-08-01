@@ -45,6 +45,12 @@ function Sprite(name, firstLeft, firstTop) {
 		this.bottom = newTop + this.image.height;
 		draw();
 	}
+	
+	this.moveCenter = function(newCenterX, newCenterY) {
+		this.move(newCenterX - this.image.width / 2, newCenterY - this.image.height / 2);
+		draw();
+	}
+	
 	this.move(firstLeft, firstTop);
 }
 
@@ -144,7 +150,7 @@ function handleClick(e) {
 			console.log("Object grabbed!");
 
 			gameObjectBeingMoved = gameObject;
-			gameObjectBeingMoved.move(mouseX, mouseY);
+			gameObjectBeingMoved.moveCenter(mouseX, mouseY);
 			break;
 		}
 	}
@@ -156,7 +162,7 @@ function handleClick(e) {
 			console.log("Palette clicked, making new game object!");
 
 			gameObjectBeingMoved = new Sprite(paletteObject.name, paletteObject.left, paletteObject.top);
-			gameObjectBeingMoved.move(mouseX, mouseY);
+			gameObjectBeingMoved.moveCenter(mouseX, mouseY);
 			
 			gameObjects[gameObjects.length] = gameObjectBeingMoved;
 			
@@ -179,7 +185,7 @@ function handleMouseMove(e) {
 	
 	if ( null != gameObjectBeingMoved ) {
 		console.log("Moving object!");
-		gameObjectBeingMoved.move(mouseX, mouseY);
+		gameObjectBeingMoved.moveCenter(mouseX, mouseY);
 	} else {
 		console.log("No grabbed object.");
 	}
