@@ -21,6 +21,10 @@ var PALETTE_OBJECT_NAMES = [
                       "spell",
                       "sphinx",
                       "hazard",
+                      "protection",
+                      "ruby",
+                      "scarab",
+                      "sphinx",
 ];
 
 var background;
