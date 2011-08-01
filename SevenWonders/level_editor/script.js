@@ -1,21 +1,4 @@
-// Prevent errors in browsers without FireBug.
-if (!window.console)
-{
-    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
-    "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
-    window.console = {};
-    for (var i = 0; i < names.length; ++i)
-        window.console[names[i]] = function() {}
-}
-
-// Objects shown in the game for this level.
-var gameObjects;
-
-var gameObjectBeingMoved;
-
-// Objects offered in the palette, they can be dragged on to the level to add a game object.
-var paletteObjects;
-
+// The names of the palette objects.
 var PALETTE_OBJECT_NAMES = [
                       "pyramid",
                       "spell",
@@ -27,17 +10,52 @@ var PALETTE_OBJECT_NAMES = [
                       "coin",
 ];
 
+// The width of the palette area of the canvas. It's on the left. 
+// Anything else represents the level.
 var PALETTE_WIDTH = 120;
 
+// Size of the level space in an Android level.
+var ANDROID_LEVEL_SIZE = 2000;
+
+// Half the size of the level space in an Android level.
+var HALF_ANDROID_LEVEL_SIZE = ANDROID_LEVEL_SIZE / 2;
+
+// Size that all images are drawn.
+var IMAGE_DRAW_SIZE = 40;
+
+// Objects shown in the game for this level.
+var gameObjects;
+
+// Object whose location is currently being set by moving the mouse.
+var gameObjectBeingMoved;
+
+// Objects offered in the palette, they can be dragged on to the level to add a game object.
+var paletteObjects;
+
+// Background image that gets drawn.
 var background;
+
+// Canvas element.
 var canvas;
+
+// Context of the canvas element.
 var ctx;
+
+//Prevent errors in browsers without FireBug.
+if (!window.console)
+{
+    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
+    "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+    window.console = {};
+    for (var i = 0; i < names.length; ++i)
+        window.console[names[i]] = function() {}
+}
 
 // Sprite type used for collision detection and drawing. Matches the size of an image.
 function Sprite(name, firstLeft, firstTop) {
 	
-	this.width = 40;
-	this.height = 40;
+	this.width = IMAGE_DRAW_SIZE;
+	this.height = IMAGE_DRAW_SIZE;
 	this.name = name;
 	
 	this.image = new Image();
@@ -223,6 +241,7 @@ function parseObjects() {
 	theText = theText.replace(/\nadd/g, "\n");
 	
 	var lines = theText.split("\n");
+	gameObjects = new Array();
 	for (var i = 0;i < lines.length;++i) {
 		parseLine(lines[i]);
 	}
@@ -230,20 +249,15 @@ function parseObjects() {
 }
 
 function convertAndroidXToCanvasX(androidX) {
-	var gameLevelAreaWidth = 512 - PALETTE_WIDTH;
-	var androidLevelSize = 2000;
-	var halfAndroidLevelSize = androidLevelSize / 2;
+	var gameLevelAreaWidth = canvas.width - PALETTE_WIDTH;
 	
 	// Convert android x to always be positive, then fit entire width of game level area
 	// into the space in the canvas for the game level.
-	return ((androidX + halfAndroidLevelSize) * gameLevelAreaWidth / androidLevelSize) + PALETTE_WIDTH;
+	return ((androidX + HALF_ANDROID_LEVEL_SIZE) * gameLevelAreaWidth / ANDROID_LEVEL_SIZE) + PALETTE_WIDTH;
 }
 
 function convertAndroidZToCanvasY(androidZ) {
-	var androidLevelSize = 2000;
-	var halfAndroidLevelSize = androidLevelSize / 2;
-
-	return (androidZ + halfAndroidLevelSize) * 640 / androidLevelSize;
+	return (androidZ + HALF_ANDROID_LEVEL_SIZE) * canvas.height / ANDROID_LEVEL_SIZE;
 }
 
 function parseLine(line) {
