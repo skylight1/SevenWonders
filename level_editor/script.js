@@ -12,7 +12,7 @@ var PALETTE_OBJECT_NAMES = [
 
 // The width of the palette area of the canvas. It's on the left. 
 // Anything else represents the level.
-var PALETTE_WIDTH = 120;
+var PALETTE_WIDTH = 90;
 
 // Size of the level space in an Android level.
 var ANDROID_LEVEL_SIZE = 2000;
@@ -22,6 +22,9 @@ var HALF_ANDROID_LEVEL_SIZE = ANDROID_LEVEL_SIZE / 2;
 
 // Size that all images are drawn.
 var IMAGE_DRAW_SIZE = 40;
+
+// Size of the canvas used for drawing the game level.
+var gameLevelAreaWidth;
 
 // Objects shown in the game for this level.
 var gameObjects;
@@ -88,7 +91,12 @@ function Sprite(name, firstLeft, firstTop) {
 function handleLoad() {
 
 	canvas = document.getElementById('gameCanvas');
+	gameLevelAreaWidth = canvas.width - PALETTE_WIDTH;
 	ctx = canvas.getContext('2d');
+	ctx.font = "bold x-large sans-serif";
+	ctx.fillStyle = "white";
+	ctx.textAlign = "left";
+	
 	background = new Image();
 	background.src = "background.png";
 	background.onload = function() {
@@ -96,8 +104,6 @@ function handleLoad() {
 	}
 		  
 	gameObjects = new Array();
-	gameObjects[0] = new Sprite("sphinx", canvas.width / 2, canvas.height / 2);
-	gameObjects[1] = new Sprite("pyramid", canvas.width / 2, 0);
 
 	paletteObjects = new Array();
 	var paletteIndex = 0;
@@ -113,8 +119,11 @@ function handleLoad() {
 }
 
 function draw() {
-		
-	ctx.drawImage(background, 0, 0);
+	
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	
+	ctx.drawImage(background, PALETTE_WIDTH, 0, gameLevelAreaWidth, canvas.height);
 	
 	//Draw game objects.
 	for( var i in gameObjects ) {
@@ -128,23 +137,21 @@ function draw() {
 		paletteObject.drawSprite(ctx);
 	}
 
-	//Draw label for the palette area of the editor.
-	ctx.font = "bold x-large sans-serif";
 	ctx.fillStyle = "white";
-	ctx.textAlign = "left";
+	
+	//Draw label for the palette area of the editor.
 	ctx.fillText("Palette", 5, 25);
 
 	//Draw a vertical line separating it.
+	/*
 	ctx.moveTo(90, 0);
 	ctx.lineTo(90, 512);
 	ctx.lineWidth = 5;
 	ctx.strokeStyle = "#000";
 	ctx.stroke();
-
+	*/
+	
 	//Draw label for the play area area of the editor.
-	ctx.font = "bold x-large sans-serif";
-	ctx.fillStyle = "white";
-	ctx.textAlign = "left";
 	ctx.fillText("Play Area", 100, 25);
 	
 	
@@ -249,8 +256,6 @@ function parseObjects() {
 }
 
 function convertAndroidXToCanvasX(androidX) {
-	var gameLevelAreaWidth = canvas.width - PALETTE_WIDTH;
-	
 	// Convert android x to always be positive, then fit entire width of game level area
 	// into the space in the canvas for the game level.
 	return ((androidX + HALF_ANDROID_LEVEL_SIZE) * gameLevelAreaWidth / ANDROID_LEVEL_SIZE) + PALETTE_WIDTH;
