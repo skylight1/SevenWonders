@@ -6,7 +6,7 @@ var PALETTE_OBJECT_NAMES = [
                       "protection",
                       "ruby",
                       "scarab",
-                      "sphinx",
+                      "sphynx",
                       "coin",
 ];
 
