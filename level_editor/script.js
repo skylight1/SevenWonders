@@ -19,7 +19,6 @@ var paletteObjects;
 var PALETTE_OBJECT_NAMES = [
                       "pyramid",
                       "spell",
-                      "sphinx",
                       "hazard",
                       "protection",
                       "ruby",
@@ -230,16 +229,33 @@ function parseObjects() {
 	draw();
 }
 
+function convertAndroidXToCanvasX(androidX) {
+	var gameLevelAreaWidth = 512 - PALETTE_WIDTH;
+	var androidLevelSize = 2000;
+	var halfAndroidLevelSize = androidLevelSize / 2;
+	
+	// Convert android x to always be positive, then fit entire width of game level area
+	// into the space in the canvas for the game level.
+	return ((androidX + halfAndroidLevelSize) * gameLevelAreaWidth / androidLevelSize) + PALETTE_WIDTH;
+}
+
+function convertAndroidZToCanvasY(androidZ) {
+	var androidLevelSize = 2000;
+	var halfAndroidLevelSize = androidLevelSize / 2;
+
+	return (androidZ + halfAndroidLevelSize) * 640 / androidLevelSize;
+}
+
 function parseLine(line) {
 	var params = line.split(",");
 	if(params.length == 3 && ! isNaN(parseInt(params[1])) && ! isNaN(parseInt(params[2]))) {
 		var name = params[0];
-		var y = parseInt(params[1]);
-		var z = parseInt(params[2]);
+		var x = convertAndroidXToCanvasX(parseInt(params[1]));
+		var y = convertAndroidZToCanvasY(parseInt(params[2]));
 
-		console.log("Reading in from level code:" + name + ", " + y + ", " + z);
+		console.log("Reading in from level code:" + name + ", " + x + ", " + y);
 		
-		gameObjects[gameObjects.length] = new Sprite(name,y,z);
+		gameObjects[gameObjects.length] = new Sprite(name,x,y);
 	}
 }
 
