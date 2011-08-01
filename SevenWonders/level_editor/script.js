@@ -1,4 +1,11 @@
-var testSprite;
+
+var GAME_OBJECTS = [
+	"test1", 
+	"test2", 
+];
+
+var testSprite1;
+var testSprite2;
 
 // Images
 var background;
@@ -26,11 +33,27 @@ function handleLoad() {
 	canvas = document.getElementById('gameCanvas');
 	ctx = canvas.getContext('2d');
 
-	background = document.getElementById('background');
-	test1 = document.getElementById('test1');
-	test2 = document.getElementById('test2');
+	background = new Image();
+	background.src = "background.png";
+	background.onload = function() {
+		draw();
+	}
+	
+	test1 = new Image();
+	test1.src = "test1.png";
+	test1.onload = function() {
+		draw();
+	}	
 
-	testSprite = new Sprite(test1, canvas.width / 2, canvas.height / 2);
+	test2 = new Image();
+	test2.src = "test2.png";	  
+	test2.onload = function() {
+		draw();
+	}	
+
+	  
+	testSprite1 = new Sprite(test1, canvas.width / 2, canvas.height / 2);
+	testSprite2 = new Sprite(test1, canvas.width / 2, 0);
 		
 	draw();
 }
@@ -39,7 +62,9 @@ function draw() {
 		
 	ctx.drawImage(background, 0, 0);
 
-	ctx.drawImage(testSprite.image, testSprite.left, testSprite.top);
+	ctx.drawImage(testSprite1.image, testSprite1.left, testSprite1.top);
+	
+	ctx.drawImage(testSprite2.image, testSprite2.left, testSprite2.top);
 
 }
 
