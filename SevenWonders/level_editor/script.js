@@ -25,6 +25,7 @@ var PALETTE_OBJECT_NAMES = [
                       "ruby",
                       "scarab",
                       "sphinx",
+                      "coin",
 ];
 
 var background;
@@ -34,25 +35,32 @@ var ctx;
 // Sprite type used for collision detection and drawing. Matches the size of an image.
 function Sprite(name, firstLeft, firstTop) {
 	
+	this.width = 40;
+	this.height = 40;
 	this.name = name;
 	
 	this.image = new Image();
 	this.image.src = name + ".png";
-	this.image.onload = function() {
+	this.onload = function() {
 		draw();
 	}
+	this.image.onload = this.onload;
 
 	this.move = function(newLeft, newTop) {
 		this.left = newLeft;
 		this.top = newTop;
-		this.right = newLeft + this.image.width;
-		this.bottom = newTop + this.image.height;
+		this.right = newLeft + this.width;
+		this.bottom = newTop + this.height;
 		draw();
 	}
 	
 	this.moveCenter = function(newCenterX, newCenterY) {
-		this.move(newCenterX - this.image.width / 2, newCenterY - this.image.height / 2);
+		this.move(newCenterX - this.width / 2, newCenterY - this.height / 2);
 		draw();
+	}
+	
+	this.drawSprite = function(ctx) {
+		ctx.drawImage(this.image, this.left, this.top, this.width, this.height);
 	}
 	
 	this.move(firstLeft, firstTop);
@@ -78,7 +86,7 @@ function handleLoad() {
 		console.log(PALETTE_OBJECT_NAMES[i]);
 		console.log(paletteIndex);
 		paletteObjects[paletteIndex] = new Sprite(
-				PALETTE_OBJECT_NAMES[i], 15, 35 + 80 * paletteIndex);
+				PALETTE_OBJECT_NAMES[i], 25, 35 + 45 * paletteIndex);
 		paletteIndex++;
 	}
 		
@@ -92,13 +100,13 @@ function draw() {
 	//Draw game objects.
 	for( var i in gameObjects ) {
 		var gameObject = gameObjects[i];
-		ctx.drawImage(gameObject.image, gameObject.left, gameObject.top);
+		gameObject.drawSprite(ctx);
 	}
 	
 	//Draw palette objects.
 	for( var i in paletteObjects ) {
 		var paletteObject = paletteObjects[i];
-		ctx.drawImage(paletteObject.image, paletteObject.left, paletteObject.top);
+		paletteObject.drawSprite(ctx);
 	}
 
 	//Draw label for the palette area of the editor.
@@ -165,7 +173,9 @@ function handleClick(e) {
 			
 			console.log("Palette clicked, making new game object!");
 
-			gameObjectBeingMoved = new Sprite(paletteObject.name, paletteObject.left, paletteObject.top);
+			gameObjectBeingMoved = new Sprite(paletteObject.name, 
+					paletteObject.left, paletteObject.top,
+					paletteObject.drawWidth, paletteObject.drawHeight);
 			gameObjectBeingMoved.moveCenter(mouseX, mouseY);
 			
 			gameObjects[gameObjects.length] = gameObjectBeingMoved;
