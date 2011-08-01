@@ -30,6 +30,8 @@ var ctx;
 // Sprite type used for collision detection and drawing. Matches the size of an image.
 function Sprite(name, firstLeft, firstTop) {
 	
+	this.name = name;
+	
 	this.image = new Image();
 	this.image.src = name + ".png";
 	this.image.onload = function() {
@@ -112,14 +114,7 @@ function draw() {
 }
 
 function doesSpriteContain(sprite, x, y) {
-		
-	console.log("x: " + x);
-	console.log("y: " + x);
-	console.log("left: " + sprite.left);
-	console.log("right: " + sprite.right);
-	console.log("bottom: " + sprite.bottom);
-	console.log("top: " + sprite.top);
-	
+			
 	if ( null == sprite ) {
 		return false;
 	}
@@ -149,7 +144,22 @@ function handleClick(e) {
 			console.log("Object grabbed!");
 
 			gameObjectBeingMoved = gameObject;
-			gameObject.move(mouseX, mouseY);
+			gameObjectBeingMoved.move(mouseX, mouseY);
+			break;
+		}
+	}
+	
+	for( var i in paletteObjects ) {
+		var paletteObject = paletteObjects[i];
+		if ( doesSpriteContain(paletteObject, mouseX, mouseY) ) {
+			
+			console.log("Palette clicked, making new game object!");
+
+			gameObjectBeingMoved = new Sprite(paletteObject.name, paletteObject.left, paletteObject.top);
+			gameObjectBeingMoved.move(mouseX, mouseY);
+			
+			gameObjects[gameObjects.length] = gameObjectBeingMoved;
+			
 			break;
 		}
 	}
