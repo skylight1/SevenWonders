@@ -209,17 +209,37 @@ function handleMouseMove(e) {
 
 // for now, we are expecting a comma separated list of sprites:
 // name, number, number
-function parseObjects(theText) {
+function parseObjects() {
+	var theObjects = document.getElementById('theObjects');
+	var theText = theObjects.value;
+	
+	theText = theText.toLowerCase();
+	theText = theText.replace(/ /g, "");
+	theText = theText.replace(/;/g, "");
+	theText = theText.replace(/this,/g, "");
+	theText = theText.replace(/\t/g, "");
+	theText = theText.replace(/\)/g, "");
+	theText = theText.replace(/\(/g, ",");
+	theText = theText.replace(/^add/g, "");
+	theText = theText.replace(/\nadd/g, "\n");
+	
 	var lines = theText.split("\n");
 	for (var i = 0;i < lines.length;++i) {
 		parseLine(lines[i]);
 	}
+	draw();
 }
 
 function parseLine(line) {
 	var params = line.split(",");
 	if(params.length == 3 && ! isNaN(parseInt(params[1])) && ! isNaN(parseInt(params[2]))) {
-		gameObjects[gameObjects.length] = new Sprite(params[0],parseInt(params[1]),parseInt(params[2]));
+		var name = params[0];
+		var y = parseInt(params[1]);
+		var z = parseInt(params[2]);
+
+		console.log("Reading in from level code:" + name + ", " + y + ", " + z);
+		
+		gameObjects[gameObjects.length] = new Sprite(name,y,z);
 	}
 }
 
