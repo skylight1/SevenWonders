@@ -28,6 +28,8 @@ var PALETTE_OBJECT_NAMES = [
                       "coin",
 ];
 
+var PALETTE_WIDTH = 120;
+
 var background;
 var canvas;
 var ctx;

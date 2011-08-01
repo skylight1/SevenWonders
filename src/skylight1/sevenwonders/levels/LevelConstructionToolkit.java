@@ -1,5 +1,6 @@
 package skylight1.sevenwonders.levels;
 
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.*;
 import skylight1.sevenwonders.GameState;
 import skylight1.sevenwonders.R;
 import android.opengl.Matrix;
@@ -135,7 +136,10 @@ public class LevelConstructionToolkit {
 	 * @param aY float how high the pyramid sticks out of the ground
 	 * @param aZ
 	 */
-	static void addPyramid(final GameLevel aGameLevel, float aRotation, final float anX, final float aY, final float aZ) {
+	static void addPyramid(final GameLevel aGameLevel, final float anX, final float aZ) {
+		final int aRotation = 0;
+		final int aY = -10;
+		
 		float[] coordinateTransform = new float[16];
 		Matrix.setIdentityM(coordinateTransform, 0);
 		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
@@ -145,8 +149,10 @@ public class LevelConstructionToolkit {
 		aGameLevel.obstacles.add(new float[] { anX, GameState.HEIGHT_OF_CARPET_FROM_GROUND, aZ, 90 });
 	}
 
-	static void addSphynx(final GameLevel aGameLevel, final float aRotation, final float anX, final float aY,
-			final float aZ) {
+	static void addSphynx(final GameLevel aGameLevel, final float anX, final float aZ) {
+		final int aRotation = 90;
+		final int aY = -30;
+		
 		float[] coordinateTransform = new float[16];
 		Matrix.setIdentityM(coordinateTransform, 0);
 		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
