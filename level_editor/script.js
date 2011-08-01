@@ -1,3 +1,12 @@
+// Prevent errors in browsers without FireBug.
+if (!window.console)
+{
+    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
+    "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+    window.console = {};
+    for (var i = 0; i < names.length; ++i)
+        window.console[names[i]] = function() {}
+}
 
 // Objects shown in the game for this level.
 var gameObjects;
@@ -47,12 +56,15 @@ function handleLoad() {
 	gameObjects = new Array();
 	gameObjects[0] = new Sprite("sphinx", canvas.width / 2, canvas.height / 2);
 	gameObjects[1] = new Sprite("pyramid", canvas.width / 2, 0);
-	
+
 	paletteObjects = new Array();
-	var paletteIndex;
+	var paletteIndex = 0;
 	for( var i in PALETTE_OBJECT_NAMES ) {
-		paletteObjects[paletteIndex++] = new Sprite(
-				PALETTE_OBJECT_NAMES[i], 80, 25 + 80 * paletteIndex);
+		console.log(PALETTE_OBJECT_NAMES[i]);
+		console.log(paletteIndex);
+		paletteObjects[paletteIndex] = new Sprite(
+				PALETTE_OBJECT_NAMES[i], 15, 35 + 80 * paletteIndex);
+		paletteIndex++;
 	}
 		
 	draw();
@@ -69,12 +81,10 @@ function draw() {
 	}
 	
 	//Draw palette objects.
-	/*
 	for( var i in paletteObjects ) {
 		var paletteObject = paletteObjects[i];
 		ctx.drawImage(paletteObject.image, paletteObject.left, paletteObject.top);
 	}
-	*/	
 
 	//Draw label for the palette area of the editor.
 	ctx.font = "bold x-large sans-serif";
