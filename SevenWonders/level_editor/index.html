@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>Level Editor</title>
+		<link type="text/css" rel="stylesheet" href="style.css">
+		<script type="text/javascript" src="script.js"></script>
+	</head>
+	<body onload="handleLoad()">
+		<header>
+			<h1>
+				Level Editor
+			</h1>
+		</header>
+		<article>
+				<p>
+					<canvas id="gameCanvas" width="512" height="512"
+						onmousemove="handleMouseMove(event)" onclick="handleClick()"
+						onmouseover="handleMouseOver()" onmouseout="handleMouseOut()" >
+					</canvas>
+				</p>
+		</article>
+		<footer>
+			<p id="gameImages">
+				<img src="background.png" id="background" />
+				<img src="test1.png" id="test1" />
+				<img src="test2.png" id="test2" />
+			</p>
+		</footer>
+	</body>
+</html>
