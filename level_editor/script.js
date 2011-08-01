@@ -204,3 +204,20 @@ function handleMouseMove(e) {
 		console.log("No grabbed object.");
 	}
 }
+
+// for now, we are expecting a comma separated list of sprites:
+// name, number, number
+function parseObjects(theText) {
+	var lines = theText.split("\n");
+	for (var i = 0;i < lines.length;++i) {
+		parseLine(lines[i]);
+	}
+}
+
+function parseLine(line) {
+	var params = line.split(",");
+	if(params.length == 3 && ! isNaN(parseInt(params[1])) && ! isNaN(parseInt(params[2]))) {
+		gameObjects[gameObjects.length] = new Sprite(params[0],parseInt(params[1]),parseInt(params[2]));
+	}
+}
+
