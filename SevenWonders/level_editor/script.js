@@ -258,11 +258,19 @@ function parseObjects() {
 function convertAndroidXToCanvasX(androidX) {
 	// Convert android x to always be positive, then fit entire width of game level area
 	// into the space in the canvas for the game level.
-	return ((androidX + HALF_ANDROID_LEVEL_SIZE) * gameLevelAreaWidth / ANDROID_LEVEL_SIZE) + PALETTE_WIDTH;
+	return ((androidX + HALF_ANDROID_LEVEL_SIZE) * gameLevelAreaWidth / ANDROID_LEVEL_SIZE) + PALETTE_WIDTH - IMAGE_DRAW_SIZE / 2;
 }
 
 function convertAndroidZToCanvasY(androidZ) {
-	return (androidZ + HALF_ANDROID_LEVEL_SIZE) * canvas.height / ANDROID_LEVEL_SIZE;
+	return (androidZ + HALF_ANDROID_LEVEL_SIZE) * canvas.height / ANDROID_LEVEL_SIZE - IMAGE_DRAW_SIZE / 2;
+}
+
+function convertCanvasXToAndroidX(canvasX) {
+	return ( ( canvasX - PALETTE_WIDTH ) * ANDROID_LEVEL_SIZE / gameLevelAreaWidth ) - HALF_ANDROID_LEVEL_SIZE;
+}
+
+function convertCanvasYToAndroidZ(canvasY) {
+	return ( canvasY * ANDROID_LEVEL_SIZE / canvas.height ) - HALF_ANDROID_LEVEL_SIZE;
 }
 
 function parseLine(line) {
@@ -283,7 +291,9 @@ function exportObjects() {
 	for(var i = 0;i < gameObjects.length;++i) {
 		text += "\t\t\tadd";
 		var name = gameObjects[i].name.charAt(0).toUpperCase() + gameObjects[i].name.slice(1);
-		text += name + "(this, " + gameObjects[i].left + ", " + gameObjects[i].top + ");\n";
+		var x = convertCanvasXToAndroidX(gameObjects[i].left + gameObjects[i].width / 2);
+		var z = convertCanvasYToAndroidZ(gameObjects[i].top + gameObjects[i].height / 2);
+		text += name + "(this, " + x + ", " + z + ");\n";
 	}
 	var theObjects = document.getElementById('theObjects');
 	theObjects.value = text;
