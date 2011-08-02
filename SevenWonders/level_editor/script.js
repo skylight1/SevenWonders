@@ -278,3 +278,15 @@ function parseLine(line) {
 	}
 }
 
+function exportObjects() {
+	var text = "";
+	for(var i = 0;i < gameObjects.length;++i) {
+		text += "\t\t\tadd";
+		var name = gameObjects[i].name.charAt(0).toUpperCase() + gameObjects[i].name.slice(1);
+		text += name + "(this, " + gameObjects[i].left + ", " + gameObjects[i].top + ");\n";
+	}
+	var theObjects = document.getElementById('theObjects');
+	theObjects.value = text;
+}
+
+

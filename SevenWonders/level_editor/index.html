@@ -22,7 +22,7 @@
 					the new game object.
 				</p>
 				<p>
-					<canvas id="gameCanvas" width="730" height="640"
+					<canvas id="gameCanvas" width="512" height="640"
 						onmousemove="handleMouseMove(event)" onclick="handleClick(event)"
 						onmouseover="handleMouseOver(event)" onmouseout="handleMouseOut(event)" >
 					</canvas>
@@ -31,6 +31,7 @@
 					<form action="javascript:parseObjects();" method="get">
  					<textarea id="theObjects" rows="10" cols="61"></textarea> <br/>
 					<input type="submit" value="Read Sprites From Code" />
+					<button type="button" onclick="exportObjects();">Export Sprites</button>
 					</form>
 				</p>
 		</article>
