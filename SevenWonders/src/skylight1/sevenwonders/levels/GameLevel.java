@@ -198,7 +198,7 @@ public enum GameLevel {
 		}
 	},
 	
-	// This level requires using the pass through objects ruby.
+	// This level=11 requires using the pass through objects ruby.
 	TEACH_RUBY(
 		"Get the Sphinx's red ruby of passage to retrieve the ankh inside the pyramid.", R.drawable.ruby) {
 		{
@@ -207,7 +207,7 @@ public enum GameLevel {
 			addPyramid(this,-620, 100);
 			addSphynx(this, -190, -90);
 			
-			addSpell(this, -80, -450);
+			addSpell(this, -220, 100);
 			addRuby(this, -25, 90);
 			addCoin(this, 200, 200);
 			addCoin(this, 200, 210);
