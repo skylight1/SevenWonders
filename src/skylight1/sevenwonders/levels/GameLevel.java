@@ -136,10 +136,10 @@ public enum GameLevel {
 	TEACH_INVULNERABILITY(
 		"Collect the Sphinx's shield to pass safely through the storm of swords.", R.drawable.shield) {
 		{
-			addPyramid(this,-80, -450);
+			addPyramid(this,-80, -650);
 			addSphynx(this, -190, -90);
 
-			addSpell(this,  -100, -300);
+			addSpell(this,  -100, -400);
 			addHazard(this, -150, -400);
 			addHazard(this, -125, -425);
 			addHazard(this, -100, -450);
