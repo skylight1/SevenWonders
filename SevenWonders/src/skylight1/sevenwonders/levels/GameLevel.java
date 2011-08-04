@@ -260,6 +260,7 @@ public enum GameLevel {
 	
 	int numberOfSpells = 0;
 	
+	int numberOfCoins = 0;
 	
 	private int totalTimeAllowedInSeconds = DEFAULT_TOTAL_TIME_ALLOWED_IN_SECONDS;
 
@@ -339,5 +340,9 @@ public enum GameLevel {
 	 */
 	public Collection<GameObjectDescriptor> getGlows() {
 		return glows;
+	}
+	
+	public int getNumberOfCoins() {
+		return numberOfCoins;
 	}
 }

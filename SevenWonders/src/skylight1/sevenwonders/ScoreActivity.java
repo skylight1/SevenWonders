@@ -89,7 +89,6 @@ public class ScoreActivity extends Activity {
 		
 		
 		final String collectedSpellCountText;
-		final String collectedCoinCountText;
 		if (collectedSpellsCount == 0) {
 			collectedSpellCountText = "No spells collected";
 		} else {
@@ -104,20 +103,6 @@ public class ScoreActivity extends Activity {
 			collectedSpellCountText = String.format("%s: %2d X %d = +%d",
 				spellsText, collectedSpellsCount, SCORE_PER_COLLECTED_SPELL, sum );
 		}
-		if (collectedCoinCount == 0) {
-			collectedCoinCountText = "No coins collected";
-		} else {
-			final String coinsText;
-			if (collectedCoinCount == 1) {
-				coinsText = "1 coin";
-			} else {
-				coinsText = String.format("%2d coins", collectedCoinCount);
-			}
-
-			final int sum = collectedCoinCount * SCORE_PER_COLLECTED_COIN;
-			collectedCoinCountText = String.format("%s: %2d X %d = +%d",
-				coinsText, collectedCoinCount, SCORE_PER_COLLECTED_COIN, sum );
-		}
 
 		boolean nextLevelExists = level < GameLevel.values().length - 1;
 		
@@ -125,9 +110,27 @@ public class ScoreActivity extends Activity {
 		final StyledSpannableStringBuilder messageBuilder = new StyledSpannableStringBuilder();
 		messageBuilder.appendScaled(getLevelEndTitle(wonLevel, level) + "\n", 1.66f);
 		
-		
 		messageBuilder.append(collectedSpellCountText + "\n");		
-		messageBuilder.append(collectedCoinCountText + "\n");
+
+		// if the level has coins, then report how many were collected
+		if (GameLevel.values()[level].getNumberOfCoins() != 0) {
+			final String collectedCoinCountText;
+			if (collectedCoinCount == 0) {
+				collectedCoinCountText = "No coins collected";
+			} else {
+				final String coinsText;
+				if (collectedCoinCount == 1) {
+					coinsText = "1 coin";
+				} else {
+					coinsText = String.format("%2d coins", collectedCoinCount);
+				}
+
+				final int sum = collectedCoinCount * SCORE_PER_COLLECTED_COIN;
+				collectedCoinCountText = String.format("%s: %2d X %d = + %d", coinsText, collectedCoinCount, SCORE_PER_COLLECTED_COIN, sum);
+			}
+			messageBuilder.append(collectedCoinCountText + "\n");
+		}
+
 		if ( wonLevel ) {
 			messageBuilder.append(getRemainingTimeText(remainingSeconds) + "\n");
 		}
@@ -191,7 +194,7 @@ public class ScoreActivity extends Activity {
 		
 		if (remainingTimeSeconds > 0) {
 			final int sum = remainingTimeSeconds * SCORE_PER_REMAINING_SECOND;
-			result = String.format("%d secs left: %d X %d = + %d", 
+			result = String.format("%d seconds left: %d X %d = + %d", 
 				remainingTimeSeconds, remainingTimeSeconds, SCORE_PER_REMAINING_SECOND, sum);	
 		} else {
 			result = "Out of time!";

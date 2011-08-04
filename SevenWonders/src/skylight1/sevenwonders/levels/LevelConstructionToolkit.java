@@ -88,6 +88,7 @@ public class LevelConstructionToolkit {
 		android.opengl.Matrix.scaleM(transformationMatrix, 0, 2, 2, 2);
 		final CollisionAction coinCollisionAction = new CoinCollisionAction();
 		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, COIN_TEXTURE_TRANSFORM, R.raw.coin, R.raw.textures), coinCollisionAction);
+		aGameLevel.numberOfCoins++;
 	}
 	
 	static void addTime(final GameLevel aGameLevel, final float anX, final float aZ) {
