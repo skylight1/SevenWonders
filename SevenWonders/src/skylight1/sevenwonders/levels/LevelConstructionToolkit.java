@@ -1,6 +1,5 @@
 package skylight1.sevenwonders.levels;
 
-import static skylight1.sevenwonders.levels.LevelConstructionToolkit.*;
 import skylight1.sevenwonders.GameState;
 import skylight1.sevenwonders.R;
 import android.opengl.Matrix;
@@ -44,7 +43,7 @@ public class LevelConstructionToolkit {
 		Matrix.scaleM(SCARAB_TEXTURE_TRANSFORM, 0, 85f / 512f, 139f / 512f, 1f);
 	}
 	
-	static void addSpell(final GameLevel aGameLevel, int anX, int aZ) {
+	static void addSpell(final GameLevel aGameLevel, final float anX, final float aZ) {
 		final float[] ankhTransformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(ankhTransformationMatrix, 0);
 		android.opengl.Matrix.translateM(ankhTransformationMatrix, 0, anX, HEIGHT_OF_SPELLS_FROM_GROUND, aZ);
@@ -65,7 +64,7 @@ public class LevelConstructionToolkit {
 		aGameLevel.numberOfSpells++;
 	}
 
-	static void addRuby(final GameLevel aGameLevel, int anX, int aZ) {
+	static void addRuby(final GameLevel aGameLevel, final float anX, final float aZ) {
 		final float[] transformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
 		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_GEMS_FROM_GROUND, aZ);
@@ -74,7 +73,7 @@ public class LevelConstructionToolkit {
 		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, null, R.raw.gem, R.raw.textures), rubyCollisionAction);
 	}
 
-	static void addProtection(final GameLevel aGameLevel, int anX, int aZ) {
+	static void addProtection(final GameLevel aGameLevel, final float anX, final float aZ) {
 		final float[] transformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
 		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_GEMS_FROM_GROUND, aZ);
@@ -82,7 +81,7 @@ public class LevelConstructionToolkit {
 		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, null, R.raw.shield, R.raw.textures), PROTECTION_ACTION);
 	}
 
-	static void addCoin(final GameLevel aGameLevel, int anX, int aZ) {
+	static void addCoin(final GameLevel aGameLevel, final float anX, final float aZ) {
 		final float[] transformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
 		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_COINS_FROM_GROUND, aZ);
@@ -91,7 +90,7 @@ public class LevelConstructionToolkit {
 		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, COIN_TEXTURE_TRANSFORM, R.raw.coin, R.raw.textures), coinCollisionAction);
 	}
 	
-	static void addExtraTime(final GameLevel aGameLevel, int anX, int aZ) {
+	static void addExtraTime(final GameLevel aGameLevel, final float anX, final float aZ) {
 		final float[] transformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
 		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_SCARAB_FROM_GROUND, aZ);
@@ -99,18 +98,8 @@ public class LevelConstructionToolkit {
 		final CollisionAction scarabCollisionAction = new ExtraTimeAction();
 		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, SCARAB_TEXTURE_TRANSFORM, R.raw.scarab, R.raw.textures), scarabCollisionAction);
 	}
-	
-	static void addTimeAdded(final GameLevel aGameLevel, int anX, int aZ) {
-		final float[] transformationMatrix = new float[16];
-		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
-		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_COINS_FROM_GROUND, aZ);
-		android.opengl.Matrix.scaleM(transformationMatrix, 0, 2, 2, 2);
-		final CollisionAction extraTimeAction = new ExtraTimeAction();
-		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, COIN_TEXTURE_TRANSFORM, R.raw.coin, R.raw.textures), extraTimeAction);
-		throw new UnsupportedOperationException();
-	}
 
-	static void addHazard(final GameLevel aGameLevel, int anX, int aZ) {
+	static void addHazard(final GameLevel aGameLevel, final float anX, final float aZ) {
 		final float[] transformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
 		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_HAZARDS_FROM_GROUND, aZ);
@@ -124,7 +113,7 @@ public class LevelConstructionToolkit {
 		return matrix;
 	}
 
-	static float[] createBoundingSphere(float anX, float aY, float aZ, float aRadius) {
+	static float[] createBoundingSphere(final float anX, final float aY, final float aZ, final float aRadius) {
 		return new float[] { anX, aY, aZ, aRadius };
 	}
 
@@ -140,7 +129,7 @@ public class LevelConstructionToolkit {
 		final int aRotation = 0;
 		final int aY = -10;
 		
-		float[] coordinateTransform = new float[16];
+		final float[] coordinateTransform = new float[16];
 		Matrix.setIdentityM(coordinateTransform, 0);
 		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
 		Matrix.translateM(coordinateTransform, 0, anX, aY - 25, aZ);
@@ -153,11 +142,11 @@ public class LevelConstructionToolkit {
 		final int aRotation = 90;
 		final int aY = -30;
 		
-		float[] coordinateTransform = new float[16];
+		final float[] coordinateTransform = new float[16];
 		Matrix.setIdentityM(coordinateTransform, 0);
 		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
 		Matrix.translateM(coordinateTransform, 0, anX, aY, aZ);
-		float[] textureTransform = new float[16];
+		final float[] textureTransform = new float[16];
 		Matrix.setIdentityM(textureTransform, 0);
 		aGameLevel.decorations.add(new GameObjectDescriptor(coordinateTransform, null, R.raw.sphinx_scaled, R.raw.sphinx));
 	}
