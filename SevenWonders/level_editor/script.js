@@ -44,6 +44,9 @@ var canvas;
 // Context of the canvas element.
 var ctx;
 
+// Indicates where player starts.
+var player;
+
 //Prevent errors in browsers without FireBug.
 if (!window.console)
 {
@@ -99,10 +102,10 @@ function handleLoad() {
 	
 	background = new Image();
 	background.src = "background.png";
-	background.onload = function() {
-		draw();
-	}
-		  
+
+	player = new Sprite("carpet", 0, 0, 40, 26);
+	player.moveCenter( PALETTE_WIDTH + gameLevelAreaWidth / 2, canvas.height / 2);
+	
 	gameObjects = new Array();
 
 	paletteObjects = new Array();
@@ -124,6 +127,10 @@ function draw() {
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	
 	ctx.drawImage(background, PALETTE_WIDTH, 0, gameLevelAreaWidth, canvas.height);
+	
+	if ( player ) {
+		player.drawSprite(ctx);
+	}
 	
 	//Draw game objects.
 	for( var i in gameObjects ) {
