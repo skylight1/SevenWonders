@@ -1,14 +1,6 @@
 package skylight1.sevenwonders.levels;
 
-import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addHazard;
-import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addPyramid;
-import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addRuby;
-import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addCoin;
-import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addProtection;
-import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addSpell;
-import static skylight1.sevenwonders.levels.LevelConstructionToolkit.addSphynx;
-import static skylight1.sevenwonders.levels.LevelConstructionToolkit.createNewIdentityMatrix;
-
+import static skylight1.sevenwonders.levels.LevelConstructionToolkit.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

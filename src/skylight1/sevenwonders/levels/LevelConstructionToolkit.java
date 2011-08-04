@@ -90,7 +90,7 @@ public class LevelConstructionToolkit {
 		aGameLevel.mapOfCollectablesToCollisionActions.put(new GameObjectDescriptor(transformationMatrix, COIN_TEXTURE_TRANSFORM, R.raw.coin, R.raw.textures), coinCollisionAction);
 	}
 	
-	static void addExtraTime(final GameLevel aGameLevel, final float anX, final float aZ) {
+	static void addTime(final GameLevel aGameLevel, final float anX, final float aZ) {
 		final float[] transformationMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(transformationMatrix, 0);
 		android.opengl.Matrix.translateM(transformationMatrix, 0, anX, HEIGHT_OF_SCARAB_FROM_GROUND, aZ);
