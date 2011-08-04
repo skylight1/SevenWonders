@@ -113,7 +113,6 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private OpenGLGeometry skyboxGeometry;
 
-	// Start a little back so that we aren't inside the pyramid.
 	private Position playerWorldPosition = new Position(0, 0, 0);
 
 	private float playerFacing;
