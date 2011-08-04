@@ -91,7 +91,7 @@ public class ScoreActivity extends Activity {
 		final String collectedSpellCountText;
 		final String collectedCoinCountText;
 		if (collectedSpellsCount == 0) {
-			collectedSpellCountText = "No spells collected :-(";
+			collectedSpellCountText = "No spells collected";
 		} else {
 			final String spellsText; 
 			if (collectedSpellsCount == 1) {
@@ -105,7 +105,7 @@ public class ScoreActivity extends Activity {
 				spellsText, collectedSpellsCount, SCORE_PER_COLLECTED_SPELL, sum );
 		}
 		if (collectedCoinCount == 0) {
-			collectedCoinCountText = "No coins collected :-(";
+			collectedCoinCountText = "No coins collected";
 		} else {
 			final String coinsText;
 			if (collectedCoinCount == 1) {
