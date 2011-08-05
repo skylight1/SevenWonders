@@ -1,10 +1,12 @@
 package skylight1.sevenwonders.services;
 
 import skylight1.sevenwonders.R;
+
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.os.Vibrator;
 import android.util.Log;
 
 public class SoundTracks
@@ -245,10 +247,8 @@ public class SoundTracks
     }
     public void play(int track, int repeats) {
     	if(track==BUMP) {
-			if(mp!=null && !mp.isPlaying()) {
-				mp.setVolume(streamVolume, streamVolume);
-				mp.start();
-			}
+    		Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+    		v.vibrate(8);
     	}
     	else if (soundPool!=null && initCompleted) {
 			streamIds[track] = soundPool.play(soundIds[track], 1.0f*streamVolume, 1.0f*streamVolume, 1, repeats, 1f);
