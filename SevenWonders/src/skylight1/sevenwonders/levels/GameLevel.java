@@ -232,16 +232,26 @@ public enum GameLevel {
 
 	LAST("Collect the remaining ankhs and Nebtawi will be defeated in Egypt!", R.drawable.icon) {
 		{
-			addSphynx(this, -190, -90);
-			addPyramid(this,-220, 100);
-			addPyramid(this, 655, 110);
-			addPyramid(this,-620, 100);
-
-			addSpell(this, 30, -130);
-			addSpell(this, 130, -150);
-			addSpell(this, 300, -100);
-			addSpell(this, 400, -160);
-			addSpell(this, 500, -100);
+			addSphynx(this, -278, -197);
+			addPyramid(this, -466, 125);
+			addPyramid(this, -100, 366);
+			addPyramid(this, -275, 247);
+			addSpell(this, -612, -531);
+			addSpell(this, -859, -884);
+			addSpell(this, 494, -531);
+			addSpell(this, 794, -844);
+			addSpell(this, -447, 453);
+			addSpell(this, -762, 850);
+			addSpell(this, 319, 422);
+			addSpell(this, 584, 841);
+			addTime(this, -884, -25);
+			addTime(this, 853, 25);
+			addTime(this, 31, -841);
+			addTime(this, 0, 838);
+			addHazard(this, -625, 641);
+			addHazard(this, 416, 606);
+			addHazard(this, 641, -700);
+			addHazard(this, -744, -725);
 		}
 	};
 
