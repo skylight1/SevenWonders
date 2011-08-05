@@ -298,8 +298,8 @@ function exportObjects() {
 	for(var i = 0;i < gameObjects.length;++i) {
 		text += "\t\t\tadd";
 		var name = gameObjects[i].name.charAt(0).toUpperCase() + gameObjects[i].name.slice(1);
-		var x = convertCanvasXToAndroidX(gameObjects[i].left + gameObjects[i].width / 2);
-		var z = convertCanvasYToAndroidZ(gameObjects[i].top + gameObjects[i].height / 2);
+		var x =Math.ceil( convertCanvasXToAndroidX(gameObjects[i].left + gameObjects[i].width / 2));
+		var z =Math.ceil( convertCanvasYToAndroidZ(gameObjects[i].top + gameObjects[i].height / 2));
 		text += name + "(this, " + x + ", " + z + ");\n";
 	}
 	var theObjects = document.getElementById('theObjects');
