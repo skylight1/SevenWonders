@@ -15,7 +15,7 @@ public enum GameLevel {
 	// The pyramid makes a good landmark for users who get lost 
 	// and can't see the ankh from far away.
 	TEACH_COLLECTION_WITH_EASY_LANDMARK(
-		"The ankh is a symbol of powerful magic. Collect it before Nebtawi arrives.", R.drawable.icon) {
+		"The ankh is a symbol of powerful magic. Collect it before Nebtawi arrives.", R.drawable.ankh) {
 		{
 			setTotalTimeAllowedInSeconds(100);
 			addPyramid(this,-80, -450);
@@ -26,7 +26,7 @@ public enum GameLevel {
 	// This level=2 has one ankh near each of three pyramids.
 	// The user has to navigate between them.
 	TEACH_COLLECTING_MULTIPLE_WITH_EASY_LANDMARKS(
-		"Each of three pyramids has an ankh nearby.  Collect all three.", R.drawable.icon) {
+		"Each of three pyramids has an ankh nearby.  Collect all three.", R.drawable.ankh) {
 		{
 			addPyramid(this,-80, -450);
 			addSpell(this, 20, -310);
@@ -39,7 +39,7 @@ public enum GameLevel {
 	
 	// This level=3 has a trail of ankhs and coins the user has to follow.
 	TEACH_COLLECTING_NO_LANDMARKS(
-		"Nebtawi, the evil vizier, has spread the ankhs far and wide. Race to find all five.", R.drawable.icon) {
+		"Nebtawi, the evil vizier, has spread the ankhs far and wide. Race to find all five.", R.drawable.coin) {
 		{
 			addSphynx(this, -90, -190);
 			addPyramid(this,-220, 100);
@@ -54,7 +54,7 @@ public enum GameLevel {
 	},
 	// This level=4
 	TEACH_COIN(
-		"Nebtawi's magic has brought forth lost treasures from the desert. Riches await you.", R.drawable.icon) {
+		"Nebtawi's magic has brought forth lost treasures from the desert. Riches await you.", R.drawable.coin) {
 		{
 			addSphynx(this, -190, -90);			
 			addPyramid(this,-80, -450);
@@ -69,7 +69,7 @@ public enum GameLevel {
 	
 	// This level=5 has a sword that has to be flown around to get the ankh.
 	TEACH_AVOIDING_SWORDS(
-		"Fly wide around Nebtawi's flying sword to collect the ankh behind it!", R.drawable.icon) {
+		"Fly wide around Nebtawi's flying sword to collect the ankh behind it!", R.drawable.sword) {
 		{
 			addSphynx(this, -190, -90);
 			addPyramid(this,-80, -450);
@@ -79,7 +79,7 @@ public enum GameLevel {
 	},
 	// This level=6
 	MANY_SWORDS(
-		"Many swords will bar your way, but the ankhs must be recovered if Egypt is to be saved.", R.drawable.icon) {
+		"Many swords will bar your way, but the ankhs must be recovered if Egypt is to be saved.", R.drawable.sword) {
 		{
 			addSphynx(this, -190, -90);
 			addPyramid(this,-80, -450);
@@ -99,7 +99,7 @@ public enum GameLevel {
 	},
 	// This level=7
 	THE_GAUNTLET(
-		"Fly carefully between the swords to recover the ankhs.", R.drawable.icon) {
+		"Fly carefully between the swords to recover the ankhs.", R.drawable.sword) {
 		{
 			addSphynx(this, -190, -90);
 			addPyramid(this, -465, -390);
@@ -230,7 +230,7 @@ public enum GameLevel {
 		}
 	},	
 
-	LAST("Collect the remaining ankhs and Nebtawi will be defeated in Egypt!", R.drawable.icon) {
+	LAST("Collect the remaining ankhs and Nebtawi will be defeated in Egypt!", R.drawable.scarab) {
 		{
 			addSphynx(this, -278, -197);
 			addPyramid(this, -466, 125);
