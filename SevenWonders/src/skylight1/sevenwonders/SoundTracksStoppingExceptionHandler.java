@@ -30,6 +30,9 @@ public class SoundTracksStoppingExceptionHandler implements UncaughtExceptionHan
 		} catch (final Throwable anotherT) {
 			Log.e(TAG, "'You can't stop the music' - Village People", anotherT);
 		}
+		if(aThrowable.getMessage()!=null && aThrowable.getMessage().indexOf("adwhirl")>0 ) {
+			return;
+		}
 		defaultVersion.uncaughtException(aThread, aThrowable);
 	}
 }
