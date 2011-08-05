@@ -130,7 +130,6 @@ public class SoundTracks
     public void stop() {
     	if(soundPool != null && initCompleted) {
         	running = false;
-        	context = null;
 			for(int i = 0; i <= SOUNDPOOL_LOOPS; i++) { // stop looping sounds
 				soundPool.setLoop(streamIds[i], 0);
 			}
@@ -247,8 +246,10 @@ public class SoundTracks
     }
     public void play(int track, int repeats) {
     	if(track==BUMP) {
-    		Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-    		v.vibrate(8);
+    		if(context!=null) {
+	    		Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+	    		v.vibrate(8);
+    		}
     	}
     	else if (soundPool!=null && initCompleted) {
 			streamIds[track] = soundPool.play(soundIds[track], 1.0f*streamVolume, 1.0f*streamVolume, 1, repeats, 1f);
