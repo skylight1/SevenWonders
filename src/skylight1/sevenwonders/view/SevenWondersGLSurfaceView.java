@@ -1,6 +1,7 @@
 package skylight1.sevenwonders.view;
 
 import skylight1.sevenwonders.GameState;
+import skylight1.sevenwonders.SevenWondersApplication;
 import skylight1.sevenwonders.levels.GameLevel;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
@@ -71,7 +72,8 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	public boolean onTouchEvent(final MotionEvent aEvent) {
 		queueEvent(new Runnable() {
 			public void run() {
-				Log.i(TAG,String.format("touched %s,%s",aEvent.getXPrecision(),aEvent.getXPrecision()));
+				if(SevenWondersApplication.isDebug)
+					Log.i(TAG,String.format("touched %s,%s",aEvent.getXPrecision(),aEvent.getXPrecision()));
 			}
 		});
 		return true;
