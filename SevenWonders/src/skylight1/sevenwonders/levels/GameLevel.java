@@ -230,28 +230,34 @@ public enum GameLevel {
 		}
 	},	
 
-	LAST("Collect the remaining ankhs and Nebtawi will be defeated in Egypt!", R.drawable.scarab) {
+	LAST("Collect the remaining ankhs and Nebtawi will be defeated in Egypt! Magic scarabs have arrived to give you time.", R.drawable.scarab) {
 		{
-			addSphynx(this, -278, -197);
-			addPyramid(this, -466, 125);
-			addPyramid(this, -100, 366);
-			addPyramid(this, -275, 247);
-			addSpell(this, -612, -531);
-			addSpell(this, -859, -884);
-			addSpell(this, 494, -531);
-			addSpell(this, 794, -844);
-			addSpell(this, -447, 453);
-			addSpell(this, -762, 850);
-			addSpell(this, 319, 422);
-			addSpell(this, 584, 841);
-			addTime(this, -884, -25);
-			addTime(this, 853, 25);
-			addTime(this, 31, -841);
-			addTime(this, 0, 838);
-			addHazard(this, -625, 641);
-			addHazard(this, 416, 606);
-			addHazard(this, 641, -700);
-			addHazard(this, -744, -725);
+			setTotalTimeAllowedInSeconds(60);
+			addSphynx(this, -16, -497);
+			addPyramid(this, -534, 256);
+			addPyramid(this, -278, 438);
+			addPyramid(this, -312, 241);
+			addSpell(this, -716, -641);
+			addSpell(this, -841, -806);
+			addSpell(this, 709, -697);
+			addSpell(this, 825, -841);
+			addSpell(this, -687, 669);
+			addSpell(this, -825, 816);
+			addSpell(this, 663, 628);
+			addSpell(this, 781, 806);
+			addTime(this, -16, -597);
+			addTime(this, 78, -747);
+			addHazard(this, -719, 803);
+			addHazard(this, 719, 713);
+			addHazard(this, 816, -737);
+			addHazard(this, -753, -806);
+			addProtection(this, -419, 369);
+			addHazard(this, -700, 828);
+			addHazard(this, -750, 759);
+			addHazard(this, -781, 728);
+			addHazard(this, -834, 675);
+			addHazard(this, -809, 700);
+			addTime(this, -91, -741);
 		}
 	};
 
