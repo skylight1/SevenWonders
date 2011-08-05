@@ -30,10 +30,8 @@ public enum GameLevel {
 		{
 			addPyramid(this,-80, -450);
 			addSpell(this, 20, -310);
-
 			addPyramid(this,-340, -550);
 			addSpell(this, -350, -350);
-
 			addPyramid(this,-340, 550);
 			addSpell(this, -480, 430);
 		}
@@ -43,11 +41,10 @@ public enum GameLevel {
 	TEACH_COLLECTING_NO_LANDMARKS(
 		"Nebtawi, the evil vizier, has spread the ankhs far and wide. Race to find all five.", R.drawable.icon) {
 		{
-			addSphynx(this, -190, -90);
+			addSphynx(this, -90, -190);
 			addPyramid(this,-220, 100);
 			addPyramid(this,655, 110);
 			addPyramid(this,-620, 100);
-
 			addSpell(this, 30, -130);
 			addSpell(this, 130, -150);
 			addSpell(this, 300, -100);
@@ -59,9 +56,8 @@ public enum GameLevel {
 	TEACH_COIN(
 		"Nebtawi's magic has brought forth lost treasures from the desert. Riches await you.", R.drawable.icon) {
 		{
+			addSphynx(this, -190, -90);			
 			addPyramid(this,-80, -450);
-			addSphynx(this, -190, -90);
-			
 			addCoin(this, 130, -180);
 			addSpell(this, 280,  -30);
 			addCoin(this, 430, 120);
@@ -75,9 +71,8 @@ public enum GameLevel {
 	TEACH_AVOIDING_SWORDS(
 		"Fly wide around Nebtawi's flying sword to collect the ankh behind it!", R.drawable.icon) {
 		{
-			addPyramid(this,-80, -450);
 			addSphynx(this, -190, -90);
-		
+			addPyramid(this,-80, -450);
 			addSpell(this, 20, -310);
 			addHazard(this, 20, -250);
 		}
@@ -86,9 +81,8 @@ public enum GameLevel {
 	MANY_SWORDS(
 		"Many swords will bar your way, but the ankhs must be recovered if Egypt is to be saved.", R.drawable.icon) {
 		{
-			addPyramid(this,-80, -450);
 			addSphynx(this, -190, -90);
-
+			addPyramid(this,-80, -450);
 			addSpell(this,  -150, -400);
 			addHazard(this, -190, -400);
 			addHazard(this, -125, -425);
@@ -107,9 +101,8 @@ public enum GameLevel {
 	THE_GAUNTLET(
 		"Fly carefully between the swords to recover the ankhs.", R.drawable.icon) {
 		{
-			addPyramid(this,-80, -450);
 			addSphynx(this, -190, -90);
-			
+			addPyramid(this,-80, -450);			
 			addSpell(this,  -170, -300);
 			addHazard(this, -150, -400);
 			addHazard(this, -125, -425);
@@ -128,9 +121,8 @@ public enum GameLevel {
 	TEACH_INVULNERABILITY(
 		"Collect the Sphinx's shield to pass safely through the storm of swords.", R.drawable.shield) {
 		{
-			addPyramid(this,-80, -650);
 			addSphynx(this, -190, -90);
-
+			addPyramid(this,-80, -650);
 			addSpell(this,  -100, -400);
 			addHazard(this, -150, -400);
 			addHazard(this, -125, -425);
@@ -149,8 +141,8 @@ public enum GameLevel {
 	TEACH_INVULNERABILITY_TIME_LIMIT(
 		"The shield does not last forever. Move quickly through the storms of swords.", R.drawable.shield) {
 		{
-			addPyramid(this, -200, -800);
 			addSphynx(this, -441, -328);
+			addPyramid(this, -200, -800);
 			addSpell(this, -122, -494);
 			addHazard(this, -134, -487);
 			addHazard(this, -137, -550);
@@ -179,8 +171,8 @@ public enum GameLevel {
 	LOTS_OF_SWORDS_N_SHIELDS(
 		"Think of some clever title", R.drawable.shield) {
 		{
-			addPyramid(this,-80, -450);
 			addSphynx(this, -190, -90);
+			addPyramid(this,-80, -450);
 			//the more negative(z) means farther away
 			//addSpell(this,x,z)
 			addSpell(this,  -100, -600);
@@ -202,36 +194,39 @@ public enum GameLevel {
 	TEACH_RUBY(
 		"Get the Sphinx's red ruby of passage to retrieve the ankh inside the pyramid.", R.drawable.ruby) {
 		{
-			addPyramid(this,-220, 100);
-			addPyramid(this,655, 110);
-			addPyramid(this,-620, 100);
-			addSphynx(this, -190, -90);
-			
+			addPyramid(this, -220, 100);
+			addPyramid(this, 655, 110);
+			addPyramid(this, -620, 100);
 			addSpell(this, -220, 100);
-			addRuby(this, -25, 90);
-			addCoin(this, 200, 200);
-			addCoin(this, 200, 210);
+			addRuby(this, -62, 438);
+			addCoin(this, 203, -256);
+			addCoin(this, 206, 234);
+			addSphynx(this, -197, 441);			
 		}
 	},	
 	
-	// sword and shield inside pyramids
+	// This level=12, It has a shield inside a pyramid, requiring a Ruby to get.
 	SECOND_LAST(
 		"With each ankh recovered, Nebtawi's power wanes. Hurry now!", R.drawable.ruby) {
 		{
-			addPyramid(this,-220, 100);
-			addPyramid(this,655, 110);
-			addPyramid(this,-620, 100);
-			addSphynx(this, -190, -90);
-			
-			addProtection(this, -220, 100);
-			addSpell(this, -80, -450);
-			addRuby(this, -25, 90);
-			addHazard(this, 150, 400);
-			addHazard(this, 150, 400);
-			addHazard(this, 150, 400);
-			addHazard(this, 150, 400);
-			addCoin(this, 200, 200);
+			addPyramid(this, -156, 416);
+			addPyramid(this, 750, -312);
+			addPyramid(this, -620, 100);
+			addProtection(this, -625, 100);
+			addSpell(this, 78, -459);
+			addRuby(this, -450, -441);
+			addHazard(this, 78, -409);
+			addHazard(this, 41, -428);
+			addHazard(this, 116, -428);
+			addHazard(this, 44, -484);
+			addCoin(this, 894, 900);
 			addCoin(this, 200, 210);
+			addCoin(this, -919, 888);
+			addCoin(this, -903, -919);
+			addCoin(this, 909, -928);
+			addHazard(this, 75, -497);
+			addHazard(this, 113, -481);
+			addSphynx(this, -600, -569);
 		}
 	},	
 
