@@ -23,15 +23,15 @@ public class SoundTracksStoppingExceptionHandler implements UncaughtExceptionHan
 
 	@Override
 	public void uncaughtException(final Thread aThread, final Throwable aThrowable) {
+		if(aThrowable.getMessage()!=null && aThrowable.getMessage().indexOf("adwhirl")>0 ) {
+			return;
+		}
 		try {
 			if (SoundTracks.getInstance() != null) {
 				SoundTracks.getInstance().stop();
 			}
 		} catch (final Throwable anotherT) {
 			Log.e(TAG, "'You can't stop the music' - Village People", anotherT);
-		}
-		if(aThrowable.getMessage()!=null && aThrowable.getMessage().indexOf("adwhirl")>0 ) {
-			return;
 		}
 		defaultVersion.uncaughtException(aThread, aThrowable);
 	}
