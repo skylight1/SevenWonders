@@ -149,21 +149,29 @@ public enum GameLevel {
 	TEACH_INVULNERABILITY_TIME_LIMIT(
 		"The shield does not last forever. Move quickly through the storms of swords.", R.drawable.shield) {
 		{
-			addPyramid(this,-80, -450);
-			addSphynx(this, -190, -90);
-			
-			addSpell(this,  -100, -200);
-			addHazard(this, -150, -400);
-			addHazard(this, -125, -425);
-			addHazard(this, -100, -450);
-			addHazard(this, -75, -425);
-			addHazard(this, 150, 400);
-			addHazard(this, 125, 425);
-			addHazard(this, 100, 450);
-			addHazard(this, 75, 425);
-			addCoin(this, 200, 200);
-			addCoin(this, 200, 210);
-			addProtection(this, -25, 90);
+			addPyramid(this, -200, -800);
+			addSphynx(this, -441, -328);
+			addSpell(this, -122, -494);
+			addHazard(this, -134, -487);
+			addHazard(this, -137, -550);
+			addHazard(this, -100, -531);
+			addHazard(this, -156, -509);
+			addHazard(this, -72, 359);
+			addHazard(this, -137, 381);
+			addHazard(this, -100, 359);
+			addHazard(this, -69, 434);
+			addCoin(this, -903, -878);
+			addCoin(this, -722, -653);
+			addProtection(this, -587, -484);
+			addCoin(this, -834, -803);
+			addHazard(this, -109, -491);
+			addSpell(this, -94, 413);
+			addHazard(this, -134, 431);
+			addHazard(this, -100, 453);
+			addHazard(this, -59, 394);
+			addCoin(this, -781, -728);
+			addCoin(this, -953, -950);
+			addPyramid(this, 522, 631);
 		}
 	},
 	
