@@ -5,6 +5,9 @@ import skylight1.sevenwonders.R;
 import android.opengl.Matrix;
 
 public class LevelConstructionToolkit {
+	// The pyramids are slightly above the ground, this is the amount they have to be moved down.
+	private static final int PYRAMID_GROUNDING_ADJUSTMENT = -40;
+
 	private static final ProtectionAction PROTECTION_ACTION = new ProtectionAction();
 
 	private static final float HEIGHT_OF_HAZARDS_FROM_GROUND = 9f;
@@ -127,13 +130,9 @@ public class LevelConstructionToolkit {
 	 * @param aZ
 	 */
 	static void addPyramid(final GameLevel aGameLevel, final float anX, final float aZ) {
-		final int aRotation = 0;
-		final int aY = -10;
-		
 		final float[] coordinateTransform = new float[16];
 		Matrix.setIdentityM(coordinateTransform, 0);
-		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
-		Matrix.translateM(coordinateTransform, 0, anX, aY - 30, aZ);
+		Matrix.translateM(coordinateTransform, 0, anX, PYRAMID_GROUNDING_ADJUSTMENT, aZ);
 		aGameLevel.decorations.add(new GameObjectDescriptor(coordinateTransform, null, R.raw.pyramid, R.raw.textures));
 
 		aGameLevel.obstacles.add(new float[] { anX, GameState.HEIGHT_OF_CARPET_FROM_GROUND, aZ, 90 });
@@ -145,8 +144,8 @@ public class LevelConstructionToolkit {
 		
 		final float[] coordinateTransform = new float[16];
 		Matrix.setIdentityM(coordinateTransform, 0);
-		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
 		Matrix.translateM(coordinateTransform, 0, anX, aY, aZ);
+		Matrix.rotateM(coordinateTransform, 0, aRotation, 0, 1, 0);
 		final float[] textureTransform = new float[16];
 		Matrix.setIdentityM(textureTransform, 0);
 		aGameLevel.decorations.add(new GameObjectDescriptor(coordinateTransform, null, R.raw.sphinx_scaled, R.raw.sphinx));
