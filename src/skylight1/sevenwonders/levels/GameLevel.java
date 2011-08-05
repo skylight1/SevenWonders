@@ -102,18 +102,18 @@ public enum GameLevel {
 		"Fly carefully between the swords to recover the ankhs.", R.drawable.icon) {
 		{
 			addSphynx(this, -190, -90);
+			addPyramid(this, -465, -390);
+			addHazard(this, -275, -334);
+			addHazard(this, -312, -450);
+			addHazard(this, -381, -421);
+			addHazard(this, -312, -425);
+			addSpell(this, -346, -371);
+			addHazard(this, -378, -340);
+			addHazard(this, -312, -331);
+			addHazard(this, -356, -343);
+			addSpell(this, -221, -365);
+			
 			addPyramid(this,-80, -450);			
-			addSpell(this,  -170, -300);
-			addHazard(this, -150, -400);
-			addHazard(this, -125, -425);
-			addHazard(this, -100, -450);
-			addHazard(this, -75, -425);
-			addHazard(this, 150, 400);
-			addHazard(this, 125, 425);
-			addHazard(this, 100, 450);
-			addHazard(this, 75, 425);
-			addCoin(this, 200, 200);
-			addCoin(this, 200, 210);
 		}
 	},
 	
