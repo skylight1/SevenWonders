@@ -179,6 +179,19 @@ function handleClick(e) {
 
 	// If dragging something, clicking drops it.
 	if ( null != gameObjectBeingMoved ) {
+		
+		// If dropped in the palette, delete it.
+		if ( gameObjectBeingMoved.left + gameObjectBeingMoved.width / 2 < PALETTE_WIDTH ) {
+			var newGameObjects = [];
+			for( var i in gameObjects ) {
+				var gameObject = gameObjects[i];
+				if ( gameObject != gameObjectBeingMoved ) {
+					newGameObjects.push(gameObject);
+				}
+			}			
+			gameObjects = newGameObjects;
+			draw();
+		}
 		gameObjectBeingMoved = null;
 		return;
 	}
