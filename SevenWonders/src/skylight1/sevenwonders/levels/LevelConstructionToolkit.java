@@ -57,8 +57,8 @@ public class LevelConstructionToolkit {
 		final float[] highlightTextureMatrix = new float[16];
 		android.opengl.Matrix.setIdentityM(highlightTransformationMatrix, 0);
 		android.opengl.Matrix.setIdentityM(highlightTextureMatrix, 0);
-		android.opengl.Matrix.translateM(highlightTransformationMatrix, 0, anX, 75, aZ);
-		android.opengl.Matrix.scaleM(highlightTransformationMatrix, 0, 4, 4, 4);
+		android.opengl.Matrix.translateM(highlightTransformationMatrix, 0, anX, 175, aZ);
+		android.opengl.Matrix.scaleM(highlightTransformationMatrix, 0, 8, 4, 8);
 		int glowIndex = aGameLevel.glows.size();
 		aGameLevel.glows.add(new GameObjectDescriptor(highlightTransformationMatrix, null, R.raw.transparent_white_cyclinder, R.raw.textures));
 
