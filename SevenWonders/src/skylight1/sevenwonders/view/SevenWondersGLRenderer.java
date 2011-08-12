@@ -91,8 +91,6 @@ public class SevenWondersGLRenderer implements Renderer {
 	// Used to reduce turning velocity, which was too high as the phone angle times the time delta alone.
 	private static final int TURNING_VELOCITY_DIVISOR = 100;
 
-	private static final int END_OF_WORLD_MARGIN = 100;
-
 	private static final String TAG = SevenWondersGLRenderer.class.getName();
 
 	private static final int FRAMES_BETWEEN_LOGGING_FPS = 60;
@@ -527,15 +525,15 @@ public class SevenWondersGLRenderer implements Renderer {
 			final float newPositionZ = playerWorldPosition.z + facingZ * velocity * aTimeDeltaMS;
 	
 			// Only update the position if it isn't too far from the end of the world.
-			if (newPositionX > (CubeBounds.TERRAIN.x1 + END_OF_WORLD_MARGIN)
-					&& newPositionX < (CubeBounds.TERRAIN.x2 - END_OF_WORLD_MARGIN)) {
+			if (newPositionX > (CubeBounds.TERRAIN.x1)
+					&& newPositionX < (CubeBounds.TERRAIN.x2)) {
 				playerWorldPosition.x = newPositionX;
 			} else {
 			    SoundTracks.getInstance().play(SoundTracks.BUMP);
 			}
 	
-			if (newPositionZ > (CubeBounds.TERRAIN.z1 + END_OF_WORLD_MARGIN)
-					&& newPositionZ < (CubeBounds.TERRAIN.z2 - END_OF_WORLD_MARGIN)) {
+			if (newPositionZ > (CubeBounds.TERRAIN.z1)
+					&& newPositionZ < (CubeBounds.TERRAIN.z2)) {
 				playerWorldPosition.z = newPositionZ;
 			} else {
 			    SoundTracks.getInstance().play(SoundTracks.BUMP);

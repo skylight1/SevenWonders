@@ -1,9 +1,11 @@
 package skylight1.sevenwonders;
 
 public class GameState {
+	
 	private long remainingGameTimeMillis;
 	
 	public int numberOfSpellsCollected;
+	
 	private int remainingInvincibilityTimeMillis;
 	
 	private int remainingPassThroughObstaclesTimeMillis;
