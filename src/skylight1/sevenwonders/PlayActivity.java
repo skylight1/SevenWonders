@@ -73,6 +73,8 @@ public class PlayActivity extends Activity {
 	
 	private GameState gameState = new GameState();
 	
+	private TextView gameStatusView;
+	
     //Handler to draw debug info (fps) and countdown and end the game
     private Handler updateUiHandler = new Handler() {
     	public void handleMessage(Message msg) {
@@ -256,10 +258,7 @@ public class PlayActivity extends Activity {
 		
 		mainLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
 		splashView = findViewById(R.id.splashView);
-		
-		TextView loadingTextView = (TextView) findViewById(R.id.loading_textview);
-		textStyles.applyHeaderTextStyle(loadingTextView);
-		
+				
 		final TextView scoreTextView = (TextView) findViewById(R.id.score);
 		scoreTextView.setText("0");
 		textStyles.applyHeaderTextStyle(scoreTextView);
@@ -277,8 +276,10 @@ public class PlayActivity extends Activity {
 		
 		gLSurfaceView = new SevenWondersGLSurfaceView(this, gameState);
 
-		final TextView loadingMessage = (TextView) findViewById(R.id.loading_textview);
-		loadingMessage.setText(currentLevel.getLoadingMessage());
+		gameStatusView = (TextView) findViewById(R.id.gameStatusView);
+		textStyles.applyHeaderTextStyle(gameStatusView);
+		gameStatusView.setText(currentLevel.getLoadingMessage());
+		
 		final long timeMessageWasShown = System.currentTimeMillis();
 		
 		// load the OpenGL objects on another thread, not the UI thread, and not
@@ -310,6 +311,7 @@ public class PlayActivity extends Activity {
 
 						// hide the splash screen
 						topLayout.removeView(splashView);
+						gameStatusView.setText("");
 
 						// start the surface
 						gLSurfaceView.initialize();
@@ -379,6 +381,11 @@ public class PlayActivity extends Activity {
 			case KeyEvent.KEYCODE_MENU:
 				lastGameTimeUptimeMillis = SystemClock.uptimeMillis();
 				isGameManuallyPaused = !isGameManuallyPaused;
+				if ( isGameManuallyPaused ) {
+					gameStatusView.setText(R.string.paused);
+				} else {
+					gameStatusView.setText("");
+				}
 				gLSurfaceView.togglePaused();
 				return true;
 		}
