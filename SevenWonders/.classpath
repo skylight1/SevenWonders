@@ -9,7 +9,7 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="lib/AdWhirlSDK_Android_2.5.4.jar"/>
 	<classpathentry kind="lib" path="lib/admob-sdk-android.jar"/>
-	<classpathentry kind="src" path="SkylightOpenGL_src"/>
 	<classpathentry kind="src" path="SkylightUtils_src"/>
+	<classpathentry kind="src" path="SkylightOpenGL_src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

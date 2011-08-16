@@ -18,6 +18,7 @@
 	<string name="visitWebsite">Visit the Seven Wonders Website</string>
 	<string name="aboutText2">\n(c) 2011 Skylight1</string>
 	<string name="retry">Retry</string>
+	<string name="paused">Paused\nPress Menu to Continue</string>
 	
 	<string name="splash_activity_visit_website_button">Visit Website</string>
 	<string name="splash_activity_expired_message">

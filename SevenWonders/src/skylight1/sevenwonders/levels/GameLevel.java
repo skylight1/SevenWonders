@@ -169,7 +169,7 @@ public enum GameLevel {
 	
 	// This level=10 requires using the shield.
 	LOTS_OF_SWORDS_N_SHIELDS(
-		"Think of some clever title", R.drawable.shield) {
+		"Magical swords fly everywhere! Evade and find the ankh.", R.drawable.shield) {
 		{
 			addSphynx(this, -190, -90);
 			addPyramid(this,-80, -450);
@@ -232,7 +232,7 @@ public enum GameLevel {
 
 	LAST("Collect the remaining ankhs and Nebtawi will be defeated in Egypt! Magic scarabs have arrived to give you time.", R.drawable.scarab) {
 		{
-			setTotalTimeAllowedInSeconds(60);
+			setTotalTimeAllowedInSeconds(100);
 			addSphynx(this, -16, -497);
 			addPyramid(this, -534, 256);
 			addPyramid(this, -278, 438);
