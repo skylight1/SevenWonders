@@ -167,7 +167,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		settings = new Settings(aContext);
 		
-		openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(125553);
+		openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(150000);
 
 		// load all of the decorations (land, water, sphinx, pyramids, etc.)
 		addGeometriesFromGameObjects(decorationGeometries, level.getDecorations(), false);
@@ -231,7 +231,7 @@ public class SevenWondersGLRenderer implements Renderer {
 				float slidingOffsetToPyramidX = aBoundingSphere[0] - playerWorldPosition.x;
 				float slidingOffsetToPyramidZ = aBoundingSphere[2] - playerWorldPosition.z;
 				float slidingDistanceFromPyramid = Matrix.length(Math.abs(slidingOffsetToPyramidX), 0, Math.abs(slidingOffsetToPyramidZ));
-				
+  				
 				// do not suppress future collisions
 				return false;
 			}
