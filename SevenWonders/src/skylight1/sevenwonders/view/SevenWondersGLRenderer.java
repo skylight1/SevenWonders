@@ -231,8 +231,6 @@ public class SevenWondersGLRenderer implements Renderer {
 				float slidingOffsetToPyramidX = aBoundingSphere[0] - playerWorldPosition.x;
 				float slidingOffsetToPyramidZ = aBoundingSphere[2] - playerWorldPosition.z;
 				float slidingDistanceFromPyramid = Matrix.length(Math.abs(slidingOffsetToPyramidX), 0, Math.abs(slidingOffsetToPyramidZ));
-				Log.i(TAG, String.format("just colided with (%s) at distance %f, retreating to distance %f", 
-						Arrays.toString(aBoundingSphere), collidingOffsetToPyramidZ, slidingDistanceFromPyramid));
 				
 				// do not suppress future collisions
 				return false;
