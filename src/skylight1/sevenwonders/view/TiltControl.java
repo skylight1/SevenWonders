@@ -77,9 +77,6 @@ public class TiltControl {
 			// Point the carpet left or right depending on phone being tilted left or right.
 			final int phonePitch = (int) aEvent.values[1]; // rotation around x-axis
 			final int carpetPitch = phonePitch / PHONE_PITCH_TO_CARPET_PITCH_DIVISOR;
-			if(SevenWondersApplication.isDebug) {
-				Log.i("TiltControl", "carpetPitch: " + carpetPitch);
-			}
 			renderer.setTurningVelocity(carpetPitch);	
 			
 			// Speed up the carpet when tilted forward.
