@@ -1,10 +1,20 @@
 package skylight1.sevenwonders;
 
+import skylight1.sevenwonders.view.Position;
+
 public class GameState {
-	
-	private long remainingGameTimeMillis;
-	
+
+	public static final float HEIGHT_OF_CARPET_FROM_GROUND = 12f;
+
 	public int numberOfSpellsCollected;
+		
+	public Position playerWorldPosition = new Position(0, 0, 0);
+
+	public float playerFacing;
+	
+	public float turningVelocity;
+
+	public float velocity;
 	
 	private int remainingInvincibilityTimeMillis;
 	
@@ -12,7 +22,7 @@ public class GameState {
 	
 	private int numberofCoinsCollected;
 
-	public static final float HEIGHT_OF_CARPET_FROM_GROUND = 12f;
+	private long remainingGameTimeMillis;
 	
 	public int getRemainingPassThroughSolidsTimeMillis() {
 		return remainingPassThroughObstaclesTimeMillis;

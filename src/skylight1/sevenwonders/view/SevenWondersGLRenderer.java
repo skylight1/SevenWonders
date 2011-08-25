@@ -4,7 +4,6 @@ import static javax.microedition.khronos.opengles.GL10.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -111,14 +110,6 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private OpenGLGeometry skyboxGeometry;
 
-	private Position playerWorldPosition = new Position(0, 0, 0);
-
-	private float playerFacing;
-	
-	private float turningVelocity;
-
-	private float velocity;
-
 	private long timeAtLastOnRenderCall;
 
 	private final CollisionDetector collisionDetector = new CollisionDetector();
@@ -203,8 +194,8 @@ public class SevenWondersGLRenderer implements Renderer {
 			    // Find the distance traveled toward the pyramid.
 				float initialOffsetToPyramidX = aBoundingSphere[0] - startOfFramePlayerWorldPositionX;
 				float initialOffsetToPyramidZ = aBoundingSphere[2] - startOfFramePlayerWorldPositionZ;
-				float collidingOffsetToPyramidX = aBoundingSphere[0] - playerWorldPosition.x;
-				float collidingOffsetToPyramidZ = aBoundingSphere[2] - playerWorldPosition.z;
+				float collidingOffsetToPyramidX = aBoundingSphere[0] - gameState.playerWorldPosition.x;
+				float collidingOffsetToPyramidZ = aBoundingSphere[2] - gameState.playerWorldPosition.z;
 				float initialDistanceFromPyramid = Matrix.length(Math.abs(initialOffsetToPyramidX), 0, Math.abs(initialOffsetToPyramidZ));
 				float collidingDistanceFromPyramid = Matrix.length(Math.abs(collidingOffsetToPyramidX), 0, Math.abs(collidingOffsetToPyramidZ));
 				float distanceTraveledTowardPyramid = initialDistanceFromPyramid - collidingDistanceFromPyramid;
@@ -222,15 +213,11 @@ public class SevenWondersGLRenderer implements Renderer {
 				// Take where the player would have gone had he not collided
 				// and subtract the distance traveled toward the pyramid. 
 				// This should leave only the motion to the side of the pyramid.
-				float playerSlidingPositionX = playerWorldPosition.x - slideOffsetX;
-				float playerSlidingPositionZ = playerWorldPosition.z - slideOffsetZ;
+				float playerSlidingPositionX = gameState.playerWorldPosition.x - slideOffsetX;
+				float playerSlidingPositionZ = gameState.playerWorldPosition.z - slideOffsetZ;
 				
-				playerWorldPosition.x = playerSlidingPositionX;
-				playerWorldPosition.z = playerSlidingPositionZ;
-			    
-				float slidingOffsetToPyramidX = aBoundingSphere[0] - playerWorldPosition.x;
-				float slidingOffsetToPyramidZ = aBoundingSphere[2] - playerWorldPosition.z;
-				float slidingDistanceFromPyramid = Matrix.length(Math.abs(slidingOffsetToPyramidX), 0, Math.abs(slidingOffsetToPyramidZ));
+				gameState.playerWorldPosition.x = playerSlidingPositionX;
+				gameState.playerWorldPosition.z = playerSlidingPositionZ;
   				
 				// do not suppress future collisions
 				return false;
@@ -419,10 +406,10 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glClear(GL10.GL_DEPTH_BUFFER_BIT);
 		
 		final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
-		float turnAmountFromTurningVelocity = turningVelocity * timeDeltaMS / TURNING_VELOCITY_DIVISOR;
+		float turnAmountFromTurningVelocity = gameState.turningVelocity * timeDeltaMS / TURNING_VELOCITY_DIVISOR;
 		turn(turnAmountFromTurningVelocity);
 		
-		playerFacingThisFrame = playerFacing;
+		playerFacingThisFrame = gameState.playerFacing;
 		
 		drawCarpet(aGl);
 
@@ -503,7 +490,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		// Rotate first, otherwise map rotates around center point we translated away from.
 		Matrix.rotateM(carpetBoundingBox, 0, playerFacingThisFrame, 0, 1, 0);
-		Matrix.translateM(carpetBoundingBox, 0, -playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
+		Matrix.translateM(carpetBoundingBox, 0, -gameState.playerWorldPosition.x, -gameState.playerWorldPosition.y, -gameState.playerWorldPosition.z);
 
 		if(!paused) {
 			collisionDetector.detectCollisions(carpetBoundingBox);
@@ -512,27 +499,27 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private void applyMovement(final GL10 aGl, final long aTimeDeltaMS) {	
 		// keep the old position in case a collision with an obstacle requires a "movement rollback"
-		startOfFramePlayerWorldPositionX = playerWorldPosition.x;
-		startOfFramePlayerWorldPositionZ = playerWorldPosition.z;
+		startOfFramePlayerWorldPositionX = gameState.playerWorldPosition.x;
+		startOfFramePlayerWorldPositionZ = gameState.playerWorldPosition.z;
 
 		final float facingX = (float) Math.sin(playerFacingThisFrame / 180f * Math.PI);
 		final float facingZ = -(float) Math.cos(playerFacingThisFrame / 180f * Math.PI);
 
 		if ( !paused ) {
-			final float newPositionX = playerWorldPosition.x + facingX * velocity * aTimeDeltaMS;
-			final float newPositionZ = playerWorldPosition.z + facingZ * velocity * aTimeDeltaMS;
+			final float newPositionX = gameState.playerWorldPosition.x + facingX * gameState.velocity * aTimeDeltaMS;
+			final float newPositionZ = gameState.playerWorldPosition.z + facingZ * gameState.velocity * aTimeDeltaMS;
 	
 			// Only update the position if it isn't too far from the end of the world.
 			if (newPositionX > (CubeBounds.TERRAIN.x1)
 					&& newPositionX < (CubeBounds.TERRAIN.x2)) {
-				playerWorldPosition.x = newPositionX;
+				gameState.playerWorldPosition.x = newPositionX;
 			} else {
 			    SoundTracks.getInstance().play(SoundTracks.BUMP);
 			}
 	
 			if (newPositionZ > (CubeBounds.TERRAIN.z1)
 					&& newPositionZ < (CubeBounds.TERRAIN.z2)) {
-				playerWorldPosition.z = newPositionZ;
+				gameState.playerWorldPosition.z = newPositionZ;
 			} else {
 			    SoundTracks.getInstance().play(SoundTracks.BUMP);
 			}
@@ -540,8 +527,9 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		checkForCollisionsWithObstacles();
 
-		GLU.gluLookAt(aGl, playerWorldPosition.x, GameState.HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z, playerWorldPosition.x
-				+ facingX, GameState.HEIGHT_OF_CARPET_FROM_GROUND, playerWorldPosition.z + facingZ, 0f, 1f, 0f);
+		GLU.gluLookAt(aGl, gameState.playerWorldPosition.x, GameState.HEIGHT_OF_CARPET_FROM_GROUND, 
+			gameState.playerWorldPosition.z, gameState.playerWorldPosition.x
+				+ facingX, GameState.HEIGHT_OF_CARPET_FROM_GROUND, gameState.playerWorldPosition.z + facingZ, 0f, 1f, 0f);
 	}
 
 	private void checkForCollisionsWithObstacles() {
@@ -551,7 +539,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		// Rotate first, otherwise map rotates around center point we translated away from.
 		Matrix.rotateM(centerOfCarpet, 0, playerFacingThisFrame, 0, 1, 0);
-		Matrix.translateM(centerOfCarpet, 0, -playerWorldPosition.x, -playerWorldPosition.y, -playerWorldPosition.z);
+		Matrix.translateM(centerOfCarpet, 0, 
+			-gameState.playerWorldPosition.x, -gameState.playerWorldPosition.y, -gameState.playerWorldPosition.z);
 
 		obstacleCollisionDetector.detectCollisions(centerOfCarpet);
 	}
@@ -589,14 +578,14 @@ public class SevenWondersGLRenderer implements Renderer {
 		if ( paused ) {
 			return;
 		}
-		velocity = aNewVelocity;
+		gameState.velocity = aNewVelocity;
 	}
 
 	public synchronized void turn(final float anAngleOfTurn) {
 		if ( paused ) {
 			return;
 		}
-		playerFacing += anAngleOfTurn;
+		gameState.playerFacing += anAngleOfTurn;
 		carpet.recordTurnAngle(anAngleOfTurn);
 	}
 
@@ -604,28 +593,29 @@ public class SevenWondersGLRenderer implements Renderer {
 		if ( paused ) {
 			return;
 		}
-		turningVelocity = aTurningVelocity;
+		gameState.turningVelocity = aTurningVelocity;
 	}
 
 	public synchronized void setPlayerFacing(final float anAngleAbosulte) {
 		if ( paused ) {
 			return;
 		}
-		playerFacing = anAngleAbosulte;
+		gameState.playerFacing = anAngleAbosulte;
 	}
 
 	public synchronized void changeVelocity(final float aVelocityIncrement) {
 		if ( paused ) {
 			return;
 		}
-		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, velocity + aVelocityIncrement));
+		gameState.velocity = Math.min(MAXIMUM_VELOCITY, 
+			Math.max(MINIMUM_VELOCITY, gameState.velocity + aVelocityIncrement));
 	}
 
 	public synchronized void setVelocity(final float aVelocity) {
 		if ( paused ) {
 			return;
 		}
-		velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, aVelocity));
+		gameState.velocity = Math.min(MAXIMUM_VELOCITY, Math.max(MINIMUM_VELOCITY, aVelocity));
 	}
 
 	public synchronized void togglePaused() {
@@ -645,7 +635,7 @@ public class SevenWondersGLRenderer implements Renderer {
 			return;
 		}
 		final float newVelocity = aPercent < 0 ? MINIMUM_VELOCITY * aPercent : MAXIMUM_VELOCITY * aPercent;
-		velocity = constrainVelocity(newVelocity);
+		gameState.velocity = constrainVelocity(newVelocity);
 	}
 
 	/**
