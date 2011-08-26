@@ -112,7 +112,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private long timeAtLastOnRenderCall;
 
-	private final CollisionDetector collisionDetector = new CollisionDetector();
+	private final CollisionDetector gameObjectCollisionDetector = new CollisionDetector();
 
 	private final CollisionDetector obstacleCollisionDetector = new CollisionDetector();
 	
@@ -357,7 +357,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		for (final Map.Entry<GameObjectDescriptor, List<OpenGLGeometry>> entry : mapOfGameObjectDescriptorsToListOfOpenGLGeometries.entrySet()) {
 			final List<OpenGLGeometry> listOfOpenGLGeometries = entry.getValue();
 			final CollisionActionToCollisionObserverAdapter adapter = new CollisionActionToCollisionObserverAdapter(listOfOpenGLGeometries, aMapOfObjectDescriptorsToCollisionActions.get(entry.getKey()), this, updateUiHandler);
-			collisionDetector.addBoundingSphere(listOfOpenGLGeometries.get(0).getBoundingSphere(), adapter);
+			gameObjectCollisionDetector.addBoundingSphere(listOfOpenGLGeometries.get(0).getBoundingSphere(), adapter);
 		}
 		
 		return objectGeometries;
@@ -493,7 +493,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		Matrix.translateM(carpetBoundingBox, 0, -gameState.playerWorldPosition.x, -gameState.playerWorldPosition.y, -gameState.playerWorldPosition.z);
 
 		if(!paused) {
-			collisionDetector.detectCollisions(carpetBoundingBox);
+			gameObjectCollisionDetector.detectCollisions(carpetBoundingBox);
 		}
 	}
 
