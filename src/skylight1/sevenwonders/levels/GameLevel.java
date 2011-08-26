@@ -230,7 +230,29 @@ public enum GameLevel {
 		}
 	},	
 
-	LAST("Collect the remaining ankhs and Nebtawi will be defeated in Egypt! Magic scarabs have arrived to give you time.", R.drawable.scarab) {
+	INTRODUCE_SCARAB("Magic scarabs have arrived to give you more time.", R.drawable.scarab) {
+		{
+			setTotalTimeAllowedInSeconds(100);
+            addPyramid(this, 616, 707);
+            addPyramid(this, -593, -653);
+            addPyramid(this, -600, 691);
+            addPyramid(this, 632, -668);
+            addTime(this, -437, -475);
+            addTime(this, -412, 604);
+            addTime(this, 529, 588);
+            addTime(this, 529, -518);
+            addSpell(this, -659, -487);
+            addSpell(this, -421, -653);
+            addSpell(this, -637, 491);
+            addSpell(this, -390, 757);
+            addSpell(this, 388, 697);
+            addSpell(this, 675, 491);
+            addSpell(this, 685, -468);
+            addSpell(this, 397, -609);
+		}
+	},
+
+	LAST("Collect the remaining ankhs and Nebtawi will be defeated in Egypt!", R.drawable.scarab) {
 		{
 			setTotalTimeAllowedInSeconds(100);
 			addSphynx(this, -16, -497);
