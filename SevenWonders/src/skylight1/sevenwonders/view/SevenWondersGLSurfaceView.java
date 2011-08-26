@@ -69,16 +69,6 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 			tiltControl.start();
 	}
 
-	public boolean onTouchEvent(final MotionEvent aEvent) {
-		queueEvent(new Runnable() {
-			public void run() {
-				if(SevenWondersApplication.isDebug)
-					Log.i(TAG,String.format("touched %s,%s",aEvent.getXPrecision(),aEvent.getXPrecision()));
-			}
-		});
-		return true;
-	}
-
 	@Override
 	public boolean onKeyDown(final int aKeyCode, final KeyEvent aEvent) {
 		
@@ -147,7 +137,9 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	}
 
 	public void togglePaused() {
-		renderer.togglePaused();
+		if(renderer != null) {
+			renderer.togglePaused();
+		}
 	}
 	
 }
