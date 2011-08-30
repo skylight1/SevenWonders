@@ -17,7 +17,7 @@ final class ExtraTimeAction implements CollisionAction {
 
 		// TODO maybe make an hour glass item for this instead? and coin could be just points?
 		// notify the message handler that the time has been increased
-		final Message message = aUiHandler.obtainMessage(PlayActivity.MODIFY_REMAINING_TIME_MESSAGE, 30, 0);
+		final Message message = aUiHandler.obtainMessage(PlayActivity.MODIFY_REMAINING_TIME_MESSAGE, 60, 0);
 		aUiHandler.sendMessage(message);
 	}
 }
