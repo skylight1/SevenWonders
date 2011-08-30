@@ -52,7 +52,7 @@ public class MenuActivity extends Activity implements OnClickListener, AdWhirlIn
         ViewGroup layout = (ViewGroup)findViewById(R.id.layout_ad);
 		Adverts.insertAdBanner(this,layout);
 		
-        tracker = Analytics.getInstance(this,"BTB", BuildInfo.getVersionName(this));
+        tracker = Analytics.getInstance(this,"7W", BuildInfo.getVersionName(this));
 		tracker.start(this);
 	}
 

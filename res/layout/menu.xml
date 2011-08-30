@@ -8,15 +8,11 @@
 
     <LinearLayout 
       a:id="@+id/layout_ad"
-      a:layout_width="320dp"
-      a:layout_height="52dp"
+      a:layout_width="wrap_content"
+      a:layout_height="wrap_content"
       a:layout_alignParentBottom="true"
       a:layout_centerHorizontal="true"
       a:background="@android:color/transparent">
-<!--      <com.adwhirl.AdWhirlLayout
-        android:id="@+id/adwhirl_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" /> -->
     </LinearLayout>
 
     <LinearLayout     

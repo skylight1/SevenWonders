@@ -1,5 +1,7 @@
 package skylight1.sevenwonders;
 
+import com.adwhirl.AdWhirlLayout.AdWhirlInterface;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class LevelChooserActivity extends ListActivity {
+public class LevelChooserActivity extends ListActivity implements AdWhirlInterface {
 
 	private static class LevelScore {
 		final GameLevel level;
@@ -82,6 +84,9 @@ public class LevelChooserActivity extends ListActivity {
 		};
 
 		setListAdapter(levelScoreAdapter);
+		
+        ViewGroup layout = (ViewGroup)findViewById(R.id.layout_ad);
+		Adverts.insertAdBanner(this,layout);
 	}
 
 	@Override
@@ -105,5 +110,9 @@ public class LevelChooserActivity extends ListActivity {
 		final Intent intent = new Intent(this, PlayActivity.class);
 		intent.putExtra(ScoreActivity.KEY_LEVEL_ORDINAL, levelScore.level.ordinal());
 		startActivity(intent);
+	}
+
+	@Override
+	public void adWhirlGeneric() {
 	}
 }
