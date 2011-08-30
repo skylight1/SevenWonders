@@ -1,5 +1,7 @@
 package skylight1.sevenwonders;
 
+import com.adwhirl.AdWhirlLayout.AdWhirlInterface;
+
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.TextStyles;
 import skylight1.util.BuildInfo;
@@ -13,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MenuActivity extends Activity implements OnClickListener {//, AdWhirlInterface {
+public class MenuActivity extends Activity implements OnClickListener, AdWhirlInterface {
 	
 	private TextView contentTextView;
 	private Button leftButton;
@@ -111,10 +113,10 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 	    tracker.stop();
     }
 
-//	@Override
-//	public void adWhirlGeneric() {
-//		// TODO Auto-generated method stub
-//		
-//	}
+	@Override
+	public void adWhirlGeneric() {
+		
+	}
+
 		
 }
