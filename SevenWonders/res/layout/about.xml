@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:a="http://schemas.android.com/apk/res/android"
+  a:layout_width="fill_parent"
+  a:layout_height="fill_parent"
+  a:orientation="vertical"
+  a:background="@drawable/bg">  
+   <FrameLayout
+      a:layout_width="fill_parent"
+      a:layout_height="0dip"      
+      a:layout_weight="0.70"
+      a:layout_margin="30dip"
+      a:background="@drawable/story_background">    
+  
+	    <TextView
+	     a:id="@+id/aboutText"
+	     a:layout_width="fill_parent" 
+	     a:layout_height="fill_parent"
+	     a:gravity="center"/>
+	          
+     </FrameLayout> 
+            
+     <LinearLayout
+        a:id="@+id/menu_footer_layout"
+        a:layout_width="fill_parent"
+        a:layout_height="0dip"
+        a:layout_weight="0.30"
+        a:weightSum="1">        
+        <Button 
+          a:text="@string/visitWebsite" 
+          a:id="@+id/visitWebsite"
+          a:layout_width="fill_parent"
+		  a:layout_height="fill_parent"
+		  a:background="@drawable/button"/>       
+    </LinearLayout>
+</LinearLayout>

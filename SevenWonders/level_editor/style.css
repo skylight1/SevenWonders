@@ -1,0 +1,31 @@
+h1, h2 {
+	color: #295599;
+}
+
+h1 {
+	font: bold xx-large sans-serif;
+}
+
+h2 {
+	font: bold x-large sans-serif;
+}
+
+body {
+	margin-left: auto;
+	margin-right: auto;
+	width: 800px;
+}
+
+p, blockquote {
+	max-width: 35em;
+}
+
+#gameImages {
+	display: none;
+}
+
+#gameStatus {
+	text-align: center;
+	width: 512px;
+	font: bold x-large sans-serif;
+}

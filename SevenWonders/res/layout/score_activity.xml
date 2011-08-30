@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:a="http://schemas.android.com/apk/res/android"
+    a:orientation="vertical"
+    a:layout_width="fill_parent"
+    a:layout_height="fill_parent"
+    a:background="@drawable/bg">    
+    <FrameLayout
+      a:layout_width="fill_parent"
+      a:layout_height="0dip"      
+      a:layout_weight="0.70">
+	     <TextView
+	      a:id="@+id/end__content_textview"
+	      a:layout_width="fill_parent"
+	      a:layout_height="wrap_content"
+	      a:layout_gravity="center"
+	      a:gravity="center"
+	      a:text="@string/story01"
+	      a:textSize="20dip"
+	      a:textColor="#ffff"      
+	      a:textStyle="bold"
+	      a:shadowRadius="3"
+	      a:shadowColor="#100"
+	      a:shadowDx="2.0"
+	      a:shadowDy="2.0"/>    
+    </FrameLayout>
+        
+    <LinearLayout
+        a:id="@+id/end__footer_layout"
+        a:layout_width="fill_parent"
+        a:layout_height="0dip"
+        a:layout_weight="0.30">        
+
+   	   <Button 
+   	   	 a:id="@+id/postToTwitter"
+   		 a:text="@string/postToTwitter"
+         a:layout_width="0dip"
+         a:layout_height="fill_parent"
+         a:layout_weight="0.20"        
+         a:background="@drawable/button"/>
+   		
+   	   <Button 
+   	   	 a:id="@+id/postToFacebook"
+   		 a:text="@string/postToFacebook"
+         a:layout_width="0dip"
+         a:layout_height="fill_parent"
+         a:layout_weight="0.20"        
+         a:background="@drawable/button"/>
+         
+       <Button
+         a:id="@+id/end__playNextLevel"
+         a:layout_width="0dip"
+         a:layout_height="fill_parent"
+         a:layout_weight="0.30"        
+         a:text="@string/playNextLevel"
+         a:background="@drawable/button"/>
+         
+       <Button
+         a:id="@+id/end__playAgain"
+         a:layout_width="0dip"
+         a:layout_height="fill_parent"
+         a:layout_weight="0.30"        
+         a:text="@string/playAgain"
+         a:background="@drawable/button"/> 
+   		
+    </LinearLayout>    
+</LinearLayout>
