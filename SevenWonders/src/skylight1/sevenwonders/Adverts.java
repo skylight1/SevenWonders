@@ -10,6 +10,7 @@ import com.adwhirl.AdWhirlLayout;
 import com.adwhirl.AdWhirlLayout.AdWhirlInterface;
 import com.adwhirl.AdWhirlManager;
 import com.adwhirl.AdWhirlTargeting;
+import com.adwhirl.util.AdWhirlUtil;
 
 public class Adverts {
 	public static void insertAdBanner(Context context, ViewGroup layout) {
@@ -18,13 +19,12 @@ public class Adverts {
 	    if(adwhirl_id!=null && adwhirl_id.length()>0) {
 
     	   AdWhirlManager.setConfigExpireTimeout(1000 * 60 * 5);	    	   
-    	   AdWhirlTargeting.setTestMode(false);
- 	
+    	   AdWhirlTargeting.setTestMode(SevenWondersApplication.isDebug);
     	   AdWhirlLayout adWhirlLayout = new AdWhirlLayout((Activity) context, adwhirl_id);
-    	   RelativeLayout.LayoutParams adWhirlLayoutParams = new RelativeLayout.LayoutParams(320, 52);
+    	   RelativeLayout.LayoutParams adWhirlLayoutParams = new RelativeLayout.LayoutParams(480, 75);
     	   layout.addView(adWhirlLayout, adWhirlLayoutParams);
-    	   int diWidth = 320;
-    	   int diHeight = 52;
+    	   int diWidth = 480;
+    	   int diHeight = 75;
     	   int density = (int) context.getResources().getDisplayMetrics().density;    	 
     	   adWhirlLayout.setAdWhirlInterface((AdWhirlInterface) context);
     	   adWhirlLayout.setMaxWidth((int)(diWidth * density));
