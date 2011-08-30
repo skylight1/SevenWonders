@@ -158,7 +158,7 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		settings = new Settings(aContext);
 		
-		openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(150000);
+		openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(96753);
 
 		// load all of the decorations (land, water, sphinx, pyramids, etc.)
 		addGeometriesFromGameObjects(decorationGeometries, level.getDecorations(), false);
