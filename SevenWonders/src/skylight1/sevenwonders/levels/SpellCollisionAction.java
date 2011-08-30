@@ -5,7 +5,9 @@ package skylight1.sevenwonders.levels;
 
 import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.services.SoundTracks;
+import skylight1.sevenwonders.view.GameMessagesDisplay;
 import skylight1.sevenwonders.view.SevenWondersGLRenderer;
+import skylight1.sevenwonders.view.GameMessagesDisplay.GameEvent;
 import android.os.Handler;
 
 final class SpellCollisionAction implements CollisionAction {
@@ -25,5 +27,6 @@ final class SpellCollisionAction implements CollisionAction {
 
 		// notify the message handler of the new score
 		aUiHandler.sendEmptyMessage(PlayActivity.SPELL_COLLECTED_MESSAGE);
+		GameMessagesDisplay.postMessage(GameEvent.ANHK_COLLECTED);
 	}
 }

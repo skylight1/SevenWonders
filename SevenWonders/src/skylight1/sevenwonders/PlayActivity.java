@@ -1,6 +1,7 @@
 package skylight1.sevenwonders;
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.services.SoundTracks;
+import skylight1.sevenwonders.view.GameMessagesDisplay;
 import skylight1.sevenwonders.view.SevenWondersGLSurfaceView;
 import skylight1.sevenwonders.view.TextStyles;
 import android.app.Activity;
@@ -32,6 +33,7 @@ public class PlayActivity extends Activity {
 	public static final int START_RENDERING_MESSAGE = 4;
 	protected static final int END_GAME_MESSAGE = 5;
 	public static final int MODIFY_REMAINING_TIME_MESSAGE = 6;
+	public static final int SHOW_GAME_EVENT_MESSAGE_MESSAGE = 7;
 
 	private static final int REMAINING_SECONDS_AFTER_WHICH_COUNTDOWN_FLASHES = 30;
 
@@ -72,6 +74,9 @@ public class PlayActivity extends Activity {
 	private boolean endedByDeath;
 	
 	private GameState gameState = new GameState();
+	
+
+	private GameMessagesDisplay eventMessages;
 	
 	private TextView gameStatusView;
 	
@@ -199,11 +204,16 @@ public class PlayActivity extends Activity {
     					// TODO would be nice to update the UI at this point, but it will be updated in at most one second anyway! 
 						
 						break;
+						
+    				case SHOW_GAME_EVENT_MESSAGE_MESSAGE:
+    					eventMessages.showMessage(msg);
+						break;
     			}
     		}
    		}
    	};
    	
+
 	private boolean isGameTimeMoving() {
 		return isRenderingStarted 
 			&& !isGameManuallyPaused 
@@ -279,6 +289,9 @@ public class PlayActivity extends Activity {
 		gameStatusView = (TextView) findViewById(R.id.gameStatusView);
 		textStyles.applyHeaderTextStyle(gameStatusView);
 		gameStatusView.setText(currentLevel.getLoadingMessage());
+		gameStatusView.setVisibility(View.VISIBLE);
+		
+		eventMessages = new GameMessagesDisplay(updateUiHandler, this);
 		
 		final long timeMessageWasShown = System.currentTimeMillis();
 		
@@ -311,7 +324,7 @@ public class PlayActivity extends Activity {
 
 						// hide the splash screen
 						topLayout.removeView(splashView);
-						gameStatusView.setText("");
+						gameStatusView.setVisibility(View.GONE);
 
 						// start the surface
 						gLSurfaceView.initialize();
@@ -383,8 +396,10 @@ public class PlayActivity extends Activity {
 				isGameManuallyPaused = !isGameManuallyPaused;
 				if ( isGameManuallyPaused ) {
 					gameStatusView.setText(R.string.paused);
+					gameStatusView.setVisibility(View.VISIBLE);
 				} else {
 					gameStatusView.setText("");
+					gameStatusView.setVisibility(View.GONE);
 				}
 				gLSurfaceView.togglePaused();
 				return true;

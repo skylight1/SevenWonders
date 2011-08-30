@@ -4,9 +4,10 @@
 package skylight1.sevenwonders.levels;
 
 import skylight1.sevenwonders.GameState;
-import skylight1.sevenwonders.PlayActivity;
 import skylight1.sevenwonders.services.SoundTracks;
+import skylight1.sevenwonders.view.GameMessagesDisplay;
 import skylight1.sevenwonders.view.SevenWondersGLRenderer;
+import skylight1.sevenwonders.view.GameMessagesDisplay.GameEvent;
 import android.os.Handler;
 
 final class ProtectionAction implements CollisionAction {
@@ -19,5 +20,6 @@ final class ProtectionAction implements CollisionAction {
 
 		final GameState gameState = aSevenWondersGLRenderer.getGameState();
 		gameState.setRemainingInvincibilityTimeMillis(TIME_INVINCIBLE_MILLIS);
+		GameMessagesDisplay.postMessage(GameEvent.INVINCIBLE);
 	}
 }
