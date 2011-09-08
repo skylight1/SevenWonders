@@ -4,7 +4,9 @@
 package skylight1.sevenwonders.levels;
 
 import skylight1.sevenwonders.services.SoundTracks;
+import skylight1.sevenwonders.view.GameMessagesDisplay;
 import skylight1.sevenwonders.view.SevenWondersGLRenderer;
+import skylight1.sevenwonders.view.GameMessagesDisplay.GameEvent;
 import android.os.Handler;
 
 final class RubyCollisionAction implements CollisionAction {
@@ -19,5 +21,6 @@ final class RubyCollisionAction implements CollisionAction {
 		// e.g. "An ankh is hidden within a pyramid! Find the magic red ruby to fly through its walls!"
 		// TODO some sort of UI indicator as well. ruby icon on screen, dialog message, etc.
 		aSevenWondersGLRenderer.getGameState().setRemainingPassThroughObstaclesTimeMillis(TIME_ABLE_TO_PASS_THROUGH_SOLID_MILLIS);
+		GameMessagesDisplay.postMessage(GameEvent.RUBY_FOUND);
 	}
 }
