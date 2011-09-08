@@ -1,15 +1,12 @@
 package skylight1.sevenwonders.view;
 
 import skylight1.sevenwonders.GameState;
-import skylight1.sevenwonders.SevenWondersApplication;
 import skylight1.sevenwonders.levels.GameLevel;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 
 public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	

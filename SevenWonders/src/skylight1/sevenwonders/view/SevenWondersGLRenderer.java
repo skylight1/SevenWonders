@@ -35,6 +35,7 @@ import skylight1.sevenwonders.levels.CollisionAction;
 import skylight1.sevenwonders.levels.GameLevel;
 import skylight1.sevenwonders.levels.GameObjectDescriptor;
 import skylight1.sevenwonders.services.SoundTracks;
+import skylight1.sevenwonders.view.GameMessagesDisplay.GameEvent;
 import skylight1.util.FPSLogger;
 import android.content.Context;
 import android.opengl.GLSurfaceView.Renderer;
@@ -190,7 +191,8 @@ public class SevenWondersGLRenderer implements Renderer {
 				}
 				
 			    SoundTracks.getInstance().play(SoundTracks.BUMP);
-		
+			    GameMessagesDisplay.postMessage(GameEvent.COLLIDED_WITH_OBSTACLE);
+			    
 			    // Find the distance traveled toward the pyramid.
 				float initialOffsetToPyramidX = aBoundingSphere[0] - startOfFramePlayerWorldPositionX;
 				float initialOffsetToPyramidZ = aBoundingSphere[2] - startOfFramePlayerWorldPositionZ;
@@ -509,21 +511,27 @@ public class SevenWondersGLRenderer implements Renderer {
 			final float newPositionX = gameState.playerWorldPosition.x + facingX * gameState.velocity * aTimeDeltaMS;
 			final float newPositionZ = gameState.playerWorldPosition.z + facingZ * gameState.velocity * aTimeDeltaMS;
 	
+			boolean isAtEndOfWorld = false;
 			// Only update the position if it isn't too far from the end of the world.
 			if (newPositionX > (CubeBounds.TERRAIN.x1)
 					&& newPositionX < (CubeBounds.TERRAIN.x2)) {
 				gameState.playerWorldPosition.x = newPositionX;
 			} else {
-			    SoundTracks.getInstance().play(SoundTracks.BUMP);
+			    isAtEndOfWorld = true;
 			}
 	
 			if (newPositionZ > (CubeBounds.TERRAIN.z1)
 					&& newPositionZ < (CubeBounds.TERRAIN.z2)) {
 				gameState.playerWorldPosition.z = newPositionZ;
 			} else {
-			    SoundTracks.getInstance().play(SoundTracks.BUMP);
+			    isAtEndOfWorld = true;
 			}
-		}
+			
+			if (isAtEndOfWorld) {
+				SoundTracks.getInstance().play(SoundTracks.BUMP);
+				GameMessagesDisplay.postMessage(GameEvent.END_OF_WORLD_REACHED);
+			}
+ 		}
 
 		checkForCollisionsWithObstacles();
 
