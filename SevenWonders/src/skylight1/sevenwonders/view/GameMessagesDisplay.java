@@ -31,9 +31,9 @@ public class GameMessagesDisplay {
 		HIT_BY_SWORD("Struck by a Sword !", Priority.MESSAGE),
 		TIME_BONUS_FOUND("Scarab found: Time gain!", Priority.MESSAGE), 
 		RUBY_FOUND("Magic Ruby found: Fly through walls!", Priority.MESSAGE),
-		INVINCIBLE("Invincibiliy! You can't harmed for a while.\nQuick now!", Priority.MESSAGE),
+		INVINCIBLE("Invincibility! You can't harmed for a while.\nQuick now!", Priority.MESSAGE),
 		NOT_HARMED("Saved by Invincibility", Priority.MESSAGE),
-		OUTCH("Outch", Priority.ALERT),
+		OUTCH("Ouch", Priority.ALERT),
 		COIN_COLLECTED("$$$", Priority.MESSAGE),
 		COLLIDED_WITH_OBSTACLE("Avoid the treacherous pull of the pyramids!", Priority.ALERT),
 		;
