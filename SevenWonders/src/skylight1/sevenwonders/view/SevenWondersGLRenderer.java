@@ -101,6 +101,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private static final int PERIOD_FOR_SPINNING_ANIMATION_CYCLE = 1000;
 
+	private static final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(96753);
+	
 	private final Context context;
 
 	private FPSLogger fPSLogger = new FPSLogger(TAG, FRAMES_BETWEEN_LOGGING_FPS);
@@ -139,8 +141,6 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	private Integer swordAnimationIndex;
 
-	private final OpenGLGeometryBuilder<GeometryBuilder.TexturableTriangle3D<GeometryBuilder.NormalizableTriangle3D<Object>>, GeometryBuilder.TexturableRectangle2D<Object>> openGLGeometryBuilder;
-
 	private float startOfFramePlayerWorldPositionX;
 
 	private float startOfFramePlayerWorldPositionZ;
@@ -159,8 +159,8 @@ public class SevenWondersGLRenderer implements Renderer {
 
 		settings = new Settings(aContext);
 		
-		openGLGeometryBuilder = OpenGLGeometryBuilderFactory.createTexturableNormalizable(96753);
-
+		openGLGeometryBuilder.reset();
+		
 		// load all of the decorations (land, water, sphinx, pyramids, etc.)
 		addGeometriesFromGameObjects(decorationGeometries, level.getDecorations(), false);
 
