@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
@@ -40,6 +41,11 @@ public class PlayActivity extends Activity {
 	private static final long ONE_SECOND_IN_MILLISECONDS = 1000;
 
 	private static final String TAG = PlayActivity.class.getName();
+	
+	private static final HandlerThread loaderThread = new HandlerThread("SevenWonders loader");
+	static {
+		loaderThread.start();
+	}
 
 	private SevenWondersGLSurfaceView gLSurfaceView;
 
@@ -78,6 +84,8 @@ public class PlayActivity extends Activity {
 	private GameMessagesDisplay eventMessages;
 	
 	private TextView gameStatusView;
+	
+	private final Handler loadHandler = new Handler(loaderThread.getLooper());
 	
 	private final Handler initFinishedHandler = new Handler() {
 		@Override
@@ -316,7 +324,7 @@ public class PlayActivity extends Activity {
 		
 		// load the OpenGL objects on another thread, not the UI thread, and not
 		// before displaying the screen
-		new Thread(new Runnable() {
+		loadHandler.post((new Runnable() {
 			@Override
 			public void run() {
 				// run the expensive part on a thread other than the UI thread
@@ -336,7 +344,7 @@ public class PlayActivity extends Activity {
 				// need to be back in the UI thread to actually add the surfaceview to the screen
 				initFinishedHandler.sendEmptyMessage(0);
 			}
-		}).start();
+		}));
 	}
 
 	@Override
