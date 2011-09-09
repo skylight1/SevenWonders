@@ -17,7 +17,7 @@ public class HazardCollisionAction implements CollisionAction {
 		
 		// Otherwise, the player died.
 		GameMessagesDisplay.postMessage(GameEvent.HIT_BY_SWORD);
-		GameMessagesDisplay.postMessage(GameEvent.OUTCH);
+		GameMessagesDisplay.postMessage(GameEvent.AAARGH);
 		aUiHandler.sendEmptyMessage(PlayActivity.START_END_GAME_MESSAGE);
 	}
 }

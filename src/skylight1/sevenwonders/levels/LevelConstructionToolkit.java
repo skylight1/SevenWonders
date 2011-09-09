@@ -135,7 +135,7 @@ public class LevelConstructionToolkit {
 		Matrix.translateM(coordinateTransform, 0, anX, PYRAMID_GROUNDING_ADJUSTMENT, aZ);
 		aGameLevel.decorations.add(new GameObjectDescriptor(coordinateTransform, null, R.raw.pyramid, R.raw.textures));
 
-		aGameLevel.obstacles.add(new float[] { anX, GameState.HEIGHT_OF_CARPET_FROM_GROUND, aZ, 90 });
+		aGameLevel.obstacles.add(new float[] { anX, GameState.HEIGHT_OF_CARPET_FROM_GROUND, aZ, 80 });
 	}
 
 	static void addSphynx(final GameLevel aGameLevel, final float anX, final float aZ) {
