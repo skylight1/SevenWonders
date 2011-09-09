@@ -26,16 +26,16 @@ public class GameMessagesDisplay {
 	}
 	
 	public enum GameEvent {	
-		END_OF_WORLD_REACHED("Reached End of World!\nQuick, turn the carpet around!", Priority.ALERT),
+		END_OF_WORLD_REACHED("A magical barrier bars your way!\nTurn around!", Priority.ALERT),
 		ANHK_COLLECTED("Ankh collected!", Priority.MESSAGE),
-		HIT_BY_SWORD("Struck by a Sword !", Priority.MESSAGE),
-		TIME_BONUS_FOUND("Scarab found: Time gain!", Priority.MESSAGE), 
-		RUBY_FOUND("Magic Ruby found: Fly through walls!", Priority.MESSAGE),
-		INVINCIBLE("Invincibility! You can't harmed for a while.\nQuick now!", Priority.MESSAGE),
-		NOT_HARMED("Saved by Invincibility", Priority.MESSAGE),
-		OUTCH("Ouch", Priority.ALERT),
-		COIN_COLLECTED("$$$", Priority.MESSAGE),
-		COLLIDED_WITH_OBSTACLE("Avoid the treacherous pull of the pyramids!", Priority.ALERT),
+		HIT_BY_SWORD("Struck by a Sword!", Priority.MESSAGE),
+		TIME_BONUS_FOUND("Extra time!", Priority.MESSAGE), 
+		RUBY_FOUND("Fly through walls for a while!", Priority.MESSAGE),
+		INVINCIBLE("Invincibility is yours for a while!", Priority.MESSAGE),
+		NOT_HARMED("Saved by Invincibility!", Priority.MESSAGE),
+		AAARGH("Aaargh!", Priority.ALERT),
+		COIN_COLLECTED("Riches are yours!", Priority.MESSAGE),
+		COLLIDED_WITH_OBSTACLE("You cannot fly through the pyramids!", Priority.ALERT),
 		;
 		
 		public final String messageText;
