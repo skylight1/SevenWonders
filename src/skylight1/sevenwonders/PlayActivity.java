@@ -75,10 +75,29 @@ public class PlayActivity extends Activity {
 	
 	private GameState gameState = new GameState();
 	
-
 	private GameMessagesDisplay eventMessages;
 	
 	private TextView gameStatusView;
+	
+	private final Handler initFinishedHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+			RelativeLayout topLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
+			topLayout.addView(gLSurfaceView, 0, params);
+
+			// hide the splash screen
+			topLayout.removeView(splashView);
+			gameStatusView.setVisibility(View.GONE);
+
+			// start the surface
+			gLSurfaceView.initialize();
+			gLSurfaceView.onResume();
+			
+			// safe to "resume" the surface view now
+			gLSurfaceViewAdded = true;
+		}
+	};
 	
     //Handler to draw debug info (fps) and countdown and end the game
     private Handler updateUiHandler = new Handler() {
@@ -315,25 +334,7 @@ public class PlayActivity extends Activity {
 				}
 				
 				// need to be back in the UI thread to actually add the surfaceview to the screen
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-						RelativeLayout topLayout = (RelativeLayout) findViewById(R.id.RelativeLayout01);
-						topLayout.addView(gLSurfaceView, 0, params);
-
-						// hide the splash screen
-						topLayout.removeView(splashView);
-						gameStatusView.setVisibility(View.GONE);
-
-						// start the surface
-						gLSurfaceView.initialize();
-						gLSurfaceView.onResume();
-						
-						// safe to "resume" the surface view now
-						gLSurfaceViewAdded = true;
-					}
-				});
+				initFinishedHandler.sendEmptyMessage(0);
 			}
 		}).start();
 	}
@@ -348,6 +349,8 @@ public class PlayActivity extends Activity {
 		}
 		if (gLSurfaceViewAdded) {
 			gLSurfaceView.onPause();
+		} else {
+			initFinishedHandler.removeMessages(0);
 		}
 	}
     
