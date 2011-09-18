@@ -109,7 +109,7 @@ public class ScoreActivity extends Activity {
 		// Build the message.		
 		final StyledSpannableStringBuilder messageBuilder = new StyledSpannableStringBuilder();
 		messageBuilder.appendScaled(getLevelEndTitle(wonLevel, level) + "\n", 1.66f);
-		
+		String twitterMessage = messageBuilder.toString();
 		messageBuilder.append(collectedSpellCountText + "\n");		
 
 		// if the level has coins, then report how many were collected
@@ -134,10 +134,12 @@ public class ScoreActivity extends Activity {
 		if ( wonLevel ) {
 			messageBuilder.append(getRemainingTimeText(remainingSeconds) + "\n");
 		}
-		messageBuilder.append(getScoreString(collectedSpellsCount, collectedCoinCount, remainingSeconds, wonLevel, level) + "\n");
+		final String scoreString = getScoreString(collectedSpellsCount, collectedCoinCount, remainingSeconds, wonLevel, level) + "\n";
+		twitterMessage += scoreString;
+		messageBuilder.append(scoreString);
 		messageBuilder.append(getWinOrLoseString(wonLevel, nextLevelExists));
 		
-		setupButtons(level, wonLevel, nextLevelExists,messageBuilder.toString());
+		setupButtons(level, wonLevel, nextLevelExists,messageBuilder.toString(),twitterMessage);
 
 		// Make the message uppercase and set it on to a TextView
 		TextView messageTextView = (TextView) findViewById(R.id.end__content_textview);		
@@ -203,8 +205,9 @@ public class ScoreActivity extends Activity {
 		return result;
 	}
 
-	private void setupButtons(final int level, final boolean wasLevelWon, boolean nextLevelExists, String scoreMessage) {
+	private void setupButtons(final int level, final boolean wasLevelWon, boolean nextLevelExists, String scoreMessage, String twitterMessage) {
 		final String message = getString(R.string.postScoreMessage) + "\n" + scoreMessage + "http://sevenwondersgame.com";
+		final String tweet = getString(R.string.postScoreMessage) + "\n" + twitterMessage + "http://sevenwondersgame.com";
 		
 		final Button playNextLevel = (Button) findViewById(R.id.end__playNextLevel);
 		textStyles.applySmallTextForButtonStyle(playNextLevel);
@@ -236,7 +239,7 @@ public class ScoreActivity extends Activity {
 		postToTwitter.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = TwitterUpdater.getIntent(ScoreActivity.this, "KStKbvCfiPgSh2ScfomkfA", "geqI6BmQh5oKwXRIeTZ5RCSGmfapPxSJglzvtN6xf4", "skylight1.sevenwonders://oauth.callback", message);
+				Intent intent = TwitterUpdater.getIntent(ScoreActivity.this, "KStKbvCfiPgSh2ScfomkfA", "geqI6BmQh5oKwXRIeTZ5RCSGmfapPxSJglzvtN6xf4", "skylight1.sevenwonders://oauth.callback", tweet);
 				startActivity(intent);
 				//finish();
 			}
