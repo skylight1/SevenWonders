@@ -115,11 +115,11 @@ public class SoundTracks
     }
     private void release()
     {
-        if (soundPool != null) {
-            soundPool.release();
-            soundPool = null;
-    		initCompleted=true;
-        }
+//        if (soundPool != null) {
+//            soundPool.release();
+//            soundPool = null;
+//    		initCompleted=true;
+//        }
         if(mp!=null) {
 			mp.stop();
 			mp.release();
