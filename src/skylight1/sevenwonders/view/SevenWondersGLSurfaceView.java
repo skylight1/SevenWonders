@@ -7,6 +7,10 @@ import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Handler;
 import android.view.KeyEvent;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+
+import com.htc.view.DisplaySetting;
 
 public class SevenWondersGLSurfaceView extends GLSurfaceView {
 	
@@ -139,4 +143,30 @@ public class SevenWondersGLSurfaceView extends GLSurfaceView {
 		}
 	}
 	
+    public boolean use3D = true;
+    public boolean supports3D;
+
+    private void enableS3D(boolean enable) {
+        final int mode = enable ? DisplaySetting.STEREOSCOPIC_3D_FORMAT_SIDE_BY_SIDE : DisplaySetting.STEREOSCOPIC_3D_FORMAT_OFF;
+
+        try {
+        	final Surface surface = getHolder().getSurface();
+            final boolean formatResult = DisplaySetting.setStereoscopic3DFormat(surface, mode);
+            supports3D = true;
+            android.util.Log.i(TAG, "return value:" + formatResult);
+        } catch (Error e) {
+        	supports3D = false;
+            android.util.Log.i(TAG, "S3D display not available", e);
+        }
+        
+        renderer.setUse3D(enable);
+        renderer.setSupports3D(supports3D);
+    }
+    
+    @Override
+    public void surfaceChanged(SurfaceHolder aHolder, int aFormat, int aWidth, int aHeight) {
+    	super.surfaceChanged(aHolder, aFormat, aWidth, aHeight);
+
+        enableS3D(use3D);
+    }	
 }

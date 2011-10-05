@@ -9,6 +9,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterListener;
 import twitter4j.TwitterMethod;
 import twitter4j.http.AccessToken;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 
 /**
@@ -48,6 +50,10 @@ public class TwitterUpdater extends Activity {
 	
 	private static final int NEW_AUTH_POST_STATUS_FAIL_MSG_ID = 3;
 	
+	private static final int RETRIEVED_REQUEST_TOKEN_FAILED_MSG_ID = 4;
+	
+	private static final int RETRIEVED_REQUEST_TOKEN_MSG_ID = 5;
+	
 	private AuthRequest mAuthSetup;
 	
 	private WebView mWebView;
@@ -60,33 +66,52 @@ public class TwitterUpdater extends Activity {
 	
 	private String mStatus;
 	
-	//Unfortunately, AsyncTwitter does callback on a thread other than the main UI thread. 
+	//AsyncTwitter does callback on a thread other than the main UI thread. 
 	//So a handler is needed to get back to the main thread.
 	private Handler mHandler = new Handler() {
 		@Override
-		public void handleMessage(Message msg) {
-			//ALog.m(msg);
+		public void handleMessage(final Message aMessage) {
 						
-			switch ( msg.what ) {					
+			switch ( aMessage.what ) {					
 				case POST_STATUS_SUCCESS_MSG_ID:
 					setResult(RESULT_OK);
 					finish();
 					break;
 					
 				case SAVED_AUTH_POST_STATUS_FAIL_MSG_ID:
-					String message = "Failed to tweet using previously saved authorization.";
-					//ALog.e((Throwable) msg.obj, message);
+					// Failed to tweet using previously saved authorization.
 					
 					//TODO distinguish between different errors
 					//network errors we may want to retry, auth errors we may want to clear the saved authorization, etc..
 					//session.clear();
 					//setErrorAndFinish();
-					
+
+					// Get new authorization and try one more time.
 					obtainAuthorization();	
 					break;
 					
 				case NEW_AUTH_POST_STATUS_FAIL_MSG_ID:
-					//ALog.e((Throwable) msg.obj, "Failed to Tweet using new credentials.");
+					// Failed to Tweet using new credentials.
+					
+					Toast.makeText(TwitterUpdater.this, 
+						"Unable to tweet at this time. Please try again later.", Toast.LENGTH_LONG).show();
+					setErrorAndFinish();
+					break;
+					
+				case RETRIEVED_REQUEST_TOKEN_MSG_ID:
+					
+					// Show the Twitter web page to authorize the app and approve the authorization request
+					// in the WebView component.
+					String authUrl = (String) aMessage.obj;
+					addWebView(authUrl);
+					break;
+					
+				case RETRIEVED_REQUEST_TOKEN_FAILED_MSG_ID:
+
+					Exception e = (Exception) aMessage.obj;
+					Log.e(LOG_TAG, "Exception authorizing and posting to Twitter: ", e);
+					Toast.makeText(TwitterUpdater.this, e.getMessage(), Toast.LENGTH_LONG).show();
+					
 					setErrorAndFinish();
 					break;
 			}
@@ -94,20 +119,17 @@ public class TwitterUpdater extends Activity {
 		
 	};
 
-	public static Intent getIntent(Context context, String consumerKey, String consumerSecret, String callbackUrl, String status) {
-		//ALog.m(context, consumerKey, consumerSecret, callbackUrl, status);
-		
-		Intent intent = new Intent(context, TwitterUpdater.class);
-		intent.putExtra(CONSUMER_KEY_EXTRA_KEY, consumerKey);
-		intent.putExtra(CONSUMER_SECRET_EXTRA_KEY, consumerSecret);
-		intent.putExtra(CALLBACK_URL_EXTRA_KEY, callbackUrl);
-		intent.putExtra(STATUS_EXTRA_KEY, status);
+	public static Intent getIntent(final Context aContext, final String aConsumerKey, final String aConsumerSecret, 
+			final String aCallbackUrl, final String aStatus) {
+		Intent intent = new Intent(aContext, TwitterUpdater.class);
+		intent.putExtra(CONSUMER_KEY_EXTRA_KEY, aConsumerKey);
+		intent.putExtra(CONSUMER_SECRET_EXTRA_KEY, aConsumerSecret);
+		intent.putExtra(CALLBACK_URL_EXTRA_KEY, aCallbackUrl);
+		intent.putExtra(STATUS_EXTRA_KEY, aStatus);
 		return intent;
 	}
 
 	private void parseIntent() {
-		//ALog.m();
-		
 		Intent intent = getIntent();
 		mConsumerKey = intent.getStringExtra(CONSUMER_KEY_EXTRA_KEY);
 		mConsumerSecret = intent.getStringExtra(CONSUMER_SECRET_EXTRA_KEY);
@@ -116,10 +138,8 @@ public class TwitterUpdater extends Activity {
 	}
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		//ALog.m(savedInstanceState);
-
-		super.onCreate(savedInstanceState);
+	public void onCreate(final Bundle aSavedInstanceState) {
+		super.onCreate(aSavedInstanceState);
 		setResult(RESULT_CANCELED);
 		parseIntent();
 
@@ -138,24 +158,27 @@ public class TwitterUpdater extends Activity {
 		}
 	}
 		
+	/**
+	 * Handle Twitter events that occur when posting a status using saved authorization information.
+	 */
 	private class SavedAuthPostStatus extends TwitterAdapter {
 		@Override
-		public void onException(TwitterException e, TwitterMethod method) {
+		public void onException(final TwitterException aException, final TwitterMethod aMethod) {
 			//ALog.m(e, method);
-			Message message = mHandler.obtainMessage(SAVED_AUTH_POST_STATUS_FAIL_MSG_ID, e);
+			Message message = mHandler.obtainMessage(SAVED_AUTH_POST_STATUS_FAIL_MSG_ID, aException);
 			mHandler.sendMessage(message);
 		}
 		@Override
-		public void updatedStatus(Status statuses) {
+		public void updatedStatus(final Status aStatus) {
 			//ALog.m(statuses);
 			mHandler.sendEmptyMessage(POST_STATUS_SUCCESS_MSG_ID);			
 		}		
 	}
 
-	private void postStatus(AccessToken a, TwitterListener listener) {
+	private void postStatus(final AccessToken aAccessToken, final TwitterListener aListener) {
 		//ALog.m(a);
-		AsyncTwitter twitter = new AsyncTwitterFactory(listener)
-			.getOAuthAuthorizedInstance(mConsumerKey, mConsumerSecret, a);		
+		AsyncTwitter twitter = new AsyncTwitterFactory(aListener)
+			.getOAuthAuthorizedInstance(mConsumerKey, mConsumerSecret, aAccessToken);		
 		twitter.updateStatus(mStatus);
 	}
 	
@@ -163,18 +186,23 @@ public class TwitterUpdater extends Activity {
 	 * Shows the Twitter page that requests authorization for the app from the user in a WebView.
 	 */
 	private void obtainAuthorization() {
-		//ALog.m();
-		
-		try {
-			mAuthSetup = new AuthRequest(mConsumerKey, mConsumerSecret, mCallbackUrl);
-			String authUrl = mAuthSetup.getAuthorizationUrl();
-			addWebView(authUrl);		
-			
-		} catch (Exception e) {
-			String message = "Error contacting Twitter to authorize app.";
-			//ALog.e(message, e);
-			setErrorAndFinish();
-		}
+
+		mAuthSetup = new AuthRequest(mConsumerKey, mConsumerSecret, mCallbackUrl);
+
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					String authUrl = mAuthSetup.getAuthorizationUrl();
+					Message message = mHandler.obtainMessage(RETRIEVED_REQUEST_TOKEN_MSG_ID, authUrl);
+					mHandler.sendMessage(message);
+				} catch (Exception e) {
+					Message message = mHandler.obtainMessage(RETRIEVED_REQUEST_TOKEN_FAILED_MSG_ID, e);
+					mHandler.sendMessage(message);
+				}
+			}
+		}.start();
+
 	}
 
 	@Override
@@ -196,17 +224,17 @@ public class TwitterUpdater extends Activity {
 	/**
 	 * Processes the callback URL encountered when the user authorizes the app.
 	 */
-	private boolean completeIfCallback(String url) {
-		Log.d(LOG_TAG, "completeIfCallback(" + url + ")");
+	private boolean completeIfCallback(final String aUrlToCheck) {
+		Log.d(LOG_TAG, "completeIfCallback(" + aUrlToCheck + ")");
 		
-		if ( null == url || !url.startsWith(mCallbackUrl)  ) {
+		if ( null == aUrlToCheck || !aUrlToCheck.startsWith(mCallbackUrl)  ) {
 			return false;
 		}
 
 		Log.d(LOG_TAG, "Callback URL detected, extracting authorization...");
 
 		try {
-			AccessToken a = mAuthSetup.getAccessToken(url);
+			AccessToken a = mAuthSetup.getAccessToken(aUrlToCheck);
 
 			AuthStore session = new AuthStore(this);
 			session.save(a.getToken(), a.getTokenSecret());
@@ -214,29 +242,29 @@ public class TwitterUpdater extends Activity {
 			postStatus(a, new NewAuthPostStatus());			
 			finish();
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			Message message = mHandler.obtainMessage(NEW_AUTH_POST_STATUS_FAIL_MSG_ID, e);
 			mHandler.sendMessage(message);
 		}
 		return true;
 	}
-	
+
+	/**
+	 * Handle Twitter events that occur when posting a status using new authorization information.
+	 */
 	private class NewAuthPostStatus extends TwitterAdapter {
 		@Override
-		public void onException(TwitterException e, TwitterMethod method) {
-			//ALog.m(e, method);
-			Message message = mHandler.obtainMessage(NEW_AUTH_POST_STATUS_FAIL_MSG_ID, e);
+		public void onException(final TwitterException aException, final TwitterMethod aMethod) {
+			Message message = mHandler.obtainMessage(NEW_AUTH_POST_STATUS_FAIL_MSG_ID, aException);
 			mHandler.sendMessage(message);
 		}
 		@Override
-		public void updatedStatus(Status statuses) {
-			//ALog.m(statuses);
+		public void updatedStatus(final Status aStatus) {
 			mHandler.sendEmptyMessage(POST_STATUS_SUCCESS_MSG_ID);	
 		}		
 	}
 
-	private void addWebView(String authUrl) {
-		//ALog.m(authUrl);
+	private void addWebView(final String aAuthUrl) {
 
 		mWebView = new NoNPEWebView(this);
 		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
@@ -247,33 +275,29 @@ public class TwitterUpdater extends Activity {
 
 		mWebView.setWebChromeClient(new WebChromeClient() {
 			@Override
-			public void onCloseWindow(WebView window) {
-				//ALog.m(window);
-				
+			public void onCloseWindow(final WebView aWindow) {				
 				TwitterUpdater.this.finish();
 			}	
 		});
 		
 		mWebView.setWebViewClient(new WebViewClient() {
 			@Override
-			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				Log.d(LOG_TAG, "shouldOverrideUrlLoading(" + url + ")");
+			public boolean shouldOverrideUrlLoading(final WebView aView, final String aUrl) {
+				Log.d(LOG_TAG, "shouldOverrideUrlLoading(" + aUrl + ")");
 				
-				if ( !completeIfCallback(url) ) {
-					view.loadUrl(url);
+				if ( !completeIfCallback(aUrl) ) {
+					aView.loadUrl(aUrl);
 				}
 				return true;
 			}
 			
 			@Override
-			public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-				//ALog.m(view, errorCode, description, failingUrl);
-				
+			public void onReceivedError(final WebView aView, final int aErrorCode, final String aDescription, final String aFailingUrl) {
 				setErrorAndFinish();
 			}
 		});
 		
-		mWebView.loadUrl(authUrl);
+		mWebView.loadUrl(aAuthUrl);
 	}
 
 }

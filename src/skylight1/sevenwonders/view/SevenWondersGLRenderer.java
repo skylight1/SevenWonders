@@ -49,6 +49,10 @@ import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
 	
+	private static enum Side {
+		LEFT, RIGHT
+	}
+
 	public static class CollisionActionToCollisionObserverAdapter implements CollisionObserver {
 		private final List<OpenGLGeometry> listOfOpenGLGeometries;
 		private final CollisionAction collisionAction;
@@ -148,6 +152,14 @@ public class SevenWondersGLRenderer implements Renderer {
 	private Settings settings;
 
 	private final GameState gameState;
+
+	private int width;
+
+	private int height;
+
+	private boolean use3D;
+
+	private boolean supports3D;
 	
 	public SevenWondersGLRenderer(final Context aContext, final Handler aUpdateUiHandler, final GameLevel aLevel, final GameState aGameState) {
 		Log.i(TAG, "SevenWondersGLRenderer()");
@@ -378,12 +390,15 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 
 	public void onSurfaceChanged(final GL10 aGl, final int aW, final int aH) {
-		aGl.glMatrixMode(GL10.GL_PROJECTION);
-		aGl.glLoadIdentity();
-		aGl.glViewport(0, 0, aW, aH);
-		GLU.gluPerspective(aGl, 45, (float) aW / (float) aH, 0.25f, 4000.0f);
-
-		aGl.glMatrixMode(GL10.GL_MODELVIEW);
+//		aGl.glMatrixMode(GL10.GL_PROJECTION);
+//		aGl.glLoadIdentity();
+//		aGl.glViewport(0, 0, aW, aH);
+//		GLU.gluPerspective(aGl, 45, (float) aW / (float) aH, 0.25f, 4000.0f);
+//
+//		aGl.glMatrixMode(GL10.GL_MODELVIEW);
+		
+		width = aW;
+		height = aH;
 		
 		// load all of the used textures
 		for (Texture texture : textureResourceIdToTextureMap.values()) {
@@ -405,13 +420,25 @@ public class SevenWondersGLRenderer implements Renderer {
 	}
 	
 	public void onDrawFrame(final GL10 aGl) {
-		aGl.glClear(GL10.GL_DEPTH_BUFFER_BIT);
-		
 		final long timeDeltaMS = calculateTimeSinceLastRenderMillis();
 		float turnAmountFromTurningVelocity = gameState.turningVelocity * timeDeltaMS / TURNING_VELOCITY_DIVISOR;
 		turn(turnAmountFromTurningVelocity);
 		
 		playerFacingThisFrame = gameState.playerFacing;
+		
+		drawOnePerspetive(aGl, Side.LEFT, timeDeltaMS);
+		drawOnePerspetive(aGl, Side.RIGHT, timeDeltaMS);
+	}
+
+	private void drawOnePerspetive(final GL10 aGl, final Side aSide, long aTimeDeltaMS) {
+		aGl.glMatrixMode(GL10.GL_PROJECTION);
+		aGl.glLoadIdentity();
+		aGl.glViewport(aSide == Side.LEFT ? 0 : width / 2, 0, width / 2, height);
+		GLU.gluPerspective(aGl, 45, (float) width / (float) height, 0.25f, 4000.0f);
+
+		aGl.glMatrixMode(GL10.GL_MODELVIEW);
+		aGl.glTranslatef(aSide == Side.LEFT ? -50 : 50, 0, 0);
+		aGl.glClear(GL10.GL_DEPTH_BUFFER_BIT);
 		
 		drawCarpet(aGl);
 
@@ -421,7 +448,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		aGl.glRotatef(worldAngle, 0f, 0f, 1f);
 		drawSkybox(aGl, worldAngle);
 				
-		applyMovement(aGl, timeDeltaMS);
+		applyMovement(aGl, aTimeDeltaMS);
 		detectCollisions();
 
 		drawSpells(aGl);		
@@ -664,5 +691,13 @@ public class SevenWondersGLRenderer implements Renderer {
 
 	public void hideGlowAt(final int aGlowIndex) {
 		glowGeometries.set(aGlowIndex, null);
+	}
+
+	public void setUse3D(final boolean aUse3D) {
+		use3D = aUse3D;
+	}
+
+	public void setSupports3D(boolean aSupports3d) {
+		supports3D = aSupports3d;	
 	}
 }
