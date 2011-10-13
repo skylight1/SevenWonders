@@ -53,7 +53,7 @@ public class MenuActivity extends Activity implements OnClickListener, AdWhirlIn
 		Adverts.insertAdBanner(this,layout);
 		
         tracker = Analytics.getInstance(this,"7W", BuildInfo.getVersionName(this));
-		tracker.start(this);
+        tracker.start(this);
 	}
 
 	@Override

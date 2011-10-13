@@ -7,6 +7,7 @@ import skylight1.sevenwonders.social.facebook.FacebookScoreActivity;
 import skylight1.sevenwonders.social.twitter.TwitterUpdater;
 import skylight1.sevenwonders.view.StyledSpannableStringBuilder;
 import skylight1.sevenwonders.view.TextStyles;
+import skylight1.util.BuildInfo;
 import android.app.Activity;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -38,6 +39,8 @@ public class ScoreActivity extends Activity {
 	static final String KEY_WON_LEVEL = "KEY_WON_LEVEL";
 
 	private TextStyles textStyles;
+	
+	private Analytics tracker;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +77,13 @@ public class ScoreActivity extends Activity {
 		}
 		
 		displayEndOfLevelMessage(wonLevel, level, collectedSpellsCount, collectedCoinCount, remainingSeconds);
+        tracker = Analytics.getInstance(this,"7W", BuildInfo.getVersionName(this));
+		tracker.start(this);
+		if(wonLevel) {
+			tracker.trackPageView("/level-" + oneBasedLevelNumber + "/win/" + remainingSeconds + "/" + collectedSpellsCount + "/" + collectedCoinCount);
+		} else {
+			tracker.trackPageView("/level-" + oneBasedLevelNumber + "/lose/"+ remainingSeconds + "/" + collectedSpellsCount + "/" + collectedCoinCount);
+		}
 	}
 
 	/**
@@ -282,5 +292,15 @@ public class ScoreActivity extends Activity {
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		SoundTracks.setVolume(this);
 	}
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tracker.dispatch();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+	    tracker.dispatch();
+	    tracker.stop();
+    }
 }

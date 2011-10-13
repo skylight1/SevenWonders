@@ -18,6 +18,8 @@ private GoogleAnalyticsTracker tracker;
         if(ga_id.length()>0) {
 	        tracker = GoogleAnalyticsTracker.getInstance();
 	        tracker.setProductVersion("7W", BuildInfo.getVersionName(context));
+	        // using custom variable (index[1-5],name,value,scope{1:visitor;2:session;3:page})
+	        tracker.setCustomVar(1, "7W", BuildInfo.getVersionName(context), 2);
         }
 	}
 	
@@ -29,7 +31,8 @@ private GoogleAnalyticsTracker tracker;
 	public void start(Context context) {
 //TODO: REFLECT! and note: start tracker can be started with a dispatch interval (in seconds) so add that method!
 		if(tracker!=null) {
-			tracker.start(ga_id, context);
+			tracker.startNewSession(ga_id, context);
+	        tracker.setCustomVar(1, "7W", BuildInfo.getVersionName(context), 2);
 		}
     }
 
@@ -57,7 +60,7 @@ private GoogleAnalyticsTracker tracker;
 	public void stop() {
 // TODO: REFLECT!
 		if(tracker!=null) {
-			tracker.stop();
+			tracker.stopSession();
 		}
 	}
 }
