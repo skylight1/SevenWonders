@@ -33,7 +33,7 @@
 	      a:layout_gravity="center"
 	      a:gravity="center"
 	      a:text="Welcome\nto\nSeven Wonders!"
-	      a:textSize="20dip"
+	      a:textSize="20sp"
 	      a:textColor="#ffff"      
 	      a:textStyle="bold"
 	      a:shadowRadius="1.3"
