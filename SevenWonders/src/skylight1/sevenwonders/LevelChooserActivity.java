@@ -17,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class LevelChooserActivity extends ListActivity implements AdWhirlInterface {
+public class LevelChooserActivity extends ListActivity {//implements AdWhirlInterface {
 
 	private static class LevelScore {
 		final GameLevel level;
@@ -85,8 +85,8 @@ public class LevelChooserActivity extends ListActivity implements AdWhirlInterfa
 
 		setListAdapter(levelScoreAdapter);
 		
-        ViewGroup layout = (ViewGroup)findViewById(R.id.layout_ad);
-		Adverts.insertAdBanner(this,layout);
+//        ViewGroup layout = (ViewGroup)findViewById(R.id.layout_ad);
+//		Adverts.insertAdBanner(this,layout);
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class LevelChooserActivity extends ListActivity implements AdWhirlInterfa
 		startActivity(intent);
 	}
 
-	@Override
-	public void adWhirlGeneric() {
-	}
+//	@Override
+//	public void adWhirlGeneric() {
+//	}
 }

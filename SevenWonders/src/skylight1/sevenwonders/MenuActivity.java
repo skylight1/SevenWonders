@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MenuActivity extends Activity implements OnClickListener, AdWhirlInterface {
+public class MenuActivity extends Activity implements OnClickListener {//, AdWhirlInterface {
 	
 	private TextView contentTextView;
 	private Button leftButton;
@@ -50,7 +50,7 @@ public class MenuActivity extends Activity implements OnClickListener, AdWhirlIn
         rightButton.setOnClickListener(this);   
 
         ViewGroup layout = (ViewGroup)findViewById(R.id.layout_ad);
-		Adverts.insertAdBanner(this,layout);
+//		Adverts.insertAdBanner(this,layout);
 		
         tracker = Analytics.getInstance(this,"7W", BuildInfo.getVersionName(this));
         tracker.start(this);
@@ -113,10 +113,10 @@ public class MenuActivity extends Activity implements OnClickListener, AdWhirlIn
 	    tracker.stop();
     }
 
-	@Override
-	public void adWhirlGeneric() {
-		
-	}
+//	@Override
+//	public void adWhirlGeneric() {
+//		
+//	}
 
 		
 }
