@@ -93,7 +93,9 @@
 		
 	<FrameLayout
 		a:layout_height="fill_parent"
-		a:layout_width="fill_parent">
+		a:layout_width="fill_parent"
+		a:keepScreenOn="true"
+		>
 					  
 		  <TextView
 			a:id="@+id/gameStatusView" 
