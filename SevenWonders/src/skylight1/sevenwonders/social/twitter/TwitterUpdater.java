@@ -1,6 +1,7 @@
 package skylight1.sevenwonders.social.twitter;
 
 import skylight1.sevenwonders.social.NoNPEWebView;
+/*
 import twitter4j.AsyncTwitter;
 import twitter4j.AsyncTwitterFactory;
 import twitter4j.Status;
@@ -9,6 +10,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterListener;
 import twitter4j.TwitterMethod;
 import twitter4j.http.AccessToken;
+*/
 
 import android.app.Activity;
 import android.content.Context;
@@ -103,7 +105,7 @@ public class TwitterUpdater extends Activity {
 					// Show the Twitter web page to authorize the app and approve the authorization request
 					// in the WebView component.
 					String authUrl = (String) aMessage.obj;
-					addWebView(authUrl);
+//					addWebView(authUrl);
 					break;
 					
 				case RETRIEVED_REQUEST_TOKEN_FAILED_MSG_ID:
@@ -145,22 +147,22 @@ public class TwitterUpdater extends Activity {
 
 		//First try to post with any previous obtained authorization.
 		AuthStore session = new AuthStore(this);
-		AccessToken token = session.restore();
-		if ( null != token ) {
-			try {
-				postStatus(token, new SavedAuthPostStatus());
-			} catch (Exception e) {
-				Message message = mHandler.obtainMessage(SAVED_AUTH_POST_STATUS_FAIL_MSG_ID, e);
-				mHandler.sendMessage(message);
-			}
-		} else {
+//		AccessToken token = session.restore();
+//		if ( null != token ) {
+//			try {
+//				postStatus(token, new SavedAuthPostStatus());
+//			} catch (Exception e) {
+//				Message message = mHandler.obtainMessage(SAVED_AUTH_POST_STATUS_FAIL_MSG_ID, e);
+//				mHandler.sendMessage(message);
+//			}
+//		} else {
 			obtainAuthorization();		
-		}
+//		}
 	}
 		
 	/**
 	 * Handle Twitter events that occur when posting a status using saved authorization information.
-	 */
+	 
 	private class SavedAuthPostStatus extends TwitterAdapter {
 		@Override
 		public void onException(final TwitterException aException, final TwitterMethod aMethod) {
@@ -177,11 +179,11 @@ public class TwitterUpdater extends Activity {
 
 	private void postStatus(final AccessToken aAccessToken, final TwitterListener aListener) {
 		//ALog.m(a);
-		AsyncTwitter twitter = new AsyncTwitterFactory(aListener)
+//		AsyncTwitter twitter = new AsyncTwitterFactory(aListener)
 			.getOAuthAuthorizedInstance(mConsumerKey, mConsumerSecret, aAccessToken);		
 		twitter.updateStatus(mStatus);
 	}
-	
+*/	
 	/**
 	 * Shows the Twitter page that requests authorization for the app from the user in a WebView.
 	 */
@@ -189,6 +191,7 @@ public class TwitterUpdater extends Activity {
 
 		mAuthSetup = new AuthRequest(mConsumerKey, mConsumerSecret, mCallbackUrl);
 
+/*
 		new Thread() {
 			@Override
 			public void run() {
@@ -202,7 +205,7 @@ public class TwitterUpdater extends Activity {
 				}
 			}
 		}.start();
-
+*/
 	}
 
 	@Override
@@ -234,12 +237,12 @@ public class TwitterUpdater extends Activity {
 		Log.d(LOG_TAG, "Callback URL detected, extracting authorization...");
 
 		try {
-			AccessToken a = mAuthSetup.getAccessToken(aUrlToCheck);
+//			AccessToken a = mAuthSetup.getAccessToken(aUrlToCheck);
 
-			AuthStore session = new AuthStore(this);
-			session.save(a.getToken(), a.getTokenSecret());
+//			AuthStore session = new AuthStore(this);
+//			session.save(a.getToken(), a.getTokenSecret());
 
-			postStatus(a, new NewAuthPostStatus());			
+//			postStatus(a, new NewAuthPostStatus());			
 			finish();
 
 		} catch (final Exception e) {
@@ -251,7 +254,6 @@ public class TwitterUpdater extends Activity {
 
 	/**
 	 * Handle Twitter events that occur when posting a status using new authorization information.
-	 */
 	private class NewAuthPostStatus extends TwitterAdapter {
 		@Override
 		public void onException(final TwitterException aException, final TwitterMethod aMethod) {
@@ -299,6 +301,6 @@ public class TwitterUpdater extends Activity {
 		
 		mWebView.loadUrl(aAuthUrl);
 	}
-
+*/
 }
 

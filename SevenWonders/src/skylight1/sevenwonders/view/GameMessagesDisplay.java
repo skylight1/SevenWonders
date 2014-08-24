@@ -35,7 +35,7 @@ public class GameMessagesDisplay {
 		NOT_HARMED("Saved by Invincibility!", Priority.MESSAGE),
 		AAARGH("Aaargh!", Priority.ALERT),
 		COIN_COLLECTED("Riches are yours!", Priority.MESSAGE),
-		COLLIDED_WITH_OBSTACLE("You cannot fly through the pyramids!", Priority.ALERT),
+		COLLIDED_WITH_OBSTACLE("You cannot fly through the pyramids yet!", Priority.ALERT),
 		;
 		
 		public final String messageText;

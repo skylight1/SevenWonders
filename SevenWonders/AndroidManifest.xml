@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="skylight1.sevenwonders" android:versionCode="15"
-	android:versionName="1.0beta15">
+	package="skylight1.sevenwonders" android:versionCode="16"
+	android:versionName="1.0W">
 	
-    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="16" />
+    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="20" />
     
-     <uses-feature android:name="android.hardware.touchscreen"
-	    android:required="false"/>
+     <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
  
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -27,7 +26,7 @@
 		<activity android:name="SplashActivity" 
 			android:launchMode="singleTask"
 			android:clearTaskOnLaunch="true"
-			android:screenOrientation="landscape">
+			android:screenOrientation="portrait"> <!--TODO: W only -->
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -46,26 +45,26 @@
 		</activity>
 
 		<activity android:name="LevelChooserActivity" android:label="@string/app_name"
-			android:screenOrientation="landscape" />
+			android:screenOrientation="portrait" />
 
 		<activity android:name="PlayActivity" android:label="@string/app_name"
-			android:screenOrientation="landscape" 
+			android:screenOrientation="portrait" 
 		/>
 
 		<activity android:name=".ScoreActivity"
-			android:screenOrientation="landscape" android:label="@string/app_name">
+			android:screenOrientation="portrait" android:label="@string/app_name">
 		</activity>
 
 		<activity android:name="MenuActivity"
-			android:screenOrientation="landscape" android:label="@string/app_name">
+			android:screenOrientation="portrait" android:label="@string/app_name">
 		</activity>
 
 		<activity android:name="AboutActivity"
-			android:screenOrientation="landscape" android:label="@string/app_name">
+			android:screenOrientation="portrait" android:label="@string/app_name">
 		</activity>
 
 		<activity android:name=".SettingsActivity"
-			android:screenOrientation="landscape" android:label="@string/app_name">
+			android:screenOrientation="portrait" android:label="@string/app_name">
 		</activity>
 
 		<activity
@@ -83,7 +82,7 @@
 		</activity>
 
 		<activity android:name=".StoryActivity" android:label="@string/app_name"
-			android:screenOrientation="landscape">
+			android:screenOrientation="portrait">
 		</activity>
 
 		<receiver android:name="com.google.android.apps.analytics.AnalyticsReceiver"

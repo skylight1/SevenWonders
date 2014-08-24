@@ -1,6 +1,6 @@
 package skylight1.sevenwonders;
 
-import com.adwhirl.AdWhirlLayout.AdWhirlInterface;
+//import com.adwhirl.AdWhirlLayout.AdWhirlInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,9 +66,14 @@ public class LevelChooserActivity extends ListActivity {//implements AdWhirlInte
 				final LevelScore levelScore = getItem(aPosition);
 
 				icon.setImageResource(levelScore.level.getIconResourceId());
-				levelNameTextView.setText("Level " + (levelScore.level.ordinal() + 1));
-				final String scoreMessage = levelScore.locked ? "LOCKED" : String.format("%d", levelScore.score);
+				//TODO: fix - temp edit for wear
+//				levelNameTextView.setText("Level " + (levelScore.level.ordinal() + 1));
+//				final String scoreMessage = levelScore.locked ? "LOCKED" : String.format("%d", levelScore.score);
+				levelNameTextView.setText(""+(levelScore.level.ordinal() + 1));
+				final String scoreMessage = levelScore.locked ? "" : String.format("%d", levelScore.score);
 				scoreTextView.setText(scoreMessage);
+				//TODO: fix
+				scoreTextView.setTextSize(20.0f);
 
 				// grey out the row if the level is locked
 				rowView.setEnabled(! levelScore.locked);
@@ -110,6 +115,7 @@ public class LevelChooserActivity extends ListActivity {//implements AdWhirlInte
 		final Intent intent = new Intent(this, PlayActivity.class);
 		intent.putExtra(ScoreActivity.KEY_LEVEL_ORDINAL, levelScore.level.ordinal());
 		startActivity(intent);
+		finish();
 	}
 
 //	@Override

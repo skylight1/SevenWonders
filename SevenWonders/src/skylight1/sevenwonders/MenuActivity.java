@@ -1,6 +1,6 @@
 package skylight1.sevenwonders;
 
-import com.adwhirl.AdWhirlLayout.AdWhirlInterface;
+//import com.adwhirl.AdWhirlLayout.AdWhirlInterface;
 
 import skylight1.sevenwonders.services.SoundTracks;
 import skylight1.sevenwonders.view.TextStyles;
@@ -54,6 +54,13 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 		
         tracker = Analytics.getInstance(this,"7W", BuildInfo.getVersionName(this));
         tracker.start(this);
+        
+		//TODO: TEMP for WEAR test
+		if (!settings.wasGameStartedAtLeastOnce()) {
+			startGame();
+			finish();
+		}
+
 	}
 
 	@Override
@@ -78,7 +85,9 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 	}
 
 	private void showStory() {
-		startActivity(new Intent(this, StoryActivity.class));		
+//TODO: temp fix for AW
+//		startActivity(new Intent(this, StoryActivity.class));		
+		finish();
 		tracker.trackPageView("/story"); 
 	}
 
@@ -91,7 +100,8 @@ public class MenuActivity extends Activity implements OnClickListener {//, AdWhi
 	}
 
 	private void startGame() {
-		startActivity(new Intent(this, LevelChooserActivity.class));		
+		startActivity(new Intent(this, LevelChooserActivity.class));
+		finish();
 		tracker.trackPageView("/game");
 	}
 	

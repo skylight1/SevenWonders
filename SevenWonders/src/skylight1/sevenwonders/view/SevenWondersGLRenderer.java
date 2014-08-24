@@ -49,6 +49,8 @@ import android.util.Log;
 
 public class SevenWondersGLRenderer implements Renderer {
 	
+	private boolean firstCollission = true;
+	
 	public static class CollisionActionToCollisionObserverAdapter implements CollisionObserver {
 		private final List<OpenGLGeometry> listOfOpenGLGeometries;
 		private final CollisionAction collisionAction;
@@ -183,6 +185,7 @@ public class SevenWondersGLRenderer implements Renderer {
 		// collision with an obstacle moves the player back to where
 		// they were at the start of the frame, prior to any movement
 		final CollisionObserver obstacleCollisionObserver = new CollisionObserver() {
+
 			@Override
 			public boolean collisionOccurred(final float[] aBoundingSphere) {
 				// Return early without doing anything if the player has gained the ability to fly through obstacles.
@@ -191,8 +194,10 @@ public class SevenWondersGLRenderer implements Renderer {
 				}
 				
 			    SoundTracks.getInstance().play(SoundTracks.BUMP);
-			    GameMessagesDisplay.postMessage(GameEvent.COLLIDED_WITH_OBSTACLE);
-			    
+			    if(firstCollission) {
+			    	GameMessagesDisplay.postMessage(GameEvent.COLLIDED_WITH_OBSTACLE);
+			    	firstCollission = false;
+			    }
 			    // Find the distance traveled toward the pyramid.
 				float initialOffsetToPyramidX = aBoundingSphere[0] - startOfFramePlayerWorldPositionX;
 				float initialOffsetToPyramidZ = aBoundingSphere[2] - startOfFramePlayerWorldPositionZ;

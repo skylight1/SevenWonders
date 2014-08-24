@@ -154,7 +154,9 @@ public class ScoreActivity extends Activity {
 		// Make the message uppercase and set it on to a TextView
 		TextView messageTextView = (TextView) findViewById(R.id.end__content_textview);		
 		textStyles.applyBodyTextStyle(messageTextView);		
-		messageTextView.setText(messageBuilder);	
+		messageTextView.setText(messageBuilder);
+		//TODO: for wearable:
+		messageTextView.setTextSize(20.0f);
 	}
 
 	private String getLevelEndTitle(boolean wonLevel, int level) {

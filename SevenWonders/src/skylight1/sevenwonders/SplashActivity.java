@@ -19,7 +19,7 @@ import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+//import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 public class SplashActivity extends Activity {
 	
@@ -31,7 +31,7 @@ public class SplashActivity extends Activity {
 	
 	private static final int EXPIRED_DIALOG_ID = 1;
 	
-	private GoogleAnalyticsTracker tracker;
+//	private GoogleAnalyticsTracker tracker;
 
 	private Handler handler = new Handler();
 
@@ -114,7 +114,9 @@ public class SplashActivity extends Activity {
 
 	private void dismissSplashActivity() {
 		if (!isFinishing()) {
-			startActivity(new Intent(this, MenuActivity.class));
+//TODO: fix - temp for AW			
+//			startActivity(new Intent(this, MenuActivity.class));
+			startActivity(new Intent(this, LevelChooserActivity.class));
 		}
 	}
 

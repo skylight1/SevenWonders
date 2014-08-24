@@ -1,6 +1,6 @@
 package skylight1.sevenwonders.social.twitter;
 
-import twitter4j.http.AccessToken;
+//import twitter4j.http.AccessToken;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -36,7 +36,7 @@ public class AuthStore {
         editor.putString(OATH_TOKEN_SECRET_PREF_KEY, oathTokenSecret);
         return editor.commit();
     }
-
+/*
     public AccessToken restore() {
         SharedPreferences savedSession = getPrefs();
         String oathToken = savedSession.getString(OATH_TOKEN_PREF_KEY, null);
@@ -48,7 +48,7 @@ public class AuthStore {
 		AccessToken a = new AccessToken(oathToken, oathTokenSecret);
         return a;
     }
-
+*/
     public void clear() {
         Editor editor = getPrefs().edit();
         editor.clear();

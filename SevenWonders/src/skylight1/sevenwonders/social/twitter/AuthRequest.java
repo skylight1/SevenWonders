@@ -1,11 +1,11 @@
 package skylight1.sevenwonders.social.twitter;
 
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.OAuthProvider;
-import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
-import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
-import oauth.signpost.exception.OAuthException;
-import twitter4j.http.AccessToken;
+//import oauth.signpost.OAuthConsumer;
+//import oauth.signpost.OAuthProvider;
+//import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+//import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
+//import oauth.signpost.exception.OAuthException;
+//import twitter4j.http.AccessToken;
 import android.net.Uri;
 
 /**
@@ -16,9 +16,9 @@ import android.net.Uri;
  */
 public class AuthRequest {
 
-	private OAuthProvider provider;
+//	private OAuthProvider provider;
 	
-	private OAuthConsumer consumer;
+//	private OAuthConsumer consumer;
 
 	private String callbackUrl;
 
@@ -26,14 +26,15 @@ public class AuthRequest {
 		
 		this.callbackUrl = callbackUrl;
 
-		consumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+//		consumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
 
-		provider = new CommonsHttpOAuthProvider(
-				"https://api.twitter.com/oauth/request_token",
-				"https://api.twitter.com/oauth/access_token",
-				"https://api.twitter.com/oauth/authorize");
+//		provider = new CommonsHttpOAuthProvider(
+//				"https://api.twitter.com/oauth/request_token",
+//				"https://api.twitter.com/oauth/access_token",
+//				"https://api.twitter.com/oauth/authorize");
 	}
-	
+
+/*
 	public String getAuthorizationUrl() throws OAuthException {
 		String authUrl = provider.retrieveRequestToken(consumer, callbackUrl);
 		return authUrl;
@@ -57,5 +58,6 @@ public class AuthRequest {
 		AccessToken a = new AccessToken(consumer.getToken(), consumer.getTokenSecret());
 		return a;
 	}
-
+*/
+	
 }
